@@ -2,7 +2,7 @@ package helpers
 
 import "strings"
 
-func Border2D(a []string, r rune) []string {
+func AddBorder2D(a []string, r rune) []string {
 	b := string(r)
 	cols := len(a[0]) + 2
 	res := make([]string, 0, len(a)+2)

@@ -24,22 +24,8 @@ func main() {
 	if err := scanner.Err(); err != nil {
 		panic(err)
 	}
-	field := helpers.Border2D(lines, '.')
+	field := helpers.AddBorder2D(lines, '.')
 
-	adjacentSymbols := func(i, j int) map[byte][]Point {
-		res := map[byte][]Point{}
-		for di := -1; di <= 1; di++ {
-			for dj := -1; dj <= 1; dj++ {
-				i0 := i + di
-				j0 := j + dj
-				ch := field[i0][j0]
-				if ch != '.' && !helpers.IsDigit(ch) {
-					res[ch] = append(res[ch], Point{i0, j0})
-				}
-			}
-		}
-		return res
-	}
 	allGears := map[Point][]int{}
 	for i, row := range field {
 		isN := false
@@ -50,12 +36,16 @@ func main() {
 			if helpers.IsDigit(ch) {
 				isN = true
 				n = 10*n + int(ch-'0')
-				symbols := adjacentSymbols(i, j)
-				if len(symbols) > 0 {
-					isAdj = true
-				}
-				for _, g := range symbols['*'] {
-					gears[g] = true
+				for ni := i - 1; ni <= i+1; ni++ {
+					for nj := j - 1; nj <= j+1; nj++ {
+						ch := field[ni][nj]
+						if ch != '.' && !helpers.IsDigit(ch) {
+							isAdj = true
+						}
+						if ch == '*' {
+							gears[Point{ni, nj}] = true
+						}
+					}
 				}
 			} else {
 				if isN {
