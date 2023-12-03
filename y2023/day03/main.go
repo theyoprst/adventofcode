@@ -1,12 +1,9 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 
 	"github.com/theyoprst/adventofcode/helpers"
-	"github.com/theyoprst/adventofcode/must"
 )
 
 type Point struct {
@@ -14,17 +11,8 @@ type Point struct {
 }
 
 func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Split(bufio.ScanLines)
 	var ans1, ans2 int
-	var lines []string
-	for scanner.Scan() {
-		line := scanner.Text()
-		lines = append(lines, line)
-	}
-	must.NoError(scanner.Err())
-	field := helpers.AddBorder2D(lines, '.')
-
+	field := helpers.AddBorder2D(helpers.ReadInputLines(), '.')
 	allGears := map[Point][]int{}
 	for i, row := range field {
 		isN := false

@@ -1,6 +1,23 @@
 package helpers
 
-import "strings"
+import (
+	"bufio"
+	"os"
+	"strings"
+
+	"github.com/theyoprst/adventofcode/must"
+)
+
+func ReadInputLines() []string {
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Split(bufio.ScanLines)
+	var lines []string
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	must.NoError(scanner.Err())
+	return lines
+}
 
 func AddBorder2D(a []string, r rune) []string {
 	b := string(r)
