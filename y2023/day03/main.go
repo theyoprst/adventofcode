@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/theyoprst/adventofcode/helpers"
+	"github.com/theyoprst/adventofcode/must"
 )
 
 type Point struct {
@@ -21,9 +22,7 @@ func main() {
 		line := scanner.Text()
 		lines = append(lines, line)
 	}
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
+	must.NoError(scanner.Err())
 	field := helpers.AddBorder2D(lines, '.')
 
 	allGears := map[Point][]int{}

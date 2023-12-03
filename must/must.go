@@ -30,11 +30,15 @@ func Split3(s string, sep string) (_, _, _ string) {
 	return split[0], split[1], split[3]
 }
 
-func Atoi(s string) int {
-	n, err := strconv.Atoi(s)
+func NoError(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func Atoi(s string) int {
+	n, err := strconv.Atoi(s)
+	NoError(err)
 	return n
 }
 

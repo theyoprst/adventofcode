@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+
+	"github.com/theyoprst/adventofcode/must"
 )
 
 func main() {
@@ -14,9 +16,7 @@ func main() {
 		line := scanner.Text()
 		_ = line
 	}
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
+	must.NoError(scanner.Err())
 
 	fmt.Println("Part 1:", ans1)
 	fmt.Println("Part 2:", ans2)
