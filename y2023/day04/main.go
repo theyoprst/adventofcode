@@ -6,7 +6,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/theyoprst/adventofcode/helpers"
+	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
 
@@ -59,15 +59,15 @@ func intersect(a, b []int) []int {
 
 func main() {
 	var ans1, ans2, ans2V2 int
-	lines := helpers.ReadInputLines()
+	lines := aoc.ReadInputLines()
 	copies := map[int]int{}
 	tree := NewSTree(len(lines))
 	tree.Inc(0, len(lines), 1)
 	for i, line := range lines {
 		_, line = must.Split2(line, ":")
 		winsStr, haveStr := must.Split2(line, "|")
-		wins := helpers.Ints(strings.TrimSpace(winsStr))
-		have := helpers.Ints(strings.TrimSpace(haveStr))
+		wins := aoc.Ints(strings.TrimSpace(winsStr))
+		have := aoc.Ints(strings.TrimSpace(haveStr))
 		k := len(intersect(wins, have))
 		copies[i]++
 		ans2 += copies[i]

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/theyoprst/adventofcode/helpers"
+	"github.com/theyoprst/adventofcode/aoc"
 )
 
 type Point struct {
@@ -12,7 +12,7 @@ type Point struct {
 
 func main() {
 	var ans1, ans2 int
-	field := helpers.AddBorder2D(helpers.ReadInputLines(), '.')
+	field := aoc.AddBorder2D(aoc.ReadInputLines(), '.')
 	allGears := map[Point][]int{}
 	for i, row := range field {
 		isN := false
@@ -20,13 +20,13 @@ func main() {
 		gears := map[Point]bool{}
 		var n int
 		for j, ch := range row {
-			if helpers.IsDigit(ch) {
+			if aoc.IsDigit(ch) {
 				isN = true
 				n = 10*n + int(ch-'0')
 				for ni := i - 1; ni <= i+1; ni++ {
 					for nj := j - 1; nj <= j+1; nj++ {
 						ch := field[ni][nj]
-						if ch != '.' && !helpers.IsDigit(ch) {
+						if ch != '.' && !aoc.IsDigit(ch) {
 							isAdj = true
 						}
 						if ch == '*' {

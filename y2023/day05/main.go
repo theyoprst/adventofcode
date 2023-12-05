@@ -6,7 +6,7 @@ import (
 	"math"
 	"slices"
 
-	"github.com/theyoprst/adventofcode/helpers"
+	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
 
@@ -19,18 +19,18 @@ type Seg struct {
 }
 
 func main() {
-	lines := helpers.ReadInputLines()
-	seeds := helpers.Ints(lines[0])
+	lines := aoc.ReadInputLines()
+	seeds := aoc.Ints(lines[0])
 	must.Equal(len(seeds)%2, 0)
 	segs := make([]Seg, len(seeds)/2)
 	for i := range segs {
 		segs[i] = Seg{seeds[2*i], seeds[2*i] + seeds[2*i+1]}
 	}
 	lines = lines[2:]
-	for _, g := range helpers.Split(lines, "") {
+	for _, g := range aoc.Split(lines, "") {
 		var items []MapItem
 		for _, line := range g[1:] {
-			ints := helpers.Ints(line)
+			ints := aoc.Ints(line)
 			items = append(items, MapItem{dst: ints[0], src: ints[1], size: ints[2]})
 		}
 		for i, seed := range seeds {

@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 
-	"github.com/theyoprst/adventofcode/helpers"
+	"github.com/theyoprst/adventofcode/aoc"
 )
 
 func main() {
 	var ans1, ans2 int
-	lines := helpers.ReadInputLines()
+	lines := aoc.ReadInputLines()
 	for i, line := range lines {
 		_, _ = i, line
 	}
