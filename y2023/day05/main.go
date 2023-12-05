@@ -72,10 +72,7 @@ func main() {
 		}
 		segs = newSegs
 	}
-	ans1 := math.MaxInt
-	for _, seed := range seeds {
-		ans1 = min(ans1, seed)
-	}
+	ans1 := slices.Min(seeds)
 	ans2 := math.MaxInt
 	for _, seg := range segs {
 		ans2 = min(ans2, seg.start)
