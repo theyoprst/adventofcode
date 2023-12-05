@@ -34,3 +34,17 @@ func AddBorder2D(a []string, r rune) []string {
 func IsDigit[T byte | rune](ch T) bool {
 	return '0' <= ch && ch <= '9'
 }
+
+func Split[T comparable](a []T, by T) [][]T {
+	var g []T
+	var gg [][]T
+	for _, x := range append(a, by) {
+		if x == by {
+			gg = append(gg, g)
+			g = []T{}
+		} else {
+			g = append(g, x)
+		}
+	}
+	return gg
+}

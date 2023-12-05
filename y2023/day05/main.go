@@ -10,20 +10,6 @@ import (
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func splitByEmpty(lines []string) [][]string {
-	var g []string
-	var gg [][]string
-	for _, line := range append(lines, "") {
-		if line == "" {
-			gg = append(gg, g)
-			g = []string{}
-		} else {
-			g = append(g, line)
-		}
-	}
-	return gg
-}
-
 type MapItem struct {
 	dst, src, size int
 }
@@ -42,7 +28,7 @@ func main() {
 		segs[i] = Seg{seeds[2*i], seeds[2*i] + seeds[2*i+1]}
 	}
 	lines = lines[2:]
-	for _, g := range splitByEmpty(lines) {
+	for _, g := range helpers.Split(lines, "") {
 		var items []MapItem
 		for _, line := range g[1:] {
 			ints := must.ParseInts(line)
