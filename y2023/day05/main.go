@@ -26,13 +26,16 @@ func main() {
 	for i := range segs {
 		segs[i] = Seg{seeds[2*i], seeds[2*i] + seeds[2*i+1]}
 	}
+	origSegs := slices.Clone(segs)
 	lines = lines[2:]
+	var maps [][]MapItem
 	for _, g := range aoc.Split(lines, "") {
 		var items []MapItem
 		for _, line := range g[1:] {
 			ints := aoc.Ints(line)
 			items = append(items, MapItem{dst: ints[0], src: ints[1], size: ints[2]})
 		}
+		maps = append(maps, items)
 		for i, seed := range seeds {
 			for _, item := range items {
 				if item.src <= seed && seed < item.src+item.size {
@@ -80,4 +83,32 @@ func main() {
 
 	fmt.Println("Part 1:", ans1)
 	fmt.Println("Part 2:", ans2)
+
+	// Brute-force:
+	mins := make(chan int)
+	for _, seg := range origSegs {
+		seg := seg
+		go func() {
+			minSeed := math.MaxInt
+			for i := seg.start; i < seg.after; i++ {
+				seed := i
+				for _, items := range maps {
+					for _, item := range items {
+						if item.src <= seed && seed < item.src+item.size {
+							seed += item.dst - item.src
+							break
+						}
+					}
+				}
+				minSeed = min(minSeed, seed)
+			}
+			mins <- minSeed
+		}()
+	}
+	ans2bf := math.MaxInt
+	for range origSegs {
+		ans2bf = min(ans2bf, <-mins)
+	}
+
+	fmt.Println("Part 2 (brute force):", ans2bf)
 }
