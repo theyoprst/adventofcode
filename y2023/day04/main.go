@@ -66,8 +66,8 @@ func main() {
 	for i, line := range lines {
 		_, line = must.Split2(line, ":")
 		winsStr, haveStr := must.Split2(line, "|")
-		wins := must.ParseInts(strings.TrimSpace(winsStr))
-		have := must.ParseInts(strings.TrimSpace(haveStr))
+		wins := helpers.Ints(strings.TrimSpace(winsStr))
+		have := helpers.Ints(strings.TrimSpace(haveStr))
 		k := len(intersect(wins, have))
 		copies[i]++
 		ans2 += copies[i]

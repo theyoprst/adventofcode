@@ -20,8 +20,7 @@ type Seg struct {
 
 func main() {
 	lines := helpers.ReadInputLines()
-	_, seedsStr := must.Split2(lines[0], ": ")
-	seeds := must.ParseInts(seedsStr)
+	seeds := helpers.Ints(lines[0])
 	must.Equal(len(seeds)%2, 0)
 	segs := make([]Seg, len(seeds)/2)
 	for i := range segs {
@@ -31,7 +30,7 @@ func main() {
 	for _, g := range helpers.Split(lines, "") {
 		var items []MapItem
 		for _, line := range g[1:] {
-			ints := must.ParseInts(line)
+			ints := helpers.Ints(line)
 			items = append(items, MapItem{dst: ints[0], src: ints[1], size: ints[2]})
 		}
 		for i, seed := range seeds {

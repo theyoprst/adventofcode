@@ -3,6 +3,7 @@ package helpers
 import (
 	"bufio"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/theyoprst/adventofcode/must"
@@ -47,4 +48,14 @@ func Split[T comparable](a []T, by T) [][]T {
 		}
 	}
 	return gg
+}
+
+var allIntsRe = regexp.MustCompile(`[-]?\d[\d,]*[\.]?[\d{2}]*`)
+
+func Ints(s string) []int {
+	var ints []int
+	for _, word := range allIntsRe.FindAllString(s, -1) {
+		ints = append(ints, must.Atoi(word))
+	}
+	return ints
 }

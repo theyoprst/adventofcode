@@ -42,15 +42,6 @@ func Atoi(s string) int {
 	return n
 }
 
-func ParseInts(s string) []int {
-	split := strings.Fields(s)
-	var res []int
-	for _, x := range split {
-		res = append(res, Atoi(x))
-	}
-	return res
-}
-
 func Equal[T comparable](got, target T) {
 	if got != target {
 		panic(fmt.Sprintf("Got %v, want %v", got, target))
