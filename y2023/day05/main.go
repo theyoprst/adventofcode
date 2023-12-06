@@ -15,7 +15,7 @@ type MapItem struct {
 }
 
 type Seg struct {
-	start, after int
+	first, after int
 }
 
 func main() {
@@ -53,22 +53,22 @@ func main() {
 			var split []Seg
 			for _, item := range items {
 				in := Seg{
-					start: max(seg.start, item.src),
+					first: max(seg.first, item.src),
 					after: min(seg.after, item.src+item.size),
 				}
-				if in.start < in.after {
-					// seg.start .. in.start .. in.after .. seg.after.
-					if seg.start < in.start {
-						split = append(split, Seg{seg.start, in.start})
+				if in.first < in.after {
+					// seg.first .. in.first .. in.after .. seg.after.
+					if seg.first < in.first {
+						split = append(split, Seg{seg.first, in.first})
 					}
 					mapped := in
-					mapped.start += item.dst - item.src
+					mapped.first += item.dst - item.src
 					mapped.after += item.dst - item.src
 					split = append(split, mapped)
 					seg = Seg{in.after, seg.after}
 				}
 			}
-			if seg.start < seg.after {
+			if seg.first < seg.after {
 				split = append(split, seg)
 			}
 			newSegs = append(newSegs, split...)
@@ -78,7 +78,7 @@ func main() {
 	ans1 := slices.Min(seeds)
 	ans2 := math.MaxInt
 	for _, seg := range segs {
-		ans2 = min(ans2, seg.start)
+		ans2 = min(ans2, seg.first)
 	}
 
 	fmt.Println("Part 1:", ans1)
@@ -90,7 +90,7 @@ func main() {
 		seg := seg
 		go func() {
 			minSeed := math.MaxInt
-			for i := seg.start; i < seg.after; i++ {
+			for i := seg.first; i < seg.after; i++ {
 				seed := i
 				for _, items := range maps {
 					for _, item := range items {

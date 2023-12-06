@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	var ans1, ans2 int
+	ans1, ans2 := 0, 0
 	lines := aoc.ReadInputLines()
 	for i, line := range lines {
 		_, _ = i, line
