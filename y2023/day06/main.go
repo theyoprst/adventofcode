@@ -15,9 +15,7 @@ func main() {
 		wins := 0
 		for a := 0; a <= tt[i]; a++ {
 			b := tt[i] - a
-			if a*b > rr[i] {
-				wins++
-			}
+			wins += aoc.BoolToInt(a*b > rr[i])
 		}
 		ans *= wins
 	}

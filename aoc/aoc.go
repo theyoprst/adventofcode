@@ -59,3 +59,10 @@ func Ints(s string) []int {
 	}
 	return ints
 }
+
+func BoolToInt(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}
