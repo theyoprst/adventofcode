@@ -2,6 +2,7 @@ package aoc
 
 import (
 	"bufio"
+	"math"
 	"os"
 	"regexp"
 	"strings"
@@ -65,4 +66,19 @@ func BoolToInt(b bool) int {
 		return 1
 	}
 	return 0
+}
+
+// Solves equation a*x^2 + b*x + c = 0. Returns x1, x2: x1 <= x2.
+func SolveQuadratic(a, b, c int) (_, _ *float64) {
+	af := float64(a)
+	bf := float64(b)
+	cf := float64(c)
+	d := math.Sqrt(bf*bf - 4*af*cf)
+	if math.IsNaN(d) {
+		return nil, nil
+	}
+	x1 := (-bf - d) / 2 / af
+	x2 := (-bf + d) / 2 / af
+	x1, x2 = min(x1, x2), max(x1, x2)
+	return &x1, &x2
 }
