@@ -8,108 +8,77 @@ import (
 	"github.com/theyoprst/adventofcode/must"
 )
 
-type Hand struct {
-	hand string
-	typ  []int
-	jtyp []int
-	bid  int
-}
-
-func NewHand(hand string, bid int) Hand {
-	m := map[byte]int{}
-	for i := range hand {
-		m[hand[i]]++
-	}
-	var a []int
-	for _, v := range m {
-		a = append(a, v)
-	}
-	slices.Sort(a)
-	slices.Reverse(a)
-
-	aj := a
-	j, ok := m['J']
-	if ok {
-		delete(m, 'J')
-		aj = []int{}
-		for _, v := range m {
-			aj = append(aj, v)
-		}
-		slices.Sort(aj)
-		slices.Reverse(aj)
-		if len(aj) > 0 {
-			aj[0] += j
-		} else {
-			aj = []int{j}
-		}
-	}
-	return Hand{
-		hand: hand,
-		typ:  a,
-		jtyp: aj,
-		bid:  bid,
-	}
-}
-
-var cardOrder = map[byte]int{
-	'2': 2,
-	'3': 3,
-	'4': 4,
-	'5': 5,
-	'6': 6,
-	'7': 7,
-	'8': 8,
-	'9': 9,
-	'T': 10,
-	'J': 11,
-	'Q': 12,
-	'K': 13,
-	'A': 14,
-}
-
 func main() {
-	ans1, ans2 := 0, 0
 	lines := aoc.ReadInputLines()
+
+	cardOrder := map[rune]int{
+		'T': 11,
+		'J': 12,
+		'Q': 13,
+		'K': 14,
+		'A': 15,
+	}
+	for ch := '2'; ch <= '9'; ch++ {
+		cardOrder[ch] = int(ch - '0')
+	}
+
+	type Hand struct {
+		key  []int
+		keyJ []int
+		bid  int
+	}
 	var hands []Hand
 	for i, line := range lines {
 		_, _ = i, line
 		hand, bidStr := must.Split2(line, " ")
 		bid := must.Atoi(bidStr)
-		hands = append(hands, NewHand(hand, bid))
-	}
-	slices.SortFunc(hands, func(a, b Hand) int {
-		res := slices.Compare(a.typ, b.typ)
-		if res != 0 {
-			return res
+
+		m := map[byte]int{}
+		for i := range hand {
+			m[hand[i]]++
 		}
-		for i := range a.hand {
-			ca := cardOrder[a.hand[i]]
-			cb := cardOrder[b.hand[i]]
-			if ca != cb {
-				return ca - cb
+		key := aoc.MapSortedValues(m)
+		slices.Reverse(key)
+
+		keyJ := slices.Clone(key)
+		j, ok := m['J']
+		if ok {
+			delete(m, 'J')
+			keyJ = aoc.MapSortedValues(m)
+			slices.Reverse(keyJ)
+			if len(keyJ) > 0 {
+				keyJ[0] += j
+			} else {
+				keyJ = []int{j}
 			}
 		}
-		return 0
+		for i, h := range hand {
+			x := cardOrder[h]
+			key = append(key, x)
+			if hand[i] == 'J' {
+				x = 0
+			}
+			keyJ = append(keyJ, x)
+		}
+
+		hands = append(hands, Hand{
+			bid:  bid,
+			key:  key,
+			keyJ: keyJ,
+		})
+	}
+	slices.SortFunc(hands, func(a, b Hand) int {
+		return slices.Compare(a.key, b.key)
 	})
+	ans1 := 0
 	for i, hand := range hands {
 		ans1 += (i + 1) * hand.bid
 	}
 
-	cardOrder['J'] = -1
 	slices.SortFunc(hands, func(a, b Hand) int {
-		res := slices.Compare(a.jtyp, b.jtyp)
-		if res != 0 {
-			return res
-		}
-		for i := range a.hand {
-			ca := cardOrder[a.hand[i]]
-			cb := cardOrder[b.hand[i]]
-			if ca != cb {
-				return ca - cb
-			}
-		}
-		return 0
+		return slices.Compare(a.keyJ, b.keyJ)
 	})
+	ans2 := 0
 	for i, hand := range hands {
 		ans2 += (i + 1) * hand.bid
 	}

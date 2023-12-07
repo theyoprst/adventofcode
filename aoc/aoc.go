@@ -2,9 +2,11 @@ package aoc
 
 import (
 	"bufio"
+	"cmp"
 	"math"
 	"os"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/theyoprst/adventofcode/must"
@@ -81,4 +83,13 @@ func SolveQuadratic(a, b, c int) (_, _ *float64) {
 	x2 := (-bf + d) / 2 / af
 	x1, x2 = min(x1, x2), max(x1, x2)
 	return &x1, &x2
+}
+
+func MapSortedValues[K comparable, V cmp.Ordered](m map[K]V) []V {
+	var vv []V
+	for _, v := range m {
+		vv = append(vv, v)
+	}
+	slices.Sort(vv)
+	return vv
 }
