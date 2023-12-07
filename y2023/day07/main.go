@@ -40,18 +40,16 @@ func main() {
 		key := aoc.MapSortedValues(m)
 		slices.Reverse(key)
 
-		keyJ := slices.Clone(key)
-		j, ok := m['J']
-		if ok {
-			delete(m, 'J')
-			keyJ = aoc.MapSortedValues(m)
-			slices.Reverse(keyJ)
-			if len(keyJ) > 0 {
-				keyJ[0] += j
-			} else {
-				keyJ = []int{j}
-			}
+		j := m['J']
+		delete(m, 'J')
+		keyJ := aoc.MapSortedValues(m)
+		slices.Reverse(keyJ)
+		if len(keyJ) > 0 {
+			keyJ[0] += j
+		} else {
+			keyJ = []int{j}
 		}
+
 		for i, h := range hand {
 			x := cardOrder[h]
 			key = append(key, x)
