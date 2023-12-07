@@ -93,3 +93,12 @@ func MapSortedValues[K comparable, V cmp.Ordered](m map[K]V) []V {
 	slices.Sort(vv)
 	return vv
 }
+
+func MapSortedKeys[K cmp.Ordered, V any](m map[K]V) []K {
+	var kk []K
+	for k := range m {
+		kk = append(kk, k)
+	}
+	slices.Sort(kk)
+	return kk
+}
