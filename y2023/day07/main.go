@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"maps"
 	"slices"
 
 	"github.com/theyoprst/adventofcode/aoc"
@@ -11,16 +12,12 @@ import (
 func main() {
 	lines := aoc.ReadInputLines()
 
-	cardOrder := map[rune]int{
-		'T': 11,
-		'J': 12,
-		'Q': 13,
-		'K': 14,
-		'A': 15,
+	cardOrder := map[rune]int{}
+	for i, r := range "23456789TJQKA" {
+		cardOrder[r] = i
 	}
-	for ch := '2'; ch <= '9'; ch++ {
-		cardOrder[ch] = int(ch - '0')
-	}
+	cardOrderJ := maps.Clone(cardOrder)
+	cardOrderJ['J'] = -1
 
 	type Hand struct {
 		key  []int
@@ -50,13 +47,9 @@ func main() {
 			keyJ = []int{j}
 		}
 
-		for i, h := range hand {
-			x := cardOrder[h]
-			key = append(key, x)
-			if hand[i] == 'J' {
-				x = 0
-			}
-			keyJ = append(keyJ, x)
+		for _, h := range hand {
+			key = append(key, cardOrder[h])
+			keyJ = append(keyJ, cardOrderJ[h])
 		}
 
 		hands = append(hands, Hand{
