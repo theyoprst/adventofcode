@@ -102,3 +102,18 @@ func MapSortedKeys[K cmp.Ordered, V any](m map[K]V) []K {
 	slices.Sort(kk)
 	return kk
 }
+
+// Greates Common Divisor.
+func GCD(a, b int) int {
+	for b != 0 {
+		a, b = b, a%b
+	}
+	return a
+}
+
+// Least Common Multiple.
+func LCM(a, b int) int {
+	a /= GCD(a, b)
+	must.Less(b, math.MaxInt/a)
+	return a * b
+}
