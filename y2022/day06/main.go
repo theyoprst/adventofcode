@@ -11,17 +11,10 @@ import (
 func SolveGeneric(lines []string, limit int) []int {
 	var res []int
 	for _, line := range lines {
-		for i := 0; i < len(line)-limit; i++ {
-			sub := []byte(line[i : i+limit])
-			slices.Sort(sub)
-			dup := false
-			for j := 0; j < len(sub)-1; j++ {
-				if sub[j+1] == sub[j] {
-					dup = true
-				}
-			}
-			if !dup {
-				res = append(res, i+limit)
+		for i := limit; i < len(line); i++ {
+			sub := []byte(line[i-limit : i])
+			if len(aoc.ToSet(sub)) == len(sub) {
+				res = append(res, i)
 				break
 			}
 		}

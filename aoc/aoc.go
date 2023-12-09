@@ -123,3 +123,11 @@ func Reversed[S ~[]E, E any](a S) []E {
 	slices.Reverse(r)
 	return r
 }
+
+func ToSet[S ~[]E, E comparable](a S) map[E]bool {
+	set := map[E]bool{}
+	for _, x := range a {
+		set[x] = true
+	}
+	return set
+}
