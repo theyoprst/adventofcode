@@ -117,3 +117,9 @@ func LCM(a, b int) int {
 	must.Less(b, math.MaxInt/a)
 	return a * b
 }
+
+func Reversed[S ~[]E, E any](a S) []E {
+	r := slices.Clone(a)
+	slices.Reverse(r)
+	return r
+}
