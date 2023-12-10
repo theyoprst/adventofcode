@@ -3,69 +3,44 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 	"testing"
-
-	"gopkg.in/yaml.v3"
 
 	"github.com/theyoprst/adventofcode/aoc"
 )
 
-type WantFile struct {
-	Part1 string `yaml:"part1"`
-	Part2 string `yaml:"part2"`
+type Input struct {
+	Path      string
+	WantPart1 string
+	WantPart2 string
+}
+
+var inputs []Input = []Input{
+	{Path: "input_ex0.txt", WantPart1: "4", WantPart2: "1"},
+	{Path: "input_ex1.txt", WantPart1: "4", WantPart2: "1"},
+	{Path: "input_ex2.txt", WantPart1: "8", WantPart2: "1"},
+	{Path: "input_ex3.txt", WantPart2: "4"},
+	{Path: "input_ex4.txt", WantPart2: "8"},
+	{Path: "input.txt", WantPart1: "6897", WantPart2: "367"},
 }
 
 func Test(t *testing.T) {
-	dir, err := os.Open(".")
-	if err != nil {
-		t.Fatal(err)
-	}
-	files, err := dir.ReadDir(-1)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ff := map[string]struct{}{}
-	for _, f := range files {
-		if f.IsDir() {
-			continue
-		}
-		ff[f.Name()] = struct{}{}
-	}
-	const wantSuf = ".want.yaml"
-	const testSuf = ".txt"
 	type testCase struct {
 		path string
 		want string
 	}
 	var testCasesPart1 []testCase
 	var testCasesPart2 []testCase
-	for _, f := range aoc.MapSortedKeys(ff) {
-		if !strings.HasSuffix(f, wantSuf) {
-			continue
-		}
-		testF := f[:len(f)-len(wantSuf)] + testSuf
-		if _, exist := ff[testF]; !exist {
-			t.Errorf("No file %q found", testF)
-		}
-		wantData, err := os.ReadFile(f)
-		if err != nil {
-			t.Error(err)
-		}
-		var want WantFile
-		if err := yaml.Unmarshal(wantData, &want); err != nil {
-			t.Error(err)
-		}
-		if want.Part1 != "" {
+	for _, input := range inputs {
+		if input.WantPart1 != "" {
 			testCasesPart1 = append(testCasesPart1, testCase{
-				path: testF,
-				want: want.Part1,
+				path: input.Path,
+				want: input.WantPart1,
 			})
 		}
-		if want.Part2 != "" {
+		if input.WantPart2 != "" {
 			testCasesPart2 = append(testCasesPart2, testCase{
-				path: testF,
-				want: want.Part2,
+				path: input.Path,
+				want: input.WantPart2,
 			})
 		}
 	}
