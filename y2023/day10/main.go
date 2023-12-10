@@ -9,6 +9,27 @@ import (
 	"github.com/theyoprst/adventofcode/aoc"
 )
 
+type Point struct {
+	row, col int
+}
+
+var (
+	E Point = Point{0, 1}
+	W Point = Point{0, -1}
+	N Point = Point{-1, 0}
+	S Point = Point{1, 0}
+
+	Dirs map[byte]map[Point]bool = map[byte]map[Point]bool{
+		'S': aoc.ToSet([]Point{N, S, E, W}),
+		'|': aoc.ToSet([]Point{N, S}),
+		'-': aoc.ToSet([]Point{E, W}),
+		'L': aoc.ToSet([]Point{E, N}),
+		'J': aoc.ToSet([]Point{W, N}),
+		'7': aoc.ToSet([]Point{S, W}),
+		'F': aoc.ToSet([]Point{S, E}),
+	}
+)
+
 func AddBorder2D(a [][]byte, b byte) [][]byte {
 	cols := len(a[0]) + 2
 	res := make([][]byte, 0, len(a)+2)
@@ -23,24 +44,6 @@ func AddBorder2D(a [][]byte, b byte) [][]byte {
 
 func SolvePart1(lines []string) any {
 	f := aoc.AddBorder2D(lines, '*')
-	type Point struct {
-		row, col int
-	}
-	E := Point{0, 1}
-	W := Point{0, -1}
-	N := Point{-1, 0}
-	S := Point{1, 0}
-	dirs := map[byte]map[Point]bool{
-		'S': aoc.ToSet([]Point{N, S, E, W}),
-		'|': aoc.ToSet([]Point{N, S}),
-		'-': aoc.ToSet([]Point{E, W}),
-		'L': aoc.ToSet([]Point{E, N}),
-		'J': aoc.ToSet([]Point{W, N}),
-		'7': aoc.ToSet([]Point{S, W}),
-		'F': aoc.ToSet([]Point{S, E}),
-		'.': nil,
-		'*': nil,
-	}
 	var start Point
 	for row := range f {
 		for col := range f[row] {
@@ -50,24 +53,23 @@ func SolvePart1(lines []string) any {
 			}
 		}
 	}
-	var dfs func(p Point, noway Point, steps int) int
-	dfs = func(p Point, noway Point, steps int) int {
-		// fmt.Printf("dfs(p=%v, noway=%v, steps=%d)\n", p, noway, steps)
+	p := start
+	noway := Point{}
+	steps := 0
+	for steps == 0 || f[p.row][p.col] != 'S' {
+		steps++
 		ch := f[p.row][p.col]
-		if ch == 'S' && steps > 0 {
-			return steps
-		}
-		for dir := range dirs[ch] {
+		for dir := range Dirs[ch] {
 			rev := Point{-dir.row, -dir.col}
 			np := Point{p.row + dir.row, p.col + dir.col}
-			if dir != noway && dirs[f[np.row][np.col]][rev] {
-				return dfs(np, rev, steps+1)
+			if dir != noway && Dirs[f[np.row][np.col]][rev] {
+				p = np
+				noway = rev
+				break
 			}
 		}
-		return -1
 	}
-	ans := dfs(start, Point{}, 0) / 2
-	return ans
+	return steps / 2
 }
 
 func SolvePart2(lines []string) any {
@@ -83,22 +85,6 @@ func SolvePart2(lines []string) any {
 	f = AddBorder2D(f, '*')
 	f = AddBorder2D(f, '*')
 
-	type Point struct {
-		row, col int
-	}
-	E := Point{0, 1}
-	W := Point{0, -1}
-	N := Point{-1, 0}
-	S := Point{1, 0}
-	dirs := map[byte]map[Point]bool{
-		'S': aoc.ToSet([]Point{N, S, E, W}),
-		'|': aoc.ToSet([]Point{N, S}),
-		'-': aoc.ToSet([]Point{E, W}),
-		'L': aoc.ToSet([]Point{E, N}),
-		'J': aoc.ToSet([]Point{W, N}),
-		'7': aoc.ToSet([]Point{S, W}),
-		'F': aoc.ToSet([]Point{S, E}),
-	}
 	var start Point
 	for row := range f {
 		for col := range f[row] {
@@ -116,11 +102,11 @@ func SolvePart2(lines []string) any {
 		steps++
 		ch := f[p.row][p.col]
 		f[p.row][p.col] = 'S'
-		for dir := range dirs[ch] {
+		for dir := range Dirs[ch] {
 			rev := Point{-dir.row, -dir.col}
 			np := Point{p.row + dir.row, p.col + dir.col}
 			np2 := Point{p.row + 2*dir.row, p.col + 2*dir.col}
-			if dir != noway && dirs[f[np2.row][np2.col]][rev] {
+			if dir != noway && Dirs[f[np2.row][np2.col]][rev] {
 				p = np2
 				f[np.row][np.col] = 'S'
 				noway = rev
@@ -151,10 +137,6 @@ func SolvePart2(lines []string) any {
 		fill(Point{row: 2, col: col})
 		fill(Point{row: len(f) - 3, col: col})
 	}
-
-	// for _, line := range f {
-	// 	fmt.Println(string(line))
-	// }
 
 	var ans2 int
 	for row := range f {
