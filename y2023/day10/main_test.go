@@ -15,11 +15,5 @@ func Test(t *testing.T) {
 		{Path: "input_ex4.txt", WantPart2: "8"},
 		{Path: "input.txt", WantPart1: "6897", WantPart2: "367"},
 	}
-	solversPart1 := []aoc.Solver{
-		SolvePart1,
-	}
-	solversPart2 := []aoc.Solver{
-		SolvePart2,
-	}
 	aoc.RunTests(t, inputs, solversPart1, solversPart2)
 }

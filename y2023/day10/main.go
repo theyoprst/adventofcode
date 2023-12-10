@@ -11,19 +11,19 @@ type Point struct {
 }
 
 var (
-	E Point = Point{0, 1}
-	W Point = Point{0, -1}
-	N Point = Point{-1, 0}
-	S Point = Point{1, 0}
+	East  Point = Point{0, 1}
+	West  Point = Point{0, -1}
+	North Point = Point{-1, 0}
+	South Point = Point{1, 0}
 
 	Dirs map[byte]map[Point]bool = map[byte]map[Point]bool{
-		'S': aoc.ToSet([]Point{N, S, E, W}),
-		'|': aoc.ToSet([]Point{N, S}),
-		'-': aoc.ToSet([]Point{E, W}),
-		'L': aoc.ToSet([]Point{E, N}),
-		'J': aoc.ToSet([]Point{W, N}),
-		'7': aoc.ToSet([]Point{S, W}),
-		'F': aoc.ToSet([]Point{S, E}),
+		'S': aoc.ToSet([]Point{North, South, East, West}),
+		'|': aoc.ToSet([]Point{North, South}),
+		'-': aoc.ToSet([]Point{East, West}),
+		'L': aoc.ToSet([]Point{East, North}),
+		'J': aoc.ToSet([]Point{West, North}),
+		'7': aoc.ToSet([]Point{South, West}),
+		'F': aoc.ToSet([]Point{South, East}),
 	}
 )
 
@@ -108,7 +108,7 @@ func SolvePart2(lines []string) any {
 			return
 		}
 		f[p.row][p.col] = '*'
-		for _, dir := range []Point{E, W, S, N} {
+		for _, dir := range []Point{East, West, South, North} {
 			fill(Point{
 				row: p.row + dir.row,
 				col: p.col + dir.col,
@@ -134,6 +134,15 @@ func SolvePart2(lines []string) any {
 	return ans2
 }
 
+var solversPart1 []aoc.Solver = []aoc.Solver{
+	SolvePart1,
+}
+
+var solversPart2 []aoc.Solver = []aoc.Solver{
+	SolvePart2,
+	// TODO: try Shoelace formula and Pick's theorem: https://www.reddit.com/r/adventofcode/comments/18evyu9/comment/kcqu687/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+}
+
 func main() {
-	aoc.Main([]aoc.Solver{SolvePart1}, []aoc.Solver{SolvePart2})
+	aoc.Main(solversPart1, solversPart2)
 }
