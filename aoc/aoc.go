@@ -3,6 +3,7 @@ package aoc
 import (
 	"bufio"
 	"cmp"
+	"io"
 	"math"
 	"os"
 	"regexp"
@@ -13,7 +14,11 @@ import (
 )
 
 func ReadInputLines() []string {
-	scanner := bufio.NewScanner(os.Stdin)
+	return ReadLines(os.Stdin)
+}
+
+func ReadLines(reader io.Reader) []string {
+	scanner := bufio.NewScanner(reader)
 	scanner.Split(bufio.ScanLines)
 	var lines []string
 	for scanner.Scan() {
