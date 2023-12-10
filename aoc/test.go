@@ -3,9 +3,6 @@ package aoc
 import (
 	"fmt"
 	"os"
-	"reflect"
-	"runtime"
-	"strings"
 	"testing"
 )
 
@@ -13,13 +10,6 @@ type Input struct {
 	Path      string
 	WantPart1 string
 	WantPart2 string
-}
-
-type Solver func([]string) any
-
-func getFunctionName(temp interface{}) string {
-	path := runtime.FuncForPC(reflect.ValueOf(temp).Pointer()).Name()
-	return path[strings.LastIndex(path, ".")+1:]
 }
 
 func RunTests(t *testing.T, inputs []Input, solversPart1 []Solver, solversPart2 []Solver) {

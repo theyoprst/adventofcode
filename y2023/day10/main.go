@@ -2,9 +2,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
-	"os"
-	"slices"
 
 	"github.com/theyoprst/adventofcode/aoc"
 )
@@ -138,16 +135,5 @@ func SolvePart2(lines []string) any {
 }
 
 func main() {
-	lines1 := aoc.ReadInputLines()
-	lines2 := slices.Clone(lines1)
-	var cmd string
-	if len(os.Args) > 1 {
-		cmd = os.Args[1]
-	}
-	if cmd != "part2" || cmd == "part1" {
-		fmt.Println("Part 1:", SolvePart1(lines1))
-	}
-	if cmd != "part1" || cmd == "part2" {
-		fmt.Println("Part 2:", SolvePart2(lines2))
-	}
+	aoc.Main([]aoc.Solver{SolvePart1}, []aoc.Solver{SolvePart2})
 }
