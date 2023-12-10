@@ -30,20 +30,9 @@ var (
 	}
 )
 
-func AddBorder2D(a [][]byte, b byte) [][]byte {
-	cols := len(a[0]) + 2
-	res := make([][]byte, 0, len(a)+2)
-	res = append(res, bytes.Repeat([]byte{b}, cols))
-	for _, s := range a {
-		line := append(append([]byte{b}, s...), b)
-		res = append(res, line)
-	}
-	res = append(res, bytes.Repeat([]byte{b}, cols))
-	return res
-}
-
 func SolvePart1(lines []string) any {
-	f := aoc.AddBorder2D(lines, '*')
+	f := aoc.ToBytesField(lines)
+	f = aoc.AddBorder2D(f, '*')
 	var start Point
 	for row := range f {
 		for col := range f[row] {
@@ -82,8 +71,8 @@ func SolvePart2(lines []string) any {
 			f[2*row][2*col] = lines[row][col]
 		}
 	}
-	f = AddBorder2D(f, '*')
-	f = AddBorder2D(f, '*')
+	f = aoc.AddBorder2D(f, '*')
+	f = aoc.AddBorder2D(f, '*')
 
 	var start Point
 	for row := range f {

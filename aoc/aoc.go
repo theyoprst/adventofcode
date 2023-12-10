@@ -8,7 +8,6 @@ import (
 	"os"
 	"regexp"
 	"slices"
-	"strings"
 
 	"github.com/theyoprst/adventofcode/must"
 )
@@ -28,15 +27,31 @@ func ReadLines(reader io.Reader) []string {
 	return lines
 }
 
-func AddBorder2D(a []string, r rune) []string {
-	b := string(r)
-	cols := len(a[0]) + 2
-	res := make([]string, 0, len(a)+2)
-	res = append(res, strings.Repeat(b, cols))
-	for _, s := range a {
-		res = append(res, b+s+b)
+func ToBytesField(lines []string) [][]byte {
+	var field [][]byte
+	for _, line := range lines {
+		field = append(field, []byte(line))
 	}
-	res = append(res, strings.Repeat(b, cols))
+	return field
+}
+
+func MakeSlice[T any](elem T, n int) []T {
+	s := make([]T, n)
+	for i := range s {
+		s[i] = elem
+	}
+	return s
+}
+
+func AddBorder2D[T any](a [][]T, b T) [][]T {
+	cols := len(a[0]) + 2
+	res := make([][]T, 0, len(a)+2)
+	res = append(res, MakeSlice(b, cols))
+	for _, s := range a {
+		line := append(append([]T{b}, s...), b)
+		res = append(res, line)
+	}
+	res = append(res, MakeSlice(b, cols))
 	return res
 }
 

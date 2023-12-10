@@ -10,9 +10,8 @@ type Point struct {
 	i, j int
 }
 
-func main() {
-	var ans1, ans2 int
-	field := aoc.AddBorder2D(aoc.ReadInputLines(), '.')
+func Solve(lines []string) (ans1, ans2 int) {
+	field := aoc.AddBorder2D(aoc.ToBytesField(lines), '.')
 	allGears := map[Point][]int{}
 	for i, row := range field {
 		isN := false
@@ -50,12 +49,28 @@ func main() {
 			}
 		}
 	}
-	fmt.Println("Part 1:", ans1)
 
 	for _, nn := range allGears {
 		if len(nn) == 2 {
 			ans2 += nn[0] * nn[1]
 		}
 	}
+
+	return ans1, ans2
+}
+
+func SolvePart1(lines []string) any {
+	ans1, _ := Solve(lines)
+	return ans1
+}
+
+func SolvePart2(lines []string) any {
+	_, ans2 := Solve(lines)
+	return ans2
+}
+
+func main() {
+	ans1, ans2 := Solve(aoc.ReadInputLines())
+	fmt.Println("Part 1:", ans1)
 	fmt.Println("Part 2:", ans2)
 }
