@@ -151,3 +151,14 @@ func ToSet[S ~[]E, E comparable](a S) map[E]bool {
 	}
 	return set
 }
+
+type SignedNumbers interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~float32 | float64
+}
+
+func Abs[T SignedNumbers](a T) T {
+	if a < 0 {
+		return -a
+	}
+	return a
+}
