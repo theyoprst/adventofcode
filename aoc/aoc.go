@@ -10,6 +10,7 @@ import (
 	"slices"
 
 	"github.com/theyoprst/adventofcode/must"
+	"golang.org/x/exp/constraints"
 )
 
 func ReadInputLines() []string {
@@ -152,13 +153,20 @@ func ToSet[S ~[]E, E comparable](a S) map[E]bool {
 	return set
 }
 
-type SignedNumbers interface {
-	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~float32 | float64
-}
-
-func Abs[T SignedNumbers](a T) T {
+func Abs[T constraints.Signed | constraints.Float](a T) T {
 	if a < 0 {
 		return -a
 	}
 	return a
+}
+
+// PartialSum returns partial sum list based on a: []int{a[0], a[0]+a[1], ...}}.
+func PartialSum[T constraints.Integer | constraints.Float](a []T) []T {
+	var sum T
+	partial := make([]T, len(a))
+	for i, x := range a {
+		sum += x
+		partial[i] = sum
+	}
+	return partial
 }

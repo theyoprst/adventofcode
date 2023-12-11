@@ -78,46 +78,29 @@ func solveGenericNaive(lines []string, expandFactor int) int {
 
 func solveGenericPartSum(lines []string, expandFactor int) int {
 	field := aoc.ToBytesField(lines)
-	rowStars := map[int]bool{}
-	colStars := map[int]bool{}
+	rows := len(field)
+	cols := len(field[0])
+
+	rowSizes := aoc.MakeSlice(expandFactor, rows)
+	colSizes := aoc.MakeSlice(expandFactor, cols)
 	var stars []Point
 	for row, line := range field {
 		for col, ch := range line {
 			if ch == Star {
 				stars = append(stars, Point{row, col})
-				rowStars[row] = true
-				colStars[col] = true
+				rowSizes[row] = 1
+				colSizes[col] = 1
 			}
 		}
 	}
 
-	sum := 0
-	var rowsPart []int
-	for row := 0; row < len(field); row++ {
-		if rowStars[row] {
-			sum += 1
-		} else {
-			sum += expandFactor
-		}
-		rowsPart = append(rowsPart, sum)
-	}
-
-	sum = 0
-	var colsPart []int
-	for col := 0; col < len(field[0]); col++ {
-		if colStars[col] {
-			sum += 1
-		} else {
-			sum += expandFactor
-		}
-		colsPart = append(colsPart, sum)
-	}
-
+	rowSums := aoc.PartialSum(rowSizes)
+	colSums := aoc.PartialSum(colSizes)
 	ans := 0
 	for i, first := range stars {
 		for _, second := range stars[i+1:] {
-			ans += aoc.Abs(rowsPart[first.row] - rowsPart[second.row])
-			ans += aoc.Abs(colsPart[first.col] - colsPart[second.col])
+			ans += aoc.Abs(rowSums[first.row] - rowSums[second.row])
+			ans += aoc.Abs(colSums[first.col] - colSums[second.col])
 		}
 	}
 	return ans
