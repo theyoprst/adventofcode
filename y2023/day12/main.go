@@ -15,73 +15,56 @@ func SolvePart2(lines []string) any {
 	return SolveGeneric(lines, 5)
 }
 
+const (
+	Block = '#'
+	Empty = '.'
+	Any   = '?'
+)
+
 func SolveGeneric(lines []string, dup int) int {
 	var ans int
 	for _, line := range lines {
-		maskStr, numsStr := must.Split2(line, " ")
-		maskStr = strings.Join(aoc.MakeSlice(maskStr, dup), "?") + "."
-		numsStr = strings.Join(aoc.MakeSlice(numsStr, dup), ",")
-		numsStrs := strings.Split(numsStr, ",")
-		var nums []int
-		for _, s := range numsStrs {
-			nums = append(nums, must.Atoi(s))
-		}
+		maskStr, blocksStr := must.Split2(line, " ")
+		maskStr = strings.Join(aoc.MakeSlice(maskStr, dup), "?") + string(Empty)
+		blocksStr = strings.Join(aoc.MakeSlice(blocksStr, dup), ",")
+		blocks := aoc.Ints(blocksStr)
 		mask := []byte(maskStr)
-		numsSum := 0
-		for _, n := range nums {
-			numsSum += n
-		}
-		nDots := 0
-		nBroken := 0
-		for _, b := range mask {
-			nDots += aoc.BoolToInt(b == '.')
-			nBroken += aoc.BoolToInt(b == '#')
-		}
-		type CacheItem struct{ curN, maskIdx, numsIdx int }
+
+		type CacheItem struct{ curBlock, maskIdx, blocksIdx int }
 		cache := map[CacheItem]int{}
-		var bf func(curN int, maskIdx int, numsIds int) int
-		bf = func(curN int, maskIdx int, numsIdx int) (result int) {
-			cacheItem := CacheItem{curN, maskIdx, numsIdx}
+
+		var dp func(curN int, maskIdx int, blocksIdx int) int
+		dp = func(curBlock int, maskIdx int, blocksIdx int) (result int) {
+			cacheItem := CacheItem{curBlock, maskIdx, blocksIdx}
 			if result, ok := cache[cacheItem]; ok {
 				return result
 			}
 			defer func() {
 				cache[cacheItem] = result
 			}()
-			nums := nums[numsIdx:]
+
+			blocks := blocks[blocksIdx:]
 			mask := mask[maskIdx:]
 			if len(mask) == 0 {
-				if len(nums) == 0 {
-					return 1
-				}
-				return 0
-			}
-			if curN > 0 {
-				if len(nums) == 0 {
-					return 0
-				}
-				if len(nums) > 0 && curN > nums[0] {
-					return 0
-				}
+				return aoc.BoolToInt(len(blocks) == 0)
 			}
 			ch := mask[0]
 			sum := 0
-			if ch == '#' || ch == '?' {
-				sum += bf(curN+1, maskIdx+1, numsIdx)
+			if ch == Block || ch == Any {
+				sum += dp(curBlock+1, maskIdx+1, blocksIdx)
 			}
-			if ch == '.' || ch == '?' {
-				if curN > 0 {
-					if len(nums) > 0 && nums[0] == curN {
-						sum += bf(0, maskIdx+1, numsIdx+1)
+			if ch == Empty || ch == Any {
+				if curBlock > 0 {
+					if len(blocks) > 0 && blocks[0] == curBlock {
+						sum += dp(0, maskIdx+1, blocksIdx+1)
 					}
 				} else {
-					sum += bf(0, maskIdx+1, numsIdx)
+					sum += dp(0, maskIdx+1, blocksIdx)
 				}
 			}
 			return sum
 		}
-		arrangements := bf(0, 0, 0)
-		ans += arrangements
+		ans += dp(0, 0, 0)
 	}
 	return ans
 }

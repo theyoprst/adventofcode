@@ -74,7 +74,7 @@ func Split[T comparable](a []T, by T) [][]T {
 	return gg
 }
 
-var allIntsRe = regexp.MustCompile(`[-]?\d[\d,]*[\.]?[\d{2}]*`)
+var allIntsRe = regexp.MustCompile(`[-+]?\d+`)
 
 func Ints(s string) []int {
 	var ints []int
