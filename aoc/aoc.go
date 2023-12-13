@@ -170,3 +170,13 @@ func PartialSum[T constraints.Integer | constraints.Float](a []T) []T {
 	}
 	return partial
 }
+
+func CountBinaryOnes[T constraints.Integer](n T) int {
+	must.GreaterOrEqual(n, 0)
+	ones := 0
+	for n > 0 {
+		ones++
+		n = n & (n - 1)
+	}
+	return ones
+}

@@ -1,102 +1,53 @@
 package main
 
 import (
-	"slices"
-
 	"github.com/theyoprst/adventofcode/aoc"
 )
 
-func MirrirPoint(a []int, ignoreI int) int {
+func FindMirrorPoint(a []int, wantMismatches int) int {
 	for i := 1; i < len(a); i++ {
-		if i == ignoreI {
-			continue
+		// Count a[:i] and a[i:] mismatches.
+		left, right := i-1, i
+		mismatches := 0
+		for 0 <= left && right < len(a) { // && mismatches <= wantMismatches could speed it up a bit (but it doesn't on these data)
+			mismatches += aoc.CountBinaryOnes(a[left] ^ a[right])
+			left--
+			right++
 		}
-		p := slices.Clone(a[:i])
-		slices.Reverse(p)
-		s := a[i:]
-		minLen := min(len(p), len(s))
-		p = p[:minLen]
-		s = s[:minLen]
-		if slices.Equal(p, s) {
-			// fmt.Printf("MirrorPoint %v: %d\n", a, i)
+		if mismatches == wantMismatches {
 			return i
 		}
 	}
 	return 0
 }
 
-func MirrorPoints(field [][]byte, ignoreHor, ignoreVert int) (int, int) {
-	cols := make([]int, len(field[0]))
-	rows := make([]int, len(field))
-	for row, line := range field {
-		for _, ch := range line {
-			rows[row] *= 2
-			if ch == '#' {
-				rows[row]++
+func SolveGeneric(lines []string, wantMismatches int) any {
+	var ans int
+	for _, pattern := range aoc.Split(lines, "") {
+		field := aoc.ToBytesField(pattern)
+		rowMasks := make([]int, len(field))
+		colMasks := make([]int, len(field[0]))
+		for row, line := range field {
+			for col, ch := range line {
+				rowMasks[row] *= 2
+				colMasks[col] *= 2
+				if ch == '#' {
+					rowMasks[row]++
+					colMasks[col]++
+				}
 			}
 		}
+		ans += FindMirrorPoint(colMasks, wantMismatches) + 100*FindMirrorPoint(rowMasks, wantMismatches)
 	}
-	for _, line := range field {
-		for col, ch := range line {
-			cols[col] *= 2
-			if ch == '#' {
-				cols[col]++
-			}
-		}
-	}
-	horLine := MirrirPoint(cols, ignoreHor)
-	vertLine := MirrirPoint(rows, ignoreVert)
-	return horLine, vertLine
+	return ans
 }
 
 func SolvePart1(lines []string) any {
-	var ans int
-	for _, pattern := range aoc.Split(lines, "") {
-		field := aoc.ToBytesField(pattern)
-		hor, vert := MirrorPoints(field, -1, -1)
-		ans += hor + 100*vert
-	}
-	return ans
+	return SolveGeneric(lines, 0)
 }
 
 func SolvePart2(lines []string) any {
-	var ans int
-	for _, pattern := range aoc.Split(lines, "") {
-		field := aoc.ToBytesField(pattern)
-		hor, vert := MirrorPoints(field, -1, -1)
-		var newHor, newVert int
-	fieldLoop:
-		for row, line := range field {
-			for col, ch := range line {
-				var newCh byte
-				if ch == '#' {
-					newCh = '.'
-				} else {
-					newCh = '#'
-				}
-				field[row][col] = newCh
-				newHor, newVert = MirrorPoints(field, hor, vert)
-				if newHor != hor && newHor > 0 {
-					break fieldLoop
-				}
-				if newVert != vert && newVert > 0 {
-					break fieldLoop
-				}
-				field[row][col] = ch
-			}
-		}
-		if newHor == hor {
-			newHor = 0
-		}
-		if newVert == vert {
-			newVert = 0
-		}
-		if newHor == 0 && newVert == 0 {
-			panic("oops")
-		}
-		ans += newHor + 100*newVert
-	}
-	return ans
+	return SolveGeneric(lines, 1)
 }
 
 var solversPart1 []aoc.Solver = []aoc.Solver{
