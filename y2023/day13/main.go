@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/theyoprst/adventofcode/aoc"
+	"github.com/theyoprst/adventofcode/must"
 )
 
 func FindMirrorPoint(a []int, wantMismatches int) int {
@@ -46,16 +47,63 @@ func SolvePart1(lines []string) any {
 	return SolveGeneric(lines, 0)
 }
 
+func Mismatches(a, b []byte) int {
+	must.Equal(len(a), len(b))
+	mismatches := 0
+	for i := range a {
+		mismatches += aoc.BoolToInt(a[i] != b[i])
+	}
+	return mismatches
+}
+
+func HorMirrorPoint(field [][]byte, wantMismatches int) int {
+	for row := 1; row < len(field); row++ {
+		top, bottom := row-1, row
+		diff := 0
+		for 0 <= top && bottom < len(field) {
+			diff += Mismatches(field[top], field[bottom])
+			top--
+			bottom++
+		}
+		if diff == wantMismatches {
+			return row
+		}
+	}
+	return 0
+}
+
+func SolvePart1Transponse(lines []string) any {
+	var ans int
+	for _, pattern := range aoc.Split(lines, "") {
+		field := aoc.ToBytesField(pattern)
+		trans := aoc.Transponse(field)
+		ans += 100*HorMirrorPoint(field, 0) + HorMirrorPoint(trans, 0)
+	}
+	return ans
+}
+
+func SolvePart2Transponse(lines []string) any {
+	var ans int
+	for _, pattern := range aoc.Split(lines, "") {
+		field := aoc.ToBytesField(pattern)
+		trans := aoc.Transponse(field)
+		ans += 100*HorMirrorPoint(field, 1) + HorMirrorPoint(trans, 1)
+	}
+	return ans
+}
+
 func SolvePart2(lines []string) any {
 	return SolveGeneric(lines, 1)
 }
 
 var solversPart1 []aoc.Solver = []aoc.Solver{
 	SolvePart1,
+	SolvePart1Transponse,
 }
 
 var solversPart2 []aoc.Solver = []aoc.Solver{
 	SolvePart2,
+	SolvePart2Transponse,
 }
 
 func main() {

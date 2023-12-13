@@ -180,3 +180,18 @@ func CountBinaryOnes[T constraints.Integer](n T) int {
 	}
 	return ones
 }
+
+func Transponse[T any](m [][]T) [][]T {
+	rows := len(m)
+	cols := len(m[0])
+	t := make([][]T, cols)
+	for col := range t {
+		t[col] = make([]T, rows)
+	}
+	for row, line := range m {
+		for col, x := range line {
+			t[col][row] = x
+		}
+	}
+	return t
+}
