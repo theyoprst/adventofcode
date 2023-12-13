@@ -47,6 +47,14 @@ func SolvePart1(lines []string) any {
 	return SolveGeneric(lines, 0)
 }
 
+func SolvePart2(lines []string) any {
+	return SolveGeneric(lines, 1)
+}
+
+//
+// Next goes solution without integer masks, just matrices.
+//
+
 func Mismatches(a, b []byte) int {
 	must.Equal(len(a), len(b))
 	mismatches := 0
@@ -90,10 +98,6 @@ func SolvePart2Transponse(lines []string) any {
 		ans += 100*HorMirrorPoint(field, 1) + HorMirrorPoint(trans, 1)
 	}
 	return ans
-}
-
-func SolvePart2(lines []string) any {
-	return SolveGeneric(lines, 1)
 }
 
 var solversPart1 []aoc.Solver = []aoc.Solver{
