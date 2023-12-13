@@ -76,7 +76,7 @@ func SolvePart1Transponse(lines []string) any {
 	var ans int
 	for _, pattern := range aoc.Split(lines, "") {
 		field := aoc.ToBytesField(pattern)
-		trans := aoc.Transponse(field)
+		trans := aoc.Transpose(field)
 		ans += 100*HorMirrorPoint(field, 0) + HorMirrorPoint(trans, 0)
 	}
 	return ans
@@ -86,7 +86,7 @@ func SolvePart2Transponse(lines []string) any {
 	var ans int
 	for _, pattern := range aoc.Split(lines, "") {
 		field := aoc.ToBytesField(pattern)
-		trans := aoc.Transponse(field)
+		trans := aoc.Transpose(field)
 		ans += 100*HorMirrorPoint(field, 1) + HorMirrorPoint(trans, 1)
 	}
 	return ans

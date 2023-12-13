@@ -181,7 +181,7 @@ func CountBinaryOnes[T constraints.Integer](n T) int {
 	return ones
 }
 
-func Transponse[T any](m [][]T) [][]T {
+func Transpose[T any](m [][]T) [][]T {
 	rows := len(m)
 	cols := len(m[0])
 	t := make([][]T, cols)
