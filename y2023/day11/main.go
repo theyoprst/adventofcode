@@ -31,7 +31,7 @@ func SolvePart2Naive(lines []string) any {
 }
 
 func solveGenericNaive(lines []string, expandFactor int) int {
-	field := aoc.ToBytesField(lines)
+	field := aoc.MakeByteField(lines)
 	rowStars := map[int]int{}
 	colStars := map[int]int{}
 	var stars []Point
@@ -77,7 +77,7 @@ func solveGenericNaive(lines []string, expandFactor int) int {
 }
 
 func solveGenericPartSum(lines []string, expandFactor int) int {
-	field := aoc.ToBytesField(lines)
+	field := aoc.MakeByteField(lines)
 	rows := len(field)
 	cols := len(field[0])
 

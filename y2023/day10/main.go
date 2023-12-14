@@ -28,8 +28,7 @@ var (
 )
 
 func SolvePart1(lines []string) any {
-	f := aoc.ToBytesField(lines)
-	f = aoc.AddBorder2D(f, '*')
+	f := aoc.MakeByteField(lines).AddBorder('*')
 	var start Point
 	for row := range f {
 		for col := range f[row] {
@@ -59,7 +58,7 @@ func SolvePart1(lines []string) any {
 }
 
 func SolvePart2(lines []string) any {
-	f := make([][]byte, 2*len(lines))
+	f := aoc.ByteField(make([][]byte, 2*len(lines)))
 	for row := 0; row < len(f); row++ {
 		f[row] = bytes.Repeat([]byte{' '}, 2*len(lines[0]))
 	}
@@ -68,8 +67,7 @@ func SolvePart2(lines []string) any {
 			f[2*row][2*col] = lines[row][col]
 		}
 	}
-	f = aoc.AddBorder2D(f, '*')
-	f = aoc.AddBorder2D(f, '*')
+	f = f.AddBorder('*').AddBorder('*')
 
 	var start Point
 	for row := range f {

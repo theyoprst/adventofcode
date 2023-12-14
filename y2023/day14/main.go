@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"slices"
 
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
@@ -15,7 +14,7 @@ const (
 )
 
 func Solve1(lines []string) any {
-	field := aoc.ToBytesField(lines)
+	field := aoc.MakeByteField(lines)
 	rows := len(field)
 	cols := len(field[0])
 	ans := 0
@@ -65,40 +64,26 @@ func ToString(field [][]byte) string {
 	return s
 }
 
-func ReverseColumns(field [][]byte) {
-	for i := range field {
-		slices.Reverse(field[i])
-	}
-}
-
-func TiltCycle(field [][]byte) [][]byte {
+func TiltCycle(field aoc.ByteField) aoc.ByteField {
 	// North:
-	field = aoc.Transpose(field)
+	field = field.Transpose()
 	TiltWest(field)
-	field = aoc.Transpose(field)
-	// fmt.Println("\nNorth:")
-	// PrintField(field)
+	field = field.Transpose()
 
 	// West
 	TiltWest(field)
-	// fmt.Println("\nWest:")
-	// PrintField(field)
 
 	// South
-	field = aoc.Transpose(field)
-	ReverseColumns(field)
+	field = field.Transpose()
+	field.ReverseColumns()
 	TiltWest(field)
-	ReverseColumns(field)
-	field = aoc.Transpose(field)
-	// fmt.Println("\nSouth:")
-	// PrintField(field)
+	field.ReverseColumns()
+	field = field.Transpose()
 
 	// East
-	ReverseColumns(field)
+	field.ReverseColumns()
 	TiltWest(field)
-	ReverseColumns(field)
-	// fmt.Println("\nEast:")
-	// PrintField(field)
+	field.ReverseColumns()
 
 	return field
 }
@@ -138,7 +123,7 @@ func NorthLoad2(field [][]byte) int {
 }
 
 func Solve2(lines []string) any {
-	field := aoc.ToBytesField(lines)
+	field := aoc.MakeByteField(lines)
 
 	seen := map[string]int{}
 	i := 1

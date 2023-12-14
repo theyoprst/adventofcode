@@ -28,32 +28,12 @@ func ReadLines(reader io.Reader) []string {
 	return lines
 }
 
-func ToBytesField(lines []string) [][]byte {
-	var field [][]byte
-	for _, line := range lines {
-		field = append(field, []byte(line))
-	}
-	return field
-}
-
 func MakeSlice[T any](elem T, n int) []T {
 	s := make([]T, n)
 	for i := range s {
 		s[i] = elem
 	}
 	return s
-}
-
-func AddBorder2D[T any](a [][]T, b T) [][]T {
-	cols := len(a[0]) + 2
-	res := make([][]T, 0, len(a)+2)
-	res = append(res, MakeSlice(b, cols))
-	for _, s := range a {
-		line := append(append([]T{b}, s...), b)
-		res = append(res, line)
-	}
-	res = append(res, MakeSlice(b, cols))
-	return res
 }
 
 func IsDigit[T byte | rune](ch T) bool {
@@ -179,19 +159,4 @@ func CountBinaryOnes[T constraints.Integer](n T) int {
 		n = n & (n - 1)
 	}
 	return ones
-}
-
-func Transpose[T any](m [][]T) [][]T {
-	rows := len(m)
-	cols := len(m[0])
-	t := make([][]T, cols)
-	for col := range t {
-		t[col] = make([]T, rows)
-	}
-	for row, line := range m {
-		for col, x := range line {
-			t[col][row] = x
-		}
-	}
-	return t
 }
