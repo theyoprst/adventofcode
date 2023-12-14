@@ -1,6 +1,9 @@
 package aoc
 
-import "slices"
+import (
+	"bytes"
+	"slices"
+)
 
 type ByteField [][]byte
 
@@ -24,7 +27,7 @@ func (f ByteField) AddBorder(b byte) ByteField {
 	return ByteField(res)
 }
 
-func (f ByteField) Transpose() ByteField {
+func (f ByteField) Transposed() ByteField {
 	rows := len(f)
 	cols := len(f[0])
 	t := make([][]byte, cols)
@@ -47,4 +50,8 @@ func (f ByteField) ReverseColumns() {
 
 func (f ByteField) ReverseRows() {
 	slices.Reverse(f)
+}
+
+func (f ByteField) String() string {
+	return string(append(bytes.Join(f, []byte{'\n'}), '\n'))
 }

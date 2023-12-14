@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
@@ -13,11 +11,9 @@ const (
 	Empty = '.'
 )
 
-func Solve1(lines []string) any {
-	field := aoc.MakeByteField(lines)
+func TiltNorth(field [][]byte) {
 	rows := len(field)
 	cols := len(field[0])
-	ans := 0
 	for col := 0; col < cols; col++ {
 		stopRow := -1
 		for row := 0; row < rows; row++ {
@@ -26,88 +22,13 @@ func Solve1(lines []string) any {
 				stopRow = row
 			} else if ch == Round {
 				stopRow++
-				ans += (rows - stopRow)
+				field[stopRow][col], field[row][col] = field[row][col], field[stopRow][col]
 			}
 		}
 	}
-	return ans
-}
-
-func TiltWest(field [][]byte) {
-	rows := len(field)
-	cols := len(field[0])
-	for row := 0; row < rows; row++ {
-		stopCol := -1
-		for col := 0; col < cols; col++ {
-			ch := field[row][col]
-			if ch == Cube {
-				stopCol = col
-			} else if ch == Round {
-				stopCol++
-				field[row][stopCol], field[row][col] = field[row][col], field[row][stopCol]
-			}
-		}
-	}
-}
-
-func PrintField(field [][]byte) {
-	for _, line := range field {
-		fmt.Println(string(line))
-	}
-}
-
-func ToString(field [][]byte) string {
-	s := ""
-	for _, line := range field {
-		s += string(line)
-	}
-	return s
-}
-
-func TiltCycle(field aoc.ByteField) aoc.ByteField {
-	// North:
-	field = field.Transpose()
-	TiltWest(field)
-	field = field.Transpose()
-
-	// West
-	TiltWest(field)
-
-	// South
-	field = field.Transpose()
-	field.ReverseColumns()
-	TiltWest(field)
-	field.ReverseColumns()
-	field = field.Transpose()
-
-	// East
-	field.ReverseColumns()
-	TiltWest(field)
-	field.ReverseColumns()
-
-	return field
 }
 
 func NorthLoad(field [][]byte) int {
-	rows := len(field)
-	cols := len(field[0])
-	ans := 0
-	for col := 0; col < cols; col++ {
-		stopRow := -1
-		for row := 0; row < rows; row++ {
-			ch := field[row][col]
-			if ch == Cube {
-				stopRow = row
-			} else if ch == Round {
-				stopRow++
-				ans += rows - stopRow
-			}
-		}
-	}
-	return ans
-}
-
-func NorthLoad2(field [][]byte) int {
 	rows := len(field)
 	cols := len(field[0])
 	ans := 0
@@ -122,6 +43,36 @@ func NorthLoad2(field [][]byte) int {
 	return ans
 }
 
+func Solve1(lines []string) any {
+	field := aoc.MakeByteField(lines)
+	TiltNorth(field)
+	return NorthLoad(field)
+}
+
+func TiltCycle(field aoc.ByteField) aoc.ByteField {
+	// North
+	TiltNorth(field)
+
+	// West
+	field = field.Transposed()
+	TiltNorth(field)
+	field = field.Transposed()
+
+	// South
+	field.ReverseRows()
+	TiltNorth(field)
+	field.ReverseRows()
+
+	// East
+	field = field.Transposed()
+	field.ReverseRows()
+	TiltNorth(field)
+	field.ReverseRows()
+	field = field.Transposed()
+
+	return field
+}
+
 func Solve2(lines []string) any {
 	field := aoc.MakeByteField(lines)
 
@@ -131,7 +82,7 @@ func Solve2(lines []string) any {
 	for ; true; i++ {
 		field = TiltCycle(field)
 
-		fieldStr := ToString(field)
+		fieldStr := field.String()
 		if seen[fieldStr] == 0 {
 			seen[fieldStr] = i
 		} else {
@@ -142,10 +93,10 @@ func Solve2(lines []string) any {
 	rest := (1000000000 - i) % cycle
 	for i := 0; i < rest; i++ {
 		field = TiltCycle(field)
-		must.Greater(seen[ToString(field)], 0)
+		must.Greater(seen[field.String()], 0)
 	}
 
-	return NorthLoad2(field)
+	return NorthLoad(field)
 }
 
 var (
