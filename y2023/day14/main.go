@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/theyoprst/adventofcode/aoc"
-	"github.com/theyoprst/adventofcode/must"
 )
 
 const (
@@ -11,7 +10,7 @@ const (
 	Empty = '.'
 )
 
-func TiltNorth(field [][]byte) {
+func TiltNorth(field aoc.ByteField) {
 	rows := len(field)
 	cols := len(field[0])
 	for col := 0; col < cols; col++ {
@@ -22,7 +21,7 @@ func TiltNorth(field [][]byte) {
 				stopRow = row
 			} else if ch == Round {
 				stopRow++
-				field[stopRow][col], field[row][col] = field[row][col], field[stopRow][col]
+				field.Swap(stopRow, col, row, col)
 			}
 		}
 	}
@@ -32,8 +31,8 @@ func NorthLoad(field [][]byte) int {
 	rows := len(field)
 	cols := len(field[0])
 	ans := 0
-	for col := 0; col < cols; col++ {
-		for row := 0; row < rows; row++ {
+	for row := 0; row < rows; row++ {
+		for col := 0; col < cols; col++ {
 			ch := field[row][col]
 			if ch == Round {
 				ans += rows - row
@@ -43,7 +42,7 @@ func NorthLoad(field [][]byte) int {
 	return ans
 }
 
-func Solve1(lines []string) any {
+func SolvePart1(lines []string) any {
 	field := aoc.MakeByteField(lines)
 	TiltNorth(field)
 	return NorthLoad(field)
@@ -57,35 +56,29 @@ func TiltCycle(field aoc.ByteField) aoc.ByteField {
 	return field
 }
 
-func Solve2(lines []string) any {
+func SolvePart2(lines []string) any {
 	field := aoc.MakeByteField(lines)
 
 	seen := map[string]int{}
-	i := 1
 	cycle := 0
-	for ; true; i++ {
+	const iters = 1000000000
+	for i := 1; i <= iters; i++ {
 		field = TiltCycle(field)
-
 		fieldStr := field.String()
 		if seen[fieldStr] == 0 {
 			seen[fieldStr] = i
 		} else {
 			cycle = i - seen[fieldStr]
-			break
+			i += cycle * ((iters - i) / cycle)
 		}
-	}
-	rest := (1000000000 - i) % cycle
-	for i := 0; i < rest; i++ {
-		field = TiltCycle(field)
-		must.Greater(seen[field.String()], 0)
 	}
 
 	return NorthLoad(field)
 }
 
 var (
-	solvers1 []aoc.Solver = []aoc.Solver{Solve1}
-	solvers2 []aoc.Solver = []aoc.Solver{Solve2}
+	solvers1 []aoc.Solver = []aoc.Solver{SolvePart1}
+	solvers2 []aoc.Solver = []aoc.Solver{SolvePart2}
 )
 
 func main() {

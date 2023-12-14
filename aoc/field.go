@@ -87,3 +87,7 @@ func (f ByteField) RotateLeft() ByteField {
 func (f ByteField) String() string {
 	return string(append(bytes.Join(f, []byte{'\n'}), '\n'))
 }
+
+func (f ByteField) Swap(rowA, colA, rowB, colB int) {
+	f[rowA][colA], f[rowB][colB] = f[rowB][colB], f[rowA][colA]
+}
