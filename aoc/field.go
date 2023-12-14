@@ -52,6 +52,38 @@ func (f ByteField) ReverseRows() {
 	slices.Reverse(f)
 }
 
+// Rotates the field clockwise.
+func (f ByteField) RotateRight() ByteField {
+	cols := len(f[0])
+	ncols := len(f)
+	nf := make([][]byte, cols)
+	for nrow := range nf {
+		nf[nrow] = make([]byte, ncols)
+	}
+	for nrow, line := range nf {
+		for ncol := range line {
+			nf[nrow][ncol] = f[ncols-ncol-1][nrow]
+		}
+	}
+	return nf
+}
+
+// Rotates the field counter-clockwise.
+func (f ByteField) RotateLeft() ByteField {
+	cols := len(f[0])
+	ncols := len(f)
+	nf := make([][]byte, cols)
+	for nrow := range nf {
+		nf[nrow] = make([]byte, ncols)
+	}
+	for nrow, line := range nf {
+		for ncol := range line {
+			nf[nrow][ncol] = f[ncol][cols-nrow-1]
+		}
+	}
+	return nf
+}
+
 func (f ByteField) String() string {
 	return string(append(bytes.Join(f, []byte{'\n'}), '\n'))
 }

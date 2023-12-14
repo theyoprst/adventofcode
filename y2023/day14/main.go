@@ -50,26 +50,10 @@ func Solve1(lines []string) any {
 }
 
 func TiltCycle(field aoc.ByteField) aoc.ByteField {
-	// North
-	TiltNorth(field)
-
-	// West
-	field = field.Transposed()
-	TiltNorth(field)
-	field = field.Transposed()
-
-	// South
-	field.ReverseRows()
-	TiltNorth(field)
-	field.ReverseRows()
-
-	// East
-	field = field.Transposed()
-	field.ReverseRows()
-	TiltNorth(field)
-	field.ReverseRows()
-	field = field.Transposed()
-
+	for i := 0; i < 4; i++ {
+		TiltNorth(field)
+		field = field.RotateRight()
+	}
 	return field
 }
 
