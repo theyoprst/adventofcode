@@ -48,14 +48,6 @@ func SolvePart1(lines []string) any {
 	return NorthLoad(field)
 }
 
-func TiltCycle(field aoc.ByteField) aoc.ByteField {
-	for i := 0; i < 4; i++ {
-		TiltNorth(field)
-		field = field.RotateRight()
-	}
-	return field
-}
-
 func SolvePart2(lines []string) any {
 	field := aoc.MakeByteField(lines)
 
@@ -63,7 +55,10 @@ func SolvePart2(lines []string) any {
 	cycle := 0
 	const iters = 1000000000
 	for i := 1; i <= iters; i++ {
-		field = TiltCycle(field)
+		for k := 0; k < 4; k++ {
+			TiltNorth(field)
+			field = field.RotateRight()
+		}
 		fieldStr := field.String()
 		if seen[fieldStr] == 0 {
 			seen[fieldStr] = i

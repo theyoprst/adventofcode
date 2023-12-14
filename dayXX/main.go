@@ -4,17 +4,17 @@ import (
 	"github.com/theyoprst/adventofcode/aoc"
 )
 
-func Solve1(lines []string) any {
+func SolvePart1(lines []string) any {
 	return 0
 }
 
-func Solve2(lines []string) any {
+func SolvePart2(lines []string) any {
 	return 0
 }
 
 var (
-	solvers1 []aoc.Solver = []aoc.Solver{Solve1}
-	solvers2 []aoc.Solver = []aoc.Solver{Solve2}
+	solvers1 []aoc.Solver = []aoc.Solver{SolvePart1}
+	solvers2 []aoc.Solver = []aoc.Solver{SolvePart2}
 )
 
 func main() {
