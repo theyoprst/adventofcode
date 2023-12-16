@@ -14,9 +14,9 @@ type Field[T comparable] [][]T
 type ByteField = Field[byte]
 
 func NewByteField(lines []string) Field[byte] {
-	var field [][]byte
-	for _, line := range lines {
-		field = append(field, []byte(line))
+	field := make([][]byte, len(lines))
+	for i, line := range lines {
+		field[i] = []byte(line)
 	}
 	return field
 }

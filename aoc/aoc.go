@@ -96,7 +96,7 @@ func MapSortedValues[K comparable, V cmp.Ordered](m map[K]V) []V {
 }
 
 func MapSortedKeys[K cmp.Ordered, V any](m map[K]V) []K {
-	var kk []K
+	kk := make([]K, 0, len(m))
 	for k := range m {
 		kk = append(kk, k)
 	}
