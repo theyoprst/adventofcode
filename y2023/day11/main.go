@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/theyoprst/adventofcode/aoc"
+	"github.com/theyoprst/adventofcode/aoc/fld"
 )
 
 type Point struct {
@@ -31,7 +32,7 @@ func SolvePart2Naive(lines []string) any {
 }
 
 func solveGenericNaive(lines []string, expandFactor int) int {
-	field := aoc.MakeByteField(lines)
+	field := fld.NewByteField(lines)
 	rowStars := map[int]int{}
 	colStars := map[int]int{}
 	var stars []Point
@@ -77,7 +78,7 @@ func solveGenericNaive(lines []string, expandFactor int) int {
 }
 
 func solveGenericPartSum(lines []string, expandFactor int) int {
-	field := aoc.MakeByteField(lines)
+	field := fld.NewByteField(lines)
 	rows := len(field)
 	cols := len(field[0])
 

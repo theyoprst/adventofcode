@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/theyoprst/adventofcode/aoc"
+	"github.com/theyoprst/adventofcode/aoc/fld"
 	"github.com/theyoprst/adventofcode/must"
 )
 
@@ -25,7 +26,7 @@ func FindMirrorPoint(a []int, wantMismatches int) int {
 func SolveGeneric(lines []string, wantMismatches int) any {
 	var ans int
 	for _, pattern := range aoc.Split(lines, "") {
-		field := aoc.MakeByteField(pattern)
+		field := fld.NewByteField(pattern)
 		rowMasks := make([]int, len(field))
 		colMasks := make([]int, len(field[0]))
 		for row, line := range field {
@@ -83,8 +84,8 @@ func HorMirrorPoint(field [][]byte, wantMismatches int) int {
 func SolvePart1Transponse(lines []string) any {
 	var ans int
 	for _, pattern := range aoc.Split(lines, "") {
-		field := aoc.MakeByteField(pattern)
-		trans := field.Transposed()
+		field := fld.NewByteField(pattern)
+		trans := field.Transpose()
 		ans += 100*HorMirrorPoint(field, 0) + HorMirrorPoint(trans, 0)
 	}
 	return ans
@@ -93,8 +94,8 @@ func SolvePart1Transponse(lines []string) any {
 func SolvePart2Transponse(lines []string) any {
 	var ans int
 	for _, pattern := range aoc.Split(lines, "") {
-		field := aoc.MakeByteField(pattern)
-		trans := field.Transposed()
+		field := fld.NewByteField(pattern)
+		trans := field.Transpose()
 		ans += 100*HorMirrorPoint(field, 1) + HorMirrorPoint(trans, 1)
 	}
 	return ans

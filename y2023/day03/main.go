@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/theyoprst/adventofcode/aoc"
+	"github.com/theyoprst/adventofcode/aoc/fld"
 )
 
 type Point struct {
@@ -11,7 +12,7 @@ type Point struct {
 }
 
 func Solve(lines []string) (ans1, ans2 int) {
-	field := aoc.MakeByteField(lines).AddBorder('.')
+	field := fld.NewByteField(lines).AddBorder('.')
 	allGears := map[Point][]int{}
 	for i, row := range field {
 		isN := false

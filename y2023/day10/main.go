@@ -4,6 +4,7 @@ import (
 	"bytes"
 
 	"github.com/theyoprst/adventofcode/aoc"
+	"github.com/theyoprst/adventofcode/aoc/fld"
 )
 
 type Point struct {
@@ -28,7 +29,7 @@ var (
 )
 
 func SolvePart1(lines []string) any {
-	f := aoc.MakeByteField(lines).AddBorder('*')
+	f := fld.NewByteField(lines).AddBorder('*')
 	var start Point
 	for row := range f {
 		for col := range f[row] {

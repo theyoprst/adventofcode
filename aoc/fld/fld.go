@@ -39,7 +39,7 @@ func (f Field[T]) AddBorder(b T) Field[T] {
 	return res
 }
 
-func (f Field[T]) Transposed() Field[T] {
+func (f Field[T]) Transpose() Field[T] {
 	rows := len(f)
 	cols := len(f[0])
 	t := make([][]T, cols)
