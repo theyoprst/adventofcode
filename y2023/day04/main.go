@@ -34,14 +34,14 @@ func (t *STree) Inc(l, r int, value int) {
 			r--
 			t.t[r] += value
 		}
-		r = r >> 1
-		l = l >> 1
+		r >>= 1
+		l >>= 1
 	}
 }
 
 func (t *STree) Get(i int) int {
 	res := 0
-	for i = i + t.n; i > 0; i = i >> 1 {
+	for i += t.n; i > 0; i >>= 1 {
 		res += t.t[i]
 	}
 	return res

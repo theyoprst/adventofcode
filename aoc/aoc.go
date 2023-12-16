@@ -156,7 +156,7 @@ func CountBinaryOnes[T constraints.Integer](n T) int {
 	ones := 0
 	for n > 0 {
 		ones++
-		n = n & (n - 1)
+		n &= n - 1
 	}
 	return ones
 }

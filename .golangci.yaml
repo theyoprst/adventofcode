@@ -24,9 +24,8 @@ linters:
     # Checks for pointers to enclosing loop variables.
     - exportloopref
 
-    # # As you already know I'm a co-author. It would be strange to not use
-    # # one of my warmly loved projects.
-    # - gocritic
+    # See article from the Author: https://olegk.dev/go-linters-configuration-the-right-version#clfs5vtp601m2ycnv2xpcfy9b
+    - gocritic
 
     # Forces to put `.` at the end of the comment. Code is poetry.
     - godot
