@@ -13,6 +13,8 @@ type Input struct {
 }
 
 func RunTests(t *testing.T, inputs []Input, solversPart1 []Solver, solversPart2 []Solver) {
+	t.Helper()
+
 	type testCase struct {
 		path string
 		want string

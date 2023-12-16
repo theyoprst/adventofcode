@@ -92,10 +92,10 @@ linters:
     - tagliatelle
 
     # # Test-related checks. All of them are good.
-    # - tenv
-    # - testableexamples
-    # - thelper
-    # - tparallel
+    - tenv
+    - testableexamples
+    - thelper
+    - tparallel
 
     # Remove unnecessary type conversions, make code cleaner
     - unconvert
