@@ -5,10 +5,12 @@ import (
 )
 
 func SolvePart1(lines []string) any {
+	_ = lines
 	return 0
 }
 
 func SolvePart2(lines []string) any {
+	_ = lines
 	return 0
 }
 

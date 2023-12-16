@@ -79,8 +79,8 @@ linters:
     # Super rare case but can catch bad things (like `io.EOF = nil`)
     - reassign
 
-    # # Drop-in replacement of `golint`.
-    # - revive
+    # Drop-in replacement of `golint`.
+    - revive
 
     # Not the same as staticcheck binary :\
     - staticcheck

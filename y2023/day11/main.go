@@ -56,7 +56,7 @@ func solveGenericNaive(lines []string, expandFactor int) int {
 				if rowStars[row] == 0 {
 					rowDist += expandFactor
 				} else {
-					rowDist += 1
+					rowDist++
 				}
 			}
 
@@ -67,7 +67,7 @@ func solveGenericNaive(lines []string, expandFactor int) int {
 				if colStars[col] == 0 {
 					colDist += expandFactor
 				} else {
-					colDist += 1
+					colDist++
 				}
 			}
 

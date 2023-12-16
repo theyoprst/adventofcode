@@ -5,10 +5,10 @@ type Pos struct {
 }
 
 var (
-	Right Pos = Pos{0, 1}
-	Left  Pos = Pos{0, -1}
-	Up    Pos = Pos{-1, 0}
-	Down  Pos = Pos{1, 0}
+	Right = Pos{0, 1}
+	Left  = Pos{0, -1}
+	Up    = Pos{-1, 0}
+	Down  = Pos{1, 0}
 
 	East  = Right
 	West  = Left
