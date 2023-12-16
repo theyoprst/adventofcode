@@ -38,7 +38,7 @@ var Map = map[byte]map[fld.Pos][]fld.Pos{
 	},
 }
 
-func CountEnergized(field fld.Field[byte], start, startDir fld.Pos) int {
+func CountEnergized(field fld.ByteField, start, startDir fld.Pos) int {
 	type State struct {
 		p, dir fld.Pos
 	}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/theyoprst/adventofcode/aoc"
+	"github.com/theyoprst/adventofcode/aoc/fld"
 )
 
 const (
@@ -10,7 +11,7 @@ const (
 	Empty = '.'
 )
 
-func TiltNorth(field aoc.ByteField) {
+func TiltNorth(field fld.ByteField) {
 	rows := len(field)
 	cols := len(field[0])
 	for col := 0; col < cols; col++ {
@@ -21,7 +22,10 @@ func TiltNorth(field aoc.ByteField) {
 				stopRow = row
 			} else if ch == Round {
 				stopRow++
-				field.Swap(stopRow, col, row, col)
+				field.Swap(
+					fld.Pos{Row: stopRow, Col: col},
+					fld.Pos{Row: row, Col: col},
+				)
 			}
 		}
 	}
@@ -43,13 +47,13 @@ func NorthLoad(field [][]byte) int {
 }
 
 func SolvePart1(lines []string) any {
-	field := aoc.MakeByteField(lines)
+	field := fld.NewByteField(lines)
 	TiltNorth(field)
 	return NorthLoad(field)
 }
 
 func SolvePart2(lines []string) any {
-	field := aoc.MakeByteField(lines)
+	field := fld.NewByteField(lines)
 
 	seen := map[string]int{}
 	cycle := 0
@@ -59,7 +63,7 @@ func SolvePart2(lines []string) any {
 			TiltNorth(field)
 			field = field.RotateRight()
 		}
-		fieldStr := field.String()
+		fieldStr := fld.ToString(field)
 		if seen[fieldStr] == 0 {
 			seen[fieldStr] = i
 		} else {

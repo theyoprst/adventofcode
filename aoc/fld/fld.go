@@ -9,6 +9,8 @@ import (
 
 type Field[T any] [][]T
 
+type ByteField = Field[byte]
+
 func NewByteField(lines []string) Field[byte] {
 	var field [][]byte
 	for _, line := range lines {
