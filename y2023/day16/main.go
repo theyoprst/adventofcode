@@ -4,11 +4,7 @@ import (
 	"github.com/theyoprst/adventofcode/aoc"
 )
 
-type Point struct {
-	row, col int
-}
-
-type Dir Point
+type Dir aoc.FieldPos
 
 var (
 	Right Dir = Dir{0, 1}
@@ -50,30 +46,27 @@ var (
 	}
 )
 
-func CountEnergized(field aoc.ByteField, start Point, startDir Dir) int {
+func CountEnergized(field aoc.ByteField, start aoc.FieldPos, startDir Dir) int {
 	type State struct {
-		p   Point
+		p   aoc.FieldPos
 		dir Dir
 	}
 	seen := map[State]bool{}
-	seenPoints := map[Point]bool{}
-	var dfs func(p Point, dir Dir)
-	dfs = func(p Point, dir Dir) {
+	seenPoints := map[aoc.FieldPos]bool{}
+	var dfs func(p aoc.FieldPos, dir Dir)
+	dfs = func(p aoc.FieldPos, dir Dir) {
+		if !field.Inside(p) {
+			return
+		}
 		if seen[State{p, dir}] {
 			return
 		}
 		seen[State{p, dir}] = true
-		ch := field[p.row][p.col]
-		if ch == '*' {
-			return
-		}
+		ch := field[p.Row][p.Col]
 		seenPoints[p] = true
 
 		for _, ndir := range Map[ch][dir] {
-			np := Point{
-				row: p.row + ndir.row,
-				col: p.col + ndir.col,
-			}
+			np := p.Add(aoc.FieldPos(ndir))
 			dfs(np, ndir)
 		}
 	}
@@ -82,22 +75,20 @@ func CountEnergized(field aoc.ByteField, start Point, startDir Dir) int {
 }
 
 func SolvePart1(lines []string) any {
-	field := aoc.MakeByteField(lines).AddBorder('*')
-	return CountEnergized(field, Point{1, 1}, Right)
+	field := aoc.MakeByteField(lines)
+	return CountEnergized(field, aoc.FieldPos{Row: 0, Col: 0}, Right)
 }
 
 func SolvePart2(lines []string) any {
-	field := aoc.MakeByteField(lines).AddBorder('*')
-	rows := len(field) - 2
-	cols := len(field[0]) - 2
+	field := aoc.MakeByteField(lines)
 	maxEn := 0
-	for col := 1; col < 1+cols; col++ {
-		maxEn = max(maxEn, CountEnergized(field, Point{row: 1, col: col}, Down))
-		maxEn = max(maxEn, CountEnergized(field, Point{row: rows, col: col}, Up))
+	for col := 0; col < field.Cols(); col++ {
+		maxEn = max(maxEn, CountEnergized(field, aoc.FieldPos{Row: 0, Col: col}, Down))
+		maxEn = max(maxEn, CountEnergized(field, aoc.FieldPos{Row: field.Rows() - 1, Col: col}, Up))
 	}
-	for row := 1; row < 1+rows; row++ {
-		maxEn = max(maxEn, CountEnergized(field, Point{row: row, col: 1}, Right))
-		maxEn = max(maxEn, CountEnergized(field, Point{row: row, col: cols}, Right))
+	for row := 0; row < field.Rows(); row++ {
+		maxEn = max(maxEn, CountEnergized(field, aoc.FieldPos{Row: row, Col: 0}, Right))
+		maxEn = max(maxEn, CountEnergized(field, aoc.FieldPos{Row: row, Col: field.Cols() - 1}, Right))
 	}
 	return maxEn
 }

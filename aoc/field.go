@@ -7,6 +7,23 @@ import (
 
 type ByteField [][]byte
 
+type FieldPos struct {
+	Row, Col int
+}
+
+func (p FieldPos) Add(other FieldPos) FieldPos {
+	return FieldPos{
+		Row: p.Row + other.Row,
+		Col: p.Col + other.Col,
+	}
+}
+
+func (p FieldPos) Mult(mult int) FieldPos {
+	p.Row *= mult
+	p.Col *= mult
+	return p
+}
+
 func MakeByteField(lines []string) ByteField {
 	var field [][]byte
 	for _, line := range lines {
@@ -90,4 +107,17 @@ func (f ByteField) String() string {
 
 func (f ByteField) Swap(rowA, colA, rowB, colB int) {
 	f[rowA][colA], f[rowB][colB] = f[rowB][colB], f[rowA][colA]
+}
+
+func (f ByteField) Inside(pos FieldPos) bool {
+	return 0 <= pos.Row && pos.Row < len(f) &&
+		0 <= pos.Col && pos.Col < len(f[pos.Row])
+}
+
+func (f ByteField) Rows() int {
+	return len(f)
+}
+
+func (f ByteField) Cols() int {
+	return len(f[0])
 }
