@@ -1,32 +1,22 @@
 package main
 
 import (
-	"fmt"
-	"maps"
 	"slices"
+	"strings"
 
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func main() {
-	lines := aoc.ReadInputLines()
+type Hand struct {
+	key []int
+	bid int
+}
 
-	cardOrder := map[rune]int{}
-	for i, r := range "23456789TJQKA" {
-		cardOrder[r] = i
-	}
-	cardOrderJ := maps.Clone(cardOrder)
-	cardOrderJ['J'] = -1
-
-	type Hand struct {
-		key  []int
-		keyJ []int
-		bid  int
-	}
+func SolvePart1(lines []string) any {
+	cardOrder := "23456789TJQKA"
 	var hands []Hand
-	for i, line := range lines {
-		_, _ = i, line
+	for _, line := range lines {
 		hand, bidStr := must.Split2(line, " ")
 		bid := must.Atoi(bidStr)
 
@@ -37,43 +27,71 @@ func main() {
 		key := aoc.MapSortedValues(m)
 		slices.Reverse(key)
 
-		j := m['J']
-		delete(m, 'J')
-		keyJ := aoc.MapSortedValues(m)
-		slices.Reverse(keyJ)
-		if len(keyJ) > 0 {
-			keyJ[0] += j
-		} else {
-			keyJ = []int{j}
-		}
-
 		for _, h := range hand {
-			key = append(key, cardOrder[h])
-			keyJ = append(keyJ, cardOrderJ[h])
+			key = append(key, strings.Index(cardOrder, string(h)))
 		}
 
 		hands = append(hands, Hand{
-			bid:  bid,
-			key:  key,
-			keyJ: keyJ,
+			bid: bid,
+			key: key,
 		})
 	}
 	slices.SortFunc(hands, func(a, b Hand) int {
 		return slices.Compare(a.key, b.key)
 	})
-	ans1 := 0
+	ans := 0
 	for i, hand := range hands {
-		ans1 += (i + 1) * hand.bid
+		ans += (i + 1) * hand.bid
 	}
 
+	return ans
+}
+
+func SolvePart2(lines []string) any {
+	cardOrder := "J23456789TQKA"
+	var hands []Hand
+	for _, line := range lines {
+		hand, bidStr := must.Split2(line, " ")
+		bid := must.Atoi(bidStr)
+
+		m := map[byte]int{}
+		for i := range hand {
+			m[hand[i]]++
+		}
+		j := m['J']
+		delete(m, 'J')
+		key := aoc.MapSortedValues(m)
+		slices.Reverse(key)
+		if len(key) > 0 {
+			key[0] += j
+		} else {
+			key = []int{j}
+		}
+
+		for _, h := range hand {
+			key = append(key, strings.Index(cardOrder, string(h)))
+		}
+
+		hands = append(hands, Hand{
+			bid: bid,
+			key: key,
+		})
+	}
 	slices.SortFunc(hands, func(a, b Hand) int {
-		return slices.Compare(a.keyJ, b.keyJ)
+		return slices.Compare(a.key, b.key)
 	})
-	ans2 := 0
+	ans := 0
 	for i, hand := range hands {
-		ans2 += (i + 1) * hand.bid
+		ans += (i + 1) * hand.bid
 	}
+	return ans
+}
 
-	fmt.Println("Part 1:", ans1)
-	fmt.Println("Part 2:", ans2)
+var (
+	solvers1 []aoc.Solver = []aoc.Solver{SolvePart1}
+	solvers2 []aoc.Solver = []aoc.Solver{SolvePart2}
+)
+
+func main() {
+	aoc.Main(solvers1, solvers2)
 }
