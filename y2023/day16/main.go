@@ -2,59 +2,50 @@ package main
 
 import (
 	"github.com/theyoprst/adventofcode/aoc"
+	"github.com/theyoprst/adventofcode/aoc/fld"
 )
 
-type Dir aoc.FieldPos
+var Map = map[byte]map[fld.Pos][]fld.Pos{
+	'-': {
+		fld.Right: {fld.Right},
+		fld.Left:  {fld.Left},
+		fld.Up:    {fld.Right, fld.Left},
+		fld.Down:  {fld.Right, fld.Left},
+	},
+	'|': {
+		fld.Right: {fld.Up, fld.Down},
+		fld.Left:  {fld.Up, fld.Down},
+		fld.Up:    {fld.Up},
+		fld.Down:  {fld.Down},
+	},
+	'\\': {
+		fld.Right: {fld.Down},
+		fld.Left:  {fld.Up},
+		fld.Up:    {fld.Left},
+		fld.Down:  {fld.Right},
+	},
+	'/': {
+		fld.Right: {fld.Up},
+		fld.Left:  {fld.Down},
+		fld.Up:    {fld.Right},
+		fld.Down:  {fld.Left},
+	},
+	'.': {
+		fld.Right: {fld.Right},
+		fld.Left:  {fld.Left},
+		fld.Up:    {fld.Up},
+		fld.Down:  {fld.Down},
+	},
+}
 
-var (
-	Right Dir = Dir{0, 1}
-	Left  Dir = Dir{0, -1}
-	Up    Dir = Dir{-1, 0}
-	Down  Dir = Dir{1, 0}
-
-	Map = map[byte]map[Dir][]Dir{
-		'-': {
-			Right: {Right},
-			Left:  {Left},
-			Up:    {Right, Left},
-			Down:  {Right, Left},
-		},
-		'|': {
-			Right: {Up, Down},
-			Left:  {Up, Down},
-			Up:    {Up},
-			Down:  {Down},
-		},
-		'\\': {
-			Right: {Down},
-			Left:  {Up},
-			Up:    {Left},
-			Down:  {Right},
-		},
-		'/': {
-			Right: {Up},
-			Left:  {Down},
-			Up:    {Right},
-			Down:  {Left},
-		},
-		'.': {
-			Right: {Right},
-			Left:  {Left},
-			Up:    {Up},
-			Down:  {Down},
-		},
-	}
-)
-
-func CountEnergized(field aoc.ByteField, start aoc.FieldPos, startDir Dir) int {
+func CountEnergized(field fld.Field[byte], start, startDir fld.Pos) int {
 	type State struct {
-		p   aoc.FieldPos
-		dir Dir
+		p, dir fld.Pos
 	}
 	seen := map[State]bool{}
-	seenPoints := map[aoc.FieldPos]bool{}
-	var dfs func(p aoc.FieldPos, dir Dir)
-	dfs = func(p aoc.FieldPos, dir Dir) {
+	seenPoints := map[fld.Pos]bool{}
+	var dfs func(p, dir fld.Pos)
+	dfs = func(p, dir fld.Pos) {
 		if !field.Inside(p) {
 			return
 		}
@@ -66,7 +57,7 @@ func CountEnergized(field aoc.ByteField, start aoc.FieldPos, startDir Dir) int {
 		seenPoints[p] = true
 
 		for _, ndir := range Map[ch][dir] {
-			np := p.Add(aoc.FieldPos(ndir))
+			np := p.Add(ndir)
 			dfs(np, ndir)
 		}
 	}
@@ -75,20 +66,20 @@ func CountEnergized(field aoc.ByteField, start aoc.FieldPos, startDir Dir) int {
 }
 
 func SolvePart1(lines []string) any {
-	field := aoc.MakeByteField(lines)
-	return CountEnergized(field, aoc.FieldPos{Row: 0, Col: 0}, Right)
+	field := fld.NewByteField(lines)
+	return CountEnergized(field, fld.Pos{Row: 0, Col: 0}, fld.Right)
 }
 
 func SolvePart2(lines []string) any {
-	field := aoc.MakeByteField(lines)
+	field := fld.NewByteField(lines)
 	maxEn := 0
 	for col := 0; col < field.Cols(); col++ {
-		maxEn = max(maxEn, CountEnergized(field, aoc.FieldPos{Row: 0, Col: col}, Down))
-		maxEn = max(maxEn, CountEnergized(field, aoc.FieldPos{Row: field.Rows() - 1, Col: col}, Up))
+		maxEn = max(maxEn, CountEnergized(field, fld.Pos{Row: 0, Col: col}, fld.Down))
+		maxEn = max(maxEn, CountEnergized(field, fld.Pos{Row: field.Rows() - 1, Col: col}, fld.Up))
 	}
 	for row := 0; row < field.Rows(); row++ {
-		maxEn = max(maxEn, CountEnergized(field, aoc.FieldPos{Row: row, Col: 0}, Right))
-		maxEn = max(maxEn, CountEnergized(field, aoc.FieldPos{Row: row, Col: field.Cols() - 1}, Right))
+		maxEn = max(maxEn, CountEnergized(field, fld.Pos{Row: row, Col: 0}, fld.Right))
+		maxEn = max(maxEn, CountEnergized(field, fld.Pos{Row: row, Col: field.Cols() - 1}, fld.Right))
 	}
 	return maxEn
 }

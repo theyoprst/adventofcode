@@ -1,0 +1,29 @@
+package fld
+
+type Pos struct {
+	Row, Col int
+}
+
+var (
+	Right Pos = Pos{0, 1}
+	Left  Pos = Pos{0, -1}
+	Up    Pos = Pos{-1, 0}
+	Down  Pos = Pos{1, 0}
+
+	East  = Right
+	West  = Left
+	North = Up
+	South = Down
+)
+
+func (p Pos) Add(dir Pos) Pos {
+	p.Row += dir.Row
+	p.Col += dir.Col
+	return p
+}
+
+func (p Pos) Mult(mult int) Pos {
+	p.Row *= mult
+	p.Col *= mult
+	return p
+}
