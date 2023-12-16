@@ -1,24 +1,17 @@
 package main
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func main() {
-	ans1, ans2 := 0, 0
-	lines := aoc.ReadInputLines()
-	cmd := lines[0]
-	_ = cmd
+type Node struct {
+	left, right string
+}
 
-	type Node struct {
-		left, right string
-	}
+func ParseGraph(lines []string) map[string]*Node {
 	g := map[string]*Node{}
-	for _, line := range lines[2:] {
+	for _, line := range lines {
 		must.Equal(len(line), 16)
 		value := line[0:3]
 		node := &Node{
@@ -27,60 +20,19 @@ func main() {
 		}
 		g[value] = node
 	}
-	if g["AAA"] != nil {
-		value := "AAA"
-		for ; value != "ZZZ"; ans1++ {
-			if cmd[ans1%len(cmd)] == 'L' {
-				value = g[value].left
-			} else {
-				value = g[value].right
-			}
-		}
-		fmt.Println("Part 1:", ans1)
-	}
+	return g
+}
 
-	// Brute force.
-	set := map[string]bool{}
-	for value := range g {
-		if strings.HasSuffix(value, "A") {
-			set[value] = true
-		}
-	}
-	isFinish := func(set map[string]bool) bool {
-		for value := range set {
-			if !strings.HasSuffix(value, "Z") {
-				return false
-			}
-		}
-		return true
-	}
-	newSet := map[string]bool{}
-	for ; !isFinish(set) && ans2 <= len(cmd)*len(g); ans2++ {
-		clear(newSet)
-		isLeft := cmd[ans2%len(cmd)] == 'L'
-		for value := range set {
-			var newValue string
-			if isLeft {
-				newValue = g[value].left
-			} else {
-				newValue = g[value].right
-			}
-			newSet[newValue] = true
-		}
-		set, newSet = newSet, set
-	}
-	if isFinish(set) {
-		fmt.Println("Part 2 (brute force):", ans2)
-	} else {
-		fmt.Println("Brute force lasts too long, need for find cycles.")
-	}
+func SolvePart2(lines []string) any {
+	cmd := lines[0]
+	g := ParseGraph(lines[2:])
 
 	type Node2 struct {
 		v string
 		n int
 	}
 
-	ans2 = 1
+	ans2 := 1
 	for v := range g {
 		if v[2] != 'A' {
 			continue
@@ -109,5 +61,30 @@ func main() {
 		ans2 = aoc.LCM(ans2, loopLen)
 	}
 
-	fmt.Println("Part 2:", ans2)
+	return ans2
+}
+
+func SolvePart1(lines []string) any {
+	ans := 0
+	cmd := lines[0]
+
+	g := ParseGraph(lines[2:])
+	value := "AAA"
+	for ; value != "ZZZ"; ans++ {
+		if cmd[ans%len(cmd)] == 'L' {
+			value = g[value].left
+		} else {
+			value = g[value].right
+		}
+	}
+	return ans
+}
+
+var (
+	solvers1 []aoc.Solver = []aoc.Solver{SolvePart1}
+	solvers2 []aoc.Solver = []aoc.Solver{SolvePart2}
+)
+
+func main() {
+	aoc.Main(solvers1, solvers2)
 }
