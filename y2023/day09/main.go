@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
@@ -20,14 +18,28 @@ func Next(a []int) int {
 	return next
 }
 
-func main() {
-	lines := aoc.ReadInputLines()
-	var ans1, ans2 int
+func SolvePart1(lines []string) any {
+	var ans int
+	for _, line := range lines {
+		ans += Next(aoc.Ints(line))
+	}
+	return ans
+}
+
+func SolvePart2(lines []string) any {
+	var ans int
 	for _, line := range lines {
 		a := aoc.Ints(line)
-		ans1 += Next(a)
-		ans2 += Next(aoc.Reversed(a))
+		ans += Next(aoc.Reversed(a))
 	}
-	fmt.Println("Part 1:", ans1)
-	fmt.Println("Part 2:", ans2)
+	return ans
+}
+
+var (
+	solvers1 []aoc.Solver = []aoc.Solver{SolvePart1}
+	solvers2 []aoc.Solver = []aoc.Solver{SolvePart2}
+)
+
+func main() {
+	aoc.Main(solvers1, solvers2)
 }
