@@ -56,7 +56,7 @@ func SolvePart2(lines []string) any {
 	field := fld.NewByteField(lines)
 
 	seen := map[string]int{}
-	cycle := 0
+	var cycle int
 	const iters = 1000000000
 	for i := 1; i <= iters; i++ {
 		for k := 0; k < 4; k++ {
