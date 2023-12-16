@@ -10,10 +10,20 @@ var (
 	Up    = Pos{-1, 0}
 	Down  = Pos{1, 0}
 
+	UpRight   = Up.Add(Right)
+	UpLeft    = Up.Add(Left)
+	DownRight = Down.Add(Right)
+	DownLeft  = Down.Add(Left)
+
 	East  = Right
 	West  = Left
 	North = Up
 	South = Down
+
+	NorthEast = UpRight
+	NorthWest = UpLeft
+	SouthEast = DownRight
+	SouthWest = DownLeft
 )
 
 func NewPos(row, col int) Pos {

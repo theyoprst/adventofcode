@@ -56,14 +56,22 @@ func (f Field[T]) Transpose() Field[T] {
 	return t
 }
 
-func (f Field[T]) ReverseColumns() {
+func (f Field[T]) ReverseColumnsInPlace() {
 	for i := range f {
 		slices.Reverse(f[i])
 	}
 }
 
-func (f Field[T]) ReverseRows() {
+func (f Field[T]) ReverseRowsInPlace() {
 	slices.Reverse(f)
+}
+
+func (f Field[T]) Clone() Field[T] {
+	cloned := make(Field[T], f.Rows())
+	for row := range cloned {
+		cloned[row] = slices.Clone(f[row])
+	}
+	return cloned
 }
 
 // Rotates the field clockwise.
