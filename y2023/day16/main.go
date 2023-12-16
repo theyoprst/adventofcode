@@ -53,7 +53,7 @@ func CountEnergized(field fld.ByteField, start, startDir fld.Pos) int {
 			return
 		}
 		seen[State{p, dir}] = true
-		ch := field[p.Row][p.Col]
+		ch := field.Get(p)
 		seenPoints[p] = true
 
 		for _, ndir := range Map[ch][dir] {
@@ -67,21 +67,21 @@ func CountEnergized(field fld.ByteField, start, startDir fld.Pos) int {
 
 func SolvePart1(lines []string) any {
 	field := fld.NewByteField(lines)
-	return CountEnergized(field, fld.Pos{Row: 0, Col: 0}, fld.Right)
+	return CountEnergized(field, fld.NewPos(0, 0), fld.Right)
 }
 
 func SolvePart2(lines []string) any {
 	field := fld.NewByteField(lines)
-	maxEn := 0
+	ans := 0
 	for col := 0; col < field.Cols(); col++ {
-		maxEn = max(maxEn, CountEnergized(field, fld.Pos{Row: 0, Col: col}, fld.Down))
-		maxEn = max(maxEn, CountEnergized(field, fld.Pos{Row: field.Rows() - 1, Col: col}, fld.Up))
+		ans = max(ans, CountEnergized(field, fld.NewPos(0, col), fld.Down))
+		ans = max(ans, CountEnergized(field, fld.NewPos(field.Rows()-1, col), fld.Up))
 	}
 	for row := 0; row < field.Rows(); row++ {
-		maxEn = max(maxEn, CountEnergized(field, fld.Pos{Row: row, Col: 0}, fld.Right))
-		maxEn = max(maxEn, CountEnergized(field, fld.Pos{Row: row, Col: field.Cols() - 1}, fld.Right))
+		ans = max(ans, CountEnergized(field, fld.NewPos(row, 0), fld.Right))
+		ans = max(ans, CountEnergized(field, fld.NewPos(row, field.Cols()-1), fld.Right))
 	}
-	return maxEn
+	return ans
 }
 
 var (

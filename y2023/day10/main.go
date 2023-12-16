@@ -7,48 +7,29 @@ import (
 	"github.com/theyoprst/adventofcode/aoc/fld"
 )
 
-type Point struct {
-	row, col int
+var Dirs map[byte]map[fld.Pos]bool = map[byte]map[fld.Pos]bool{
+	'S': aoc.ToSet([]fld.Pos{fld.North, fld.South, fld.East, fld.West}),
+	'|': aoc.ToSet([]fld.Pos{fld.North, fld.South}),
+	'-': aoc.ToSet([]fld.Pos{fld.East, fld.West}),
+	'L': aoc.ToSet([]fld.Pos{fld.East, fld.North}),
+	'J': aoc.ToSet([]fld.Pos{fld.West, fld.North}),
+	'7': aoc.ToSet([]fld.Pos{fld.South, fld.West}),
+	'F': aoc.ToSet([]fld.Pos{fld.South, fld.East}),
 }
-
-var (
-	East  Point = Point{0, 1}
-	West  Point = Point{0, -1}
-	North Point = Point{-1, 0}
-	South Point = Point{1, 0}
-
-	Dirs map[byte]map[Point]bool = map[byte]map[Point]bool{
-		'S': aoc.ToSet([]Point{North, South, East, West}),
-		'|': aoc.ToSet([]Point{North, South}),
-		'-': aoc.ToSet([]Point{East, West}),
-		'L': aoc.ToSet([]Point{East, North}),
-		'J': aoc.ToSet([]Point{West, North}),
-		'7': aoc.ToSet([]Point{South, West}),
-		'F': aoc.ToSet([]Point{South, East}),
-	}
-)
 
 func SolvePart1(lines []string) any {
 	f := fld.NewByteField(lines).AddBorder('*')
-	var start Point
-	for row := range f {
-		for col := range f[row] {
-			if f[row][col] == 'S' {
-				start.row = row
-				start.col = col
-			}
-		}
-	}
+	start := f.FindFirst('S')
 	p := start
-	noway := Point{}
+	noway := fld.Pos{}
 	steps := 0
-	for steps == 0 || f[p.row][p.col] != 'S' {
+	for steps == 0 || f[p.Row][p.Col] != 'S' {
 		steps++
-		ch := f[p.row][p.col]
+		ch := f[p.Row][p.Col]
 		for dir := range Dirs[ch] {
-			rev := Point{-dir.row, -dir.col}
-			np := Point{p.row + dir.row, p.col + dir.col}
-			if dir != noway && Dirs[f[np.row][np.col]][rev] {
+			rev := dir.Mult(-1)
+			np := p.Add(dir)
+			if dir != noway && Dirs[f[np.Row][np.Col]][rev] {
 				p = np
 				noway = rev
 				break
@@ -70,57 +51,46 @@ func SolvePart2(lines []string) any {
 	}
 	f = f.AddBorder('*').AddBorder('*')
 
-	var start Point
-	for row := range f {
-		for col := range f[row] {
-			if f[row][col] == 'S' {
-				start.row = row
-				start.col = col
-			}
-		}
-	}
+	start := f.FindFirst('S')
 
 	p := start
-	noway := Point{}
+	noway := fld.Pos{}
 	steps := 0
-	for steps == 0 || f[p.row][p.col] != 'S' {
+	for steps == 0 || f[p.Row][p.Col] != 'S' {
 		steps++
-		ch := f[p.row][p.col]
-		f[p.row][p.col] = 'S'
+		ch := f[p.Row][p.Col]
+		f[p.Row][p.Col] = 'S'
 		for dir := range Dirs[ch] {
-			rev := Point{-dir.row, -dir.col}
-			np := Point{p.row + dir.row, p.col + dir.col}
-			np2 := Point{p.row + 2*dir.row, p.col + 2*dir.col}
-			if dir != noway && Dirs[f[np2.row][np2.col]][rev] {
+			rev := dir.Mult(-1)
+			np := p.Add(dir)
+			np2 := p.Add(dir.Mult(2))
+			if dir != noway && Dirs[f[np2.Row][np2.Col]][rev] {
 				p = np2
-				f[np.row][np.col] = 'S'
+				f.Set(np, 'S')
 				noway = rev
 				break
 			}
 		}
 	}
 
-	var fill func(p Point)
-	fill = func(p Point) {
-		ch := f[p.row][p.col]
+	var fill func(p fld.Pos)
+	fill = func(p fld.Pos) {
+		ch := f.Get(p)
 		if ch == '*' || ch == 'S' {
 			return
 		}
-		f[p.row][p.col] = '*'
-		for _, dir := range []Point{East, West, South, North} {
-			fill(Point{
-				row: p.row + dir.row,
-				col: p.col + dir.col,
-			})
+		f.Set(p, '*')
+		for _, dir := range []fld.Pos{fld.East, fld.West, fld.South, fld.North} {
+			fill(p.Add(dir))
 		}
 	}
 	for row := 2; row < len(f)-2; row++ {
-		fill(Point{row: row, col: 2})
-		fill(Point{row: row, col: len(f[row]) - 3})
+		fill(fld.NewPos(row, 2))
+		fill(fld.NewPos(row, f.Cols()-3))
 	}
 	for col := 2; col < len(f[0])-2; col++ {
-		fill(Point{row: 2, col: col})
-		fill(Point{row: len(f) - 3, col: col})
+		fill(fld.NewPos(2, col))
+		fill(fld.NewPos(f.Rows()-3, col))
 	}
 
 	var ans2 int

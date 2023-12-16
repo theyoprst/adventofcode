@@ -2,12 +2,14 @@ package fld
 
 import (
 	"bytes"
+	"fmt"
 	"slices"
 
 	"github.com/theyoprst/adventofcode/aoc"
+	"github.com/theyoprst/adventofcode/must"
 )
 
-type Field[T any] [][]T
+type Field[T comparable] [][]T
 
 type ByteField = Field[byte]
 
@@ -109,4 +111,27 @@ func (f Field[T]) Swap(a, b Pos) {
 func (f Field[T]) Inside(pos Pos) bool {
 	return 0 <= pos.Row && pos.Row < len(f) &&
 		0 <= pos.Col && pos.Col < len(f[pos.Row])
+}
+
+func (f Field[T]) Get(p Pos) T {
+	return f[p.Row][p.Col]
+}
+
+func (f Field[T]) Set(p Pos, val T) {
+	f[p.Row][p.Col] = val
+}
+
+func (f Field[T]) FindFirst(val T) Pos {
+	var p Pos
+	for row := range f {
+		for col := range f[row] {
+			if f[row][col] == val {
+				p.Row = row
+				p.Col = col
+				return p
+			}
+		}
+	}
+	must.NoError(fmt.Errorf("cannot find %v", val))
+	return p
 }

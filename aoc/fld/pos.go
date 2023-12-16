@@ -16,6 +16,13 @@ var (
 	South = Down
 )
 
+func NewPos(row, col int) Pos {
+	return Pos{
+		Row: row,
+		Col: col,
+	}
+}
+
 func (p Pos) Add(dir Pos) Pos {
 	p.Row += dir.Row
 	p.Col += dir.Col
