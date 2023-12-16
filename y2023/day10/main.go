@@ -59,7 +59,7 @@ func SolvePart1(lines []string) any {
 }
 
 func SolvePart2(lines []string) any {
-	f := aoc.ByteField(make([][]byte, 2*len(lines)))
+	f := fld.ByteField(make([][]byte, 2*len(lines)))
 	for row := 0; row < len(f); row++ {
 		f[row] = bytes.Repeat([]byte{' '}, 2*len(lines[0]))
 	}
