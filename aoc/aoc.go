@@ -57,9 +57,10 @@ func Split[T comparable](a []T, by T) [][]T {
 var allIntsRe = regexp.MustCompile(`[-+]?\d+`)
 
 func Ints(s string) []int {
-	var ints []int
-	for _, word := range allIntsRe.FindAllString(s, -1) {
-		ints = append(ints, must.Atoi(word))
+	words := allIntsRe.FindAllString(s, -1)
+	ints := make([]int, len(words))
+	for i, word := range words {
+		ints[i] = must.Atoi(word)
 	}
 	return ints
 }
@@ -87,7 +88,7 @@ func SolveQuadratic(a, b, c int) (_, _ *float64) {
 }
 
 func MapSortedValues[K comparable, V cmp.Ordered](m map[K]V) []V {
-	var vv []V
+	vv := make([]V, 0, len(m))
 	for _, v := range m {
 		vv = append(vv, v)
 	}

@@ -42,7 +42,7 @@ func RunTests(t *testing.T, inputs []Input, solversPart1 []Solver, solversPart2 
 		testCases []testCase
 	}
 
-	var testSuites []testSuite
+	testSuites := make([]testSuite, 0, len(solversPart1)+len(solversPart1))
 	for _, solvePart1 := range solversPart1 {
 		testSuites = append(testSuites, testSuite{
 			name:      getFunctionName(solvePart1),

@@ -112,13 +112,18 @@ linters:
     # Finds wasted assignment statements.
     - wastedassign
 
-
-disable:
     # Finds slices that could potentially be pre-allocated.
     # Minimal performance win by the cost of less readability and more complex code.
     # Not relevant to this repository (don't need performance optimization).
     - prealloc
 
+issues:
+  exclude-rules:
+    - path: day\d+
+      linters:
+        - prealloc  # Does not require prealloc for actual solutions
+
+disable:
     # Checks whether HTTP response body is closed successfully.
     # Not relevant to this repository.
     - bodyclose
@@ -131,3 +136,4 @@ disable:
     # Not relevant to this reposirory.
     - rowserrcheck
     - sqlclosecheck
+
