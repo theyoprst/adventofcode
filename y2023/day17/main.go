@@ -1,11 +1,11 @@
 package main
 
 import (
-	"math"
-	"slices"
+	"fmt"
 
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/fld"
+	"github.com/theyoprst/adventofcode/aoc/queues"
 	"github.com/theyoprst/adventofcode/must"
 )
 
@@ -24,61 +24,47 @@ func SolveGeneric(lines []string, minSteps, maxSteps int) any {
 		dir   fld.Pos
 		steps int // steps done before in that dir
 	}
-	found := map[Vertex]bool{}
-	type Node struct {
-		Vertex
-		cost int
-	}
-	nodes := []Node{{
-		Vertex: Vertex{steps: minSteps},
-	}}
+	minCosts := map[Vertex]int{}
+	pq := queues.NewPriorityQueue[Vertex, int]()
+	pq.Insert(Vertex{steps: minSteps}, 0)
 	from := map[Vertex]Vertex{}
-	for len(nodes) > 0 {
-		minNode := Node{cost: math.MaxInt}
-		minI := -1
-		for i, node := range nodes {
-			if node.cost < minNode.cost {
-				minNode = node
-				minI = i
+	for pq.Len() > 0 {
+		minV, cost := pq.PopMin()
+		minCosts[minV] = cost
+		if minV.pos == fld.NewPos(field.Rows()-1, field.Cols()-1) && minSteps <= minV.steps && minV.steps <= maxSteps {
+			v := minV
+			for v.pos != fld.NewPos(0, 0) {
+				// fmt.Println("Back to start:", v)
+				must.Equal(from[v].pos.Add(v.dir), v.pos)
+				v = from[v]
+				switch v.dir {
+				case fld.Right:
+					field.Set(v.pos, '>')
+				case fld.Left:
+					field.Set(v.pos, '<')
+				case fld.Up:
+					field.Set(v.pos, '^')
+				case fld.Down:
+					field.Set(v.pos, 'v')
+				}
 			}
-		}
-		nodes = slices.Delete(nodes, minI, minI+1)
-
-		found[minNode.Vertex] = true
-		if minNode.pos == fld.NewPos(field.Rows()-1, field.Cols()-1) && minSteps <= minNode.steps && minNode.steps <= maxSteps {
-			// v := minNode.Vertex
-			// for v.pos != fld.NewPos(0, 0) {
-			// 	// fmt.Println("Back to start:", v)
-			// 	must.Equal(from[v].pos.Add(v.dir), v.pos)
-			// 	v = from[v]
-			// 	switch v.dir {
-			// 	case fld.Right:
-			// 		field.Set(v.pos, '>')
-			// 	case fld.Left:
-			// 		field.Set(v.pos, '<')
-			// 	case fld.Up:
-			// 		field.Set(v.pos, '^')
-			// 	case fld.Down:
-			// 		field.Set(v.pos, 'v')
-			// 	}
-			// }
-			// fmt.Println(fld.ToString(field))
-			return minNode.cost
+			fmt.Println(fld.ToString(field))
+			return cost
 		}
 		for _, dir := range []fld.Pos{fld.Left, fld.Right, fld.Up, fld.Down} {
-			pos := minNode.pos.Add(dir)
+			pos := minV.pos.Add(dir)
 			if !field.Inside(pos) {
 				continue
 			}
-			if dir == minNode.dir.Mult(-1) {
+			if dir == minV.dir.Mult(-1) {
 				continue // Forbid turn-over.
 			}
-			if dir != minNode.dir && minNode.steps < minSteps {
+			if dir != minV.dir && minV.steps < minSteps {
 				continue
 			}
 			steps := 1
-			if dir == minNode.dir {
-				steps += minNode.steps
+			if dir == minV.dir {
+				steps += minV.steps
 				if steps > maxSteps {
 					continue
 				}
@@ -88,25 +74,19 @@ func SolveGeneric(lines []string, minSteps, maxSteps int) any {
 				dir:   dir,
 				steps: steps,
 			}
-			must.LessOrEqual(steps, maxSteps)
-			if found[v] {
+			if minCosts[v] > 0 {
 				continue
 			}
-			newCost := minNode.cost + int(field.Get(pos)-'0')
-			nodeI := slices.IndexFunc(nodes, func(node Node) bool {
-				return node.Vertex == v
-			})
+			newCost := cost + int(field.Get(pos)-'0')
+			nodeI, curCost := pq.Lookup(v)
 			if nodeI != -1 {
-				if nodes[nodeI].cost > newCost {
-					nodes[nodeI].cost = newCost
-					from[v] = minNode.Vertex
+				if newCost < curCost {
+					pq.SetByIndex(nodeI, newCost)
+					from[v] = minV
 				}
 			} else {
-				nodes = append(nodes, Node{
-					Vertex: v,
-					cost:   newCost,
-				})
-				from[v] = minNode.Vertex
+				pq.Insert(v, newCost)
+				from[v] = minV
 			}
 		}
 	}
