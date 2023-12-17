@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 	"slices"
 
@@ -46,26 +45,24 @@ func SolveGeneric(lines []string, minSteps, maxSteps int) any {
 		nodes = slices.Delete(nodes, minI, minI+1)
 
 		found[minNode.Vertex] = true
-		// fmt.Println("Found", minNode)
 		if minNode.pos == fld.NewPos(field.Rows()-1, field.Cols()-1) {
-			v := minNode.Vertex
-			// field.Set(v.pos, '0')
-			for v.pos != fld.NewPos(0, 0) {
-				// fmt.Println("Back to start:", v)
-				must.Equal(from[v].pos.Add(v.dir), v.pos)
-				v = from[v]
-				switch v.dir {
-				case fld.Right:
-					field.Set(v.pos, '>')
-				case fld.Left:
-					field.Set(v.pos, '<')
-				case fld.Up:
-					field.Set(v.pos, '^')
-				case fld.Down:
-					field.Set(v.pos, 'v')
-				}
-			}
-			fmt.Println(fld.ToString(field))
+			// v := minNode.Vertex
+			// for v.pos != fld.NewPos(0, 0) {
+			// 	// fmt.Println("Back to start:", v)
+			// 	must.Equal(from[v].pos.Add(v.dir), v.pos)
+			// 	v = from[v]
+			// 	switch v.dir {
+			// 	case fld.Right:
+			// 		field.Set(v.pos, '>')
+			// 	case fld.Left:
+			// 		field.Set(v.pos, '<')
+			// 	case fld.Up:
+			// 		field.Set(v.pos, '^')
+			// 	case fld.Down:
+			// 		field.Set(v.pos, 'v')
+			// 	}
+			// }
+			// fmt.Println(fld.ToString(field))
 			return minNode.cost
 		}
 		for _, dir := range []fld.Pos{fld.Left, fld.Right, fld.Up, fld.Down} {
@@ -76,17 +73,15 @@ func SolveGeneric(lines []string, minSteps, maxSteps int) any {
 			if dir == minNode.dir.Mult(-1) {
 				continue // Forbid turn-over.
 			}
-			steps := 1
 			if dir != minNode.dir && minNode.steps < minSteps {
 				continue
 			}
-			if dir == minNode.dir || dir == minNode.dir.Mult(-1) {
-				if minNode.steps >= maxSteps {
-					continue
-				}
-			}
+			steps := 1
 			if dir == minNode.dir {
 				steps += minNode.steps
+				if steps > maxSteps {
+					continue
+				}
 			}
 			v := Vertex{
 				pos:   pos,
