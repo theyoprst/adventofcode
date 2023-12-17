@@ -45,7 +45,7 @@ func SolveGeneric(lines []string, minSteps, maxSteps int) any {
 		nodes = slices.Delete(nodes, minI, minI+1)
 
 		found[minNode.Vertex] = true
-		if minNode.pos == fld.NewPos(field.Rows()-1, field.Cols()-1) {
+		if minNode.pos == fld.NewPos(field.Rows()-1, field.Cols()-1) && minSteps <= minNode.steps && minNode.steps <= maxSteps {
 			// v := minNode.Vertex
 			// for v.pos != fld.NewPos(0, 0) {
 			// 	// fmt.Println("Back to start:", v)

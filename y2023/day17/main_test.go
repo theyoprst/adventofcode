@@ -16,7 +16,7 @@ func Test(t *testing.T) {
 		{
 			Path:      "input_ex2.txt",
 			WantPart1: "59",
-			WantPart2: "47",
+			WantPart2: "71",
 		},
 		{
 			Path:      "input.txt",
