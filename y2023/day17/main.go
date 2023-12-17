@@ -6,7 +6,7 @@ import (
 
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/fld"
-	"github.com/theyoprst/adventofcode/aoc/queues"
+	"github.com/theyoprst/adventofcode/aoc/graphs"
 )
 
 func SolvePart1(lines []string) any {
@@ -23,52 +23,12 @@ type Vertex struct {
 	steps int // steps done before in that dir
 }
 
-type OutEdge struct {
-	to   Vertex
-	cost int
-}
-
-type MinPath struct {
-	cost int
-	prev Vertex
-}
-
-func Dijkstra(startV Vertex, outEdges func(v Vertex) []OutEdge) map[Vertex]MinPath {
-	pq := queues.NewPriorityQueue[Vertex, int]()
-	pq.Insert(startV, 0)
-	res := map[Vertex]MinPath{}
-	from := map[Vertex]Vertex{}
-	for pq.Len() > 0 {
-		minV, cost := pq.PopMin()
-		res[minV] = MinPath{
-			cost: cost,
-			prev: from[minV],
-		}
-		for _, edge := range outEdges(minV) {
-			v := edge.to
-			if _, ok := res[v]; ok {
-				continue
-			}
-			newCost := cost + edge.cost
-			nodeI, curCost := pq.Lookup(v)
-			if nodeI != -1 {
-				if newCost < curCost {
-					pq.SetByIndex(nodeI, newCost)
-					from[v] = minV
-				}
-			} else {
-				pq.Insert(v, newCost)
-				from[v] = minV
-			}
-		}
-	}
-	return res
-}
+type Edge = graphs.OutEdge[Vertex]
 
 func SolveGeneric(lines []string, minSteps, maxSteps int) any {
 	field := fld.NewByteField(lines)
-	outEdges := func(v Vertex) []OutEdge {
-		var edges []OutEdge
+	outEdges := func(v Vertex) []Edge {
+		var edges []Edge
 		for _, dir := range []fld.Pos{fld.Left, fld.Right, fld.Up, fld.Down} {
 			pos := v.pos.Add(dir)
 			if !field.Inside(pos) {
@@ -87,30 +47,30 @@ func SolveGeneric(lines []string, minSteps, maxSteps int) any {
 					continue
 				}
 			}
-			edges = append(edges, OutEdge{
-				to: Vertex{
+			edges = append(edges, Edge{
+				To: Vertex{
 					pos:   pos,
 					dir:   dir,
 					steps: steps,
 				},
-				cost: int(field.Get(pos) - '0'),
+				Cost: int(field.Get(pos) - '0'),
 			})
 		}
 		return edges
 	}
 
-	minPaths := Dijkstra(Vertex{steps: minSteps}, outEdges)
+	minPaths := graphs.DijkstraHeap(Vertex{steps: minSteps}, outEdges)
 
 	ans := math.MaxInt
 	var minV Vertex
 	bottomRight := fld.NewPos(field.Rows()-1, field.Cols()-1)
 	for v, path := range minPaths {
 		if v.pos == bottomRight && minSteps <= v.steps && v.steps <= maxSteps {
-			if path.cost < ans {
-				ans = path.cost
+			if path.MinCost < ans {
+				ans = path.MinCost
 				minV = v
 			}
-			ans = min(ans, path.cost)
+			ans = min(ans, path.MinCost)
 		}
 	}
 
@@ -127,7 +87,7 @@ func SolveGeneric(lines []string, minSteps, maxSteps int) any {
 		case fld.Down:
 			field.Set(v.pos, 'v')
 		}
-		v = minPaths[v].prev
+		v = minPaths[v].Prev
 	}
 	fmt.Println()
 	fmt.Println(fld.ToString(field))
