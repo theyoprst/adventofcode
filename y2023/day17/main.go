@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/fld"
 	"github.com/theyoprst/adventofcode/aoc/queues"
-	"github.com/theyoprst/adventofcode/must"
 )
 
 func SolvePart1(lines []string) any {
@@ -17,67 +17,39 @@ func SolvePart2(lines []string) any {
 	return SolveGeneric(lines, 4, 10)
 }
 
-func SolveGeneric(lines []string, minSteps, maxSteps int) any {
-	field := fld.NewByteField(lines)
-	type Vertex struct {
-		pos   fld.Pos
-		dir   fld.Pos
-		steps int // steps done before in that dir
-	}
-	minCosts := map[Vertex]int{}
+type Vertex struct {
+	pos   fld.Pos
+	dir   fld.Pos
+	steps int // steps done before in that dir
+}
+
+type OutEdge struct {
+	to   Vertex
+	cost int
+}
+
+type MinPath struct {
+	cost int
+	prev Vertex
+}
+
+func Dijkstra(startV Vertex, outEdges func(v Vertex) []OutEdge) map[Vertex]MinPath {
 	pq := queues.NewPriorityQueue[Vertex, int]()
-	pq.Insert(Vertex{steps: minSteps}, 0)
+	pq.Insert(startV, 0)
+	res := map[Vertex]MinPath{}
 	from := map[Vertex]Vertex{}
 	for pq.Len() > 0 {
 		minV, cost := pq.PopMin()
-		minCosts[minV] = cost
-		if minV.pos == fld.NewPos(field.Rows()-1, field.Cols()-1) && minSteps <= minV.steps && minV.steps <= maxSteps {
-			v := minV
-			for v.pos != fld.NewPos(0, 0) {
-				// fmt.Println("Back to start:", v)
-				must.Equal(from[v].pos.Add(v.dir), v.pos)
-				v = from[v]
-				switch v.dir {
-				case fld.Right:
-					field.Set(v.pos, '>')
-				case fld.Left:
-					field.Set(v.pos, '<')
-				case fld.Up:
-					field.Set(v.pos, '^')
-				case fld.Down:
-					field.Set(v.pos, 'v')
-				}
-			}
-			fmt.Println(fld.ToString(field))
-			return cost
+		res[minV] = MinPath{
+			cost: cost,
+			prev: from[minV],
 		}
-		for _, dir := range []fld.Pos{fld.Left, fld.Right, fld.Up, fld.Down} {
-			pos := minV.pos.Add(dir)
-			if !field.Inside(pos) {
+		for _, edge := range outEdges(minV) {
+			v := edge.to
+			if _, ok := res[v]; ok {
 				continue
 			}
-			if dir == minV.dir.Mult(-1) {
-				continue // Forbid turn-over.
-			}
-			if dir != minV.dir && minV.steps < minSteps {
-				continue
-			}
-			steps := 1
-			if dir == minV.dir {
-				steps += minV.steps
-				if steps > maxSteps {
-					continue
-				}
-			}
-			v := Vertex{
-				pos:   pos,
-				dir:   dir,
-				steps: steps,
-			}
-			if minCosts[v] > 0 {
-				continue
-			}
-			newCost := cost + int(field.Get(pos)-'0')
+			newCost := cost + edge.cost
 			nodeI, curCost := pq.Lookup(v)
 			if nodeI != -1 {
 				if newCost < curCost {
@@ -90,7 +62,77 @@ func SolveGeneric(lines []string, minSteps, maxSteps int) any {
 			}
 		}
 	}
-	panic("unreachable")
+	return res
+}
+
+func SolveGeneric(lines []string, minSteps, maxSteps int) any {
+	field := fld.NewByteField(lines)
+	outEdges := func(v Vertex) []OutEdge {
+		var edges []OutEdge
+		for _, dir := range []fld.Pos{fld.Left, fld.Right, fld.Up, fld.Down} {
+			pos := v.pos.Add(dir)
+			if !field.Inside(pos) {
+				continue
+			}
+			if dir == v.dir.Mult(-1) {
+				continue // Forbid turn-over.
+			}
+			if dir != v.dir && v.steps < minSteps {
+				continue
+			}
+			steps := 1
+			if dir == v.dir {
+				steps += v.steps
+				if steps > maxSteps {
+					continue
+				}
+			}
+			edges = append(edges, OutEdge{
+				to: Vertex{
+					pos:   pos,
+					dir:   dir,
+					steps: steps,
+				},
+				cost: int(field.Get(pos) - '0'),
+			})
+		}
+		return edges
+	}
+
+	minPaths := Dijkstra(Vertex{steps: minSteps}, outEdges)
+
+	ans := math.MaxInt
+	var minV Vertex
+	bottomRight := fld.NewPos(field.Rows()-1, field.Cols()-1)
+	for v, path := range minPaths {
+		if v.pos == bottomRight && minSteps <= v.steps && v.steps <= maxSteps {
+			if path.cost < ans {
+				ans = path.cost
+				minV = v
+			}
+			ans = min(ans, path.cost)
+		}
+	}
+
+	// Optional: print path.
+	v := minV
+	for v.pos != fld.NewPos(0, 0) {
+		switch v.dir {
+		case fld.Right:
+			field.Set(v.pos, '>')
+		case fld.Left:
+			field.Set(v.pos, '<')
+		case fld.Up:
+			field.Set(v.pos, '^')
+		case fld.Down:
+			field.Set(v.pos, 'v')
+		}
+		v = minPaths[v].prev
+	}
+	fmt.Println()
+	fmt.Println(fld.ToString(field))
+
+	return ans
 }
 
 var (
