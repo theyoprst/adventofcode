@@ -5,6 +5,7 @@ type Pos struct {
 }
 
 var (
+	Zero  = Pos{0, 0}
 	Right = Pos{0, 1}
 	Left  = Pos{0, -1}
 	Up    = Pos{-1, 0}

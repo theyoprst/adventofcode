@@ -53,6 +53,8 @@ func SolvePart1(lines []string) any {
 			field.Set(pos, '#')
 		}
 	}
+	// TODO: Refactor dfs function to Fill field's method, reuse in day10
+	// Also reuse in day10 solution.
 	var dfs func(p fld.Pos)
 	dfs = func(p fld.Pos) {
 		if !field.Inside(p) {
@@ -123,9 +125,9 @@ func NewFieldBySize(rows, cols int, fill byte) fld.ByteField {
 }
 
 func GetStartAndSize(commands []Command) (start fld.Pos, rows, cols int) {
-	minP := fld.NewPos(0, 0)
-	maxP := fld.NewPos(0, 0)
-	pos := fld.NewPos(0, 0)
+	minP := fld.Zero
+	maxP := fld.Zero
+	pos := fld.Zero
 	for _, cmd := range commands {
 		pos = pos.Add(cmd.dir.Mult(cmd.steps))
 		minP.Row = min(minP.Row, pos.Row)
@@ -158,7 +160,7 @@ func SolveByCompression(commands []Command) any {
 	rows := len(rowVals) - 1
 	cols := len(colVals) - 1
 	field := NewFieldBySize(rows, cols, '.')
-	ipos := fld.NewPos(0, 0)
+	ipos := fld.Zero
 	for rowVals[ipos.Row] < pos.Row {
 		ipos.Row++
 	}
