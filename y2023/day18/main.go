@@ -136,24 +136,6 @@ func GetStartAndSize(commands []Command) (start fld.Pos, rows, cols int) {
 	return minP.Mult(-1), maxP.Row - minP.Row + 1, maxP.Col - minP.Col + 1
 }
 
-type Interval struct {
-	first int
-	after int
-}
-
-func (i Interval) Len() int {
-	return i.after - i.first
-}
-
-func IntervalPos(a []Interval, n int) int {
-	for i, interval := range a {
-		if interval.first <= n && n < interval.after {
-			return i
-		}
-	}
-	panic("unreachable")
-}
-
 func SolveByCompression(commands []Command) any {
 	pos, _, _ := GetStartAndSize(commands)
 	rowSet := map[int]bool{
@@ -165,34 +147,28 @@ func SolveByCompression(commands []Command) any {
 	for _, cmd := range commands {
 		pos = pos.Add(cmd.dir.Mult(cmd.steps))
 		rowSet[pos.Row] = true
+		rowSet[pos.Row+1] = true
 		colSet[pos.Col] = true
+		colSet[pos.Col+1] = true
 	}
 
-	var rowIntervals []Interval
 	rowVals := aoc.MapSortedKeys(rowSet)
-	for i := range rowVals {
-		if i > 0 && rowVals[i-1]+1 < rowVals[i] {
-			rowIntervals = append(rowIntervals, Interval{rowVals[i-1] + 1, rowVals[i]})
-		}
-		rowIntervals = append(rowIntervals, Interval{rowVals[i], rowVals[i] + 1})
-	}
-	var colIntervals []Interval
 	colVals := aoc.MapSortedKeys(colSet)
-	for i := range colVals {
-		if i > 0 && colVals[i-1]+1 < colVals[i] {
-			colIntervals = append(colIntervals, Interval{colVals[i-1] + 1, colVals[i]})
-		}
-		colIntervals = append(colIntervals, Interval{colVals[i], colVals[i] + 1})
-	}
 
-	rows := len(rowIntervals)
-	cols := len(colIntervals)
+	rows := len(rowVals) - 1
+	cols := len(colVals) - 1
 	field := NewFieldBySize(rows, cols, '.')
-	ipos := fld.NewPos(IntervalPos(rowIntervals, pos.Row), IntervalPos(colIntervals, pos.Col))
+	ipos := fld.NewPos(0, 0)
+	for rowVals[ipos.Row] < pos.Row {
+		ipos.Row++
+	}
+	for colVals[ipos.Col] < pos.Col {
+		ipos.Col++
+	}
 	field.Set(ipos, '#')
 	for _, cmd := range commands {
 		npos := ipos
-		for aoc.Abs(rowIntervals[npos.Row].first-rowIntervals[ipos.Row].first)+aoc.Abs(colIntervals[npos.Col].first-colIntervals[ipos.Col].first) < cmd.steps {
+		for aoc.Abs(rowVals[npos.Row]-rowVals[ipos.Row])+aoc.Abs(colVals[npos.Col]-colVals[ipos.Col]) < cmd.steps {
 			npos = npos.Add(cmd.dir)
 			field.Set(npos, '#')
 		}
@@ -224,7 +200,7 @@ func SolveByCompression(commands []Command) any {
 	for row, line := range field {
 		for col, ch := range line {
 			if ch == '.' || ch == '#' {
-				ans += rowIntervals[row].Len() * colIntervals[col].Len()
+				ans += (rowVals[row+1] - rowVals[row]) * (colVals[col+1] - colVals[col])
 			}
 		}
 	}
