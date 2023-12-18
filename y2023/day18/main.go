@@ -135,6 +135,7 @@ func GetStartAndSize(commands []Command) (start fld.Pos, rows, cols int) {
 		maxP.Row = max(maxP.Row, pos.Row)
 		maxP.Col = max(maxP.Col, pos.Col)
 	}
+	must.Equal(pos, fld.Zero)
 	return minP.Mult(-1), maxP.Row - minP.Row + 1, maxP.Col - minP.Col + 1
 }
 
@@ -210,8 +211,8 @@ func SolveByCompression(commands []Command) any {
 }
 
 var (
-	solvers1 []aoc.Solver = []aoc.Solver{SolvePart1, SolvePart1ByCompression}
-	solvers2 []aoc.Solver = []aoc.Solver{SolvePart2}
+	solvers1 []aoc.Solver = []aoc.Solver{SolvePart1, SolvePart1ByCompression, SolvePart1Gauss}
+	solvers2 []aoc.Solver = []aoc.Solver{SolvePart2, SolvePart2Gauss}
 )
 
 func main() {
