@@ -27,7 +27,7 @@ func Split3(s string, sep string) (_, _, _ string) {
 	if len(split) != 3 {
 		panic(fmt.Sprintf("Split %q by %q: got %d parts, want %d", s, sep, len(split), 3))
 	}
-	return split[0], split[1], split[3]
+	return split[0], split[1], split[2]
 }
 
 func NoError(err error) {
