@@ -120,60 +120,54 @@ func SolvePart2(lines []string) any {
 		key, workflow := parseWorkflow(workflowStr)
 		workflows[key] = workflow
 	}
-	first := map[string]int{}
-	after := map[string]int{}
-	for _, ch := range "xmas" {
-		first[string(ch)] = 1
-		after[string(ch)] = 4001
+	type Interval struct {
+		first, after int
 	}
-	var countAccepted func(workflowName string, first, after map[string]int) int
-	countAccepted = func(workflowName string, first, after map[string]int) int {
-		first = maps.Clone(first)
-		after = maps.Clone(after)
+	rect := map[string]Interval{}
+	for _, ch := range "xmas" {
+		rect[string(ch)] = Interval{
+			first: 1,
+			after: 4001,
+		}
+	}
+	var countAccepted func(workflowName string, rect map[string]Interval) int
+	countAccepted = func(workflowName string, rect map[string]Interval) int {
+		rect = maps.Clone(rect)
 		if workflowName == "R" {
 			return 0
 		}
 		if workflowName == "A" {
 			p := 1
-			for _, ch := range "xmas" {
-				afterV := after[string(ch)]
-				firstV := first[string(ch)]
-				must.Greater(afterV, 0)
-				must.Greater(firstV, 0)
-				p *= afterV - firstV
+			for _, interval := range rect {
+				p *= interval.after - interval.first
 			}
 			return max(0, p)
 		}
 		count := 0
 		for _, rule := range workflows[workflowName] {
 			if rule.opCode == 0 {
-				count += countAccepted(rule.next, first, after)
+				count += countAccepted(rule.next, rect)
 				continue
 			}
 
+			src := rect[rule.key]
 			if rule.opCode == '<' {
-				afterV := after[rule.key]
-				// [firstV:T], [T:afterV]
-				after[rule.key] = rule.threshold
-				count += countAccepted(rule.next, first, after)
-				after[rule.key] = afterV
-
-				first[rule.key] = rule.threshold
+				// [first:T], [T:after]
+				rect[rule.key] = Interval{src.first, rule.threshold}
+				count += countAccepted(rule.next, rect)
+				rect[rule.key] = Interval{rule.threshold, src.after}
 			} else if rule.opCode == '>' {
-				firstV := first[rule.key]
 				// [T+1:afterV], [firstV:T+1],
-				first[rule.key] = rule.threshold + 1
-				count += countAccepted(rule.next, first, after)
-				first[rule.key] = firstV
-
-				after[rule.key] = rule.threshold + 1
+				rect[rule.key] = Interval{rule.threshold + 1, src.after}
+				count += countAccepted(rule.next, rect)
+				rect[rule.key] = Interval{src.first, rule.threshold + 1}
 			} else {
 				panic("Unreachable")
 			}
 		}
 		return count
 	}
-	return countAccepted("in", first, after)
+	return countAccepted("in", rect)
 }
 
 var (
