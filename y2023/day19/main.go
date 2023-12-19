@@ -2,13 +2,12 @@ package main
 
 import (
 	"maps"
+	"regexp"
 	"strings"
 
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
-
-// TODO: use regexps.
 
 type Rule struct {
 	key       string
@@ -48,32 +47,22 @@ func parseRatings(s string) map[string]int {
 	return ratings
 }
 
+var ruleRe = regexp.MustCompile(`^(([xmas])([<>])(\d+):)?(\w+)$`)
+
 func parseRule(s string) Rule {
-	colonI := strings.Index(s, ":")
-	if colonI == -1 {
-		return Rule{next: s}
+	sub := ruleRe.FindStringSubmatch(s)
+	var opCode byte
+	var threshold int
+	if sub[1] != "" {
+		opCode = sub[3][0]
+		threshold = must.Atoi(sub[4])
 	}
-	ruleS := s[:colonI]
-	next := s[colonI+1:]
-	lessI := strings.Index(ruleS, "<")
-	if lessI != -1 {
-		return Rule{
-			key:       ruleS[:lessI],
-			threshold: must.Atoi(ruleS[lessI+1:]),
-			opCode:    '<',
-			next:      next,
-		}
+	return Rule{
+		key:       sub[2],
+		threshold: threshold,
+		opCode:    opCode,
+		next:      sub[5],
 	}
-	greaterI := strings.Index(ruleS, ">")
-	if greaterI != -1 {
-		return Rule{
-			key:       ruleS[:greaterI],
-			threshold: must.Atoi(ruleS[greaterI+1:]),
-			opCode:    '>',
-			next:      next,
-		}
-	}
-	panic("Unreachable")
 }
 
 func SolvePart1(lines []string) any {
