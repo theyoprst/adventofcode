@@ -123,12 +123,15 @@ func SolvePart2(lines []string) any {
 		if workflowName == "R" {
 			return 0
 		}
+		vol := 1
+		for _, interval := range rect {
+			vol *= interval.after - interval.first
+		}
+		if vol <= 0 {
+			return 0
+		}
 		if workflowName == "A" {
-			p := 1
-			for _, interval := range rect {
-				p *= interval.after - interval.first
-			}
-			return max(0, p)
+			return vol
 		}
 		count := 0
 		for _, rule := range workflows[workflowName] {
