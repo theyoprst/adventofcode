@@ -12,15 +12,15 @@ import (
 type Rule struct {
 	key       string
 	threshold int
-	opCode    byte
+	opCode    string
 	next      string
 }
 
 func (r Rule) Op(value int) bool {
 	switch r.opCode {
-	case '<':
+	case "<":
 		return value < r.threshold
-	case '>':
+	case ">":
 		return value > r.threshold
 	default:
 		return true
@@ -51,16 +51,14 @@ var ruleRe = regexp.MustCompile(`^(([xmas])([<>])(\d+):)?(\w+)$`)
 
 func parseRule(s string) Rule {
 	sub := ruleRe.FindStringSubmatch(s)
-	var opCode byte
 	var threshold int
 	if sub[1] != "" {
-		opCode = sub[3][0]
 		threshold = must.Atoi(sub[4])
 	}
 	return Rule{
 		key:       sub[2],
 		threshold: threshold,
-		opCode:    opCode,
+		opCode:    sub[3],
 		next:      sub[5],
 	}
 }
@@ -134,18 +132,18 @@ func SolvePart2(lines []string) any {
 		}
 		count := 0
 		for _, rule := range workflows[workflowName] {
-			if rule.opCode == 0 {
+			if rule.opCode == "" {
 				count += countAccepted(rule.next, rect)
 				continue
 			}
 
 			src := rect[rule.key]
-			if rule.opCode == '<' {
+			if rule.opCode == "<" {
 				// [first:T], [T:after]
 				rect[rule.key] = Interval{src.first, rule.threshold}
 				count += countAccepted(rule.next, rect)
 				rect[rule.key] = Interval{rule.threshold, src.after}
-			} else if rule.opCode == '>' {
+			} else if rule.opCode == ">" {
 				// [T+1:afterV], [firstV:T+1],
 				rect[rule.key] = Interval{rule.threshold + 1, src.after}
 				count += countAccepted(rule.next, rect)
