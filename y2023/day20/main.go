@@ -1,16 +1,12 @@
 package main
 
 import (
+	"slices"
 	"strings"
 
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
-
-type Impulse struct {
-	value Imp
-	from  string
-}
 
 type Imp int
 
@@ -26,6 +22,18 @@ const (
 	Off
 )
 
+func (ff FlipFlop) Invert() FlipFlop {
+	return 1 - ff
+}
+
+const Broadcaster = "broadcaster"
+
+type Impulse struct {
+	from  string
+	to    string
+	value Imp
+}
+
 func SolvePart1(lines []string) any {
 	flip := map[string]FlipFlop{}
 	conj := map[string]map[string]Imp{}
@@ -33,8 +41,7 @@ func SolvePart1(lines []string) any {
 	for _, line := range lines {
 		src, dstsStr := must.Split2(line, " -> ")
 		dsts := strings.Split(dstsStr, ", ")
-		if src == "broadcaster" {
-		} else if src[0] == '%' {
+		if src[0] == '%' {
 			// flip-flop
 			src = src[1:]
 			flip[src] = Off
@@ -43,7 +50,7 @@ func SolvePart1(lines []string) any {
 			src = src[1:]
 			conj[src] = map[string]Imp{}
 		} else {
-			panic("unreachable")
+			must.Equal(src, Broadcaster)
 		}
 		dispatch[src] = dsts
 	}
@@ -57,18 +64,98 @@ func SolvePart1(lines []string) any {
 	lows := 0
 	highs := 0
 	for step := 0; step < 1000; step++ {
-		impulses := map[string]Impulse{
-			"broadcaster": {value: Low, from: ""},
+		impulses := []Impulse{{from: "", to: Broadcaster, value: Low}}
+		for len(impulses) > 0 {
+			impulse := impulses[0]
+			impulses = impulses[1:]
+			cur := impulse.to
+			if impulse.value == Low {
+				lows++
+			} else {
+				highs++
+			}
+			nImp := impulse.value
+			if _, ok := flip[cur]; ok {
+				if impulse.value == High {
+					continue
+				}
+				flip[cur] = flip[cur].Invert()
+				nImp = High
+				if flip[cur] == Off {
+					nImp = Low
+				}
+			} else if conj[cur] != nil {
+				conj[cur][impulse.from] = impulse.value
+				nImp = Low
+				for _, imp := range conj[cur] {
+					if imp != High {
+						nImp = High
+						break
+					}
+				}
+			}
+			for _, dst := range dispatch[cur] {
+				impulses = append(impulses, Impulse{
+					value: nImp, from: cur, to: dst,
+				})
+			}
 		}
+	}
+	return highs * lows
+}
+
+func SolvePart2(lines []string) any {
+	flip := map[string]FlipFlop{}
+	conj := map[string]map[string]Imp{}
+	dispatch := map[string][]string{}
+	for _, line := range lines {
+		src, dstsStr := must.Split2(line, " -> ")
+		dsts := strings.Split(dstsStr, ", ")
+		if src[0] == '%' {
+			// flip-flop
+			src = src[1:]
+			flip[src] = Off
+		} else if src[0] == '&' {
+			// conjunction
+			src = src[1:]
+			conj[src] = map[string]Imp{}
+		} else {
+			must.Equal(src, Broadcaster)
+		}
+		dispatch[src] = dsts
+	}
+	// Want Low signal on "rx", let's see who can send it.
+	for src, dsts := range dispatch {
+		for _, dst := range dsts {
+			if conj[dst] != nil {
+				conj[dst][src] = Low
+			}
+		}
+	}
+	var rxSources []string
+	for src, dsts := range dispatch {
+		if slices.Contains(dsts, "rx") {
+			rxSources = append(rxSources, src)
+		}
+	}
+	must.Equal(len(rxSources), 1)
+	rxSrc := rxSources[0]             // In our test there is only one source of "rx".
+	must.Greater(len(conj[rxSrc]), 1) // In our test source of "rx" is conjunction of several other nodes.
+	cycles := map[string]int{}
+
+	// Now we need to find step where all nodes from "waitFor" emit High signal.
+	// So that their conjunction will emit Low signal.
+
+	for step := 1; step < 10000; step++ {
+		impulses := []Impulse{{from: "", to: "broadcaster", value: Low}}
 		for len(impulses) > 0 {
 			// fmt.Println(impulses)
-			nImpulses := map[string]Impulse{}
-			for cur, impulse := range impulses {
-				if impulse.value == Low {
-					lows++
-				} else {
-					highs++
-				}
+			nImpulses := []Impulse{}
+			for _, impulse := range impulses {
+				cur := impulse.to
+				// if impulse.value == Low && impulse.to == "rx" {
+				// 	return step
+				// }
 				nImp := impulse.value
 				if _, ok := flip[cur]; ok {
 					if impulse.value == High {
@@ -89,23 +176,31 @@ func SolvePart1(lines []string) any {
 						}
 					}
 				}
+				// fmt.Println(cur, dispatch[cur])
 				for _, dst := range dispatch[cur] {
-					if _, ok := nImpulses[dst]; ok {
-						panic(dst)
+					nImpulses = append(nImpulses, Impulse{
+						value: nImp, from: cur, to: dst,
+					})
+				}
+			}
+			for name, count := range conj[rxSrc] {
+				if count > 0 {
+					if cycles[name] == 0 {
+						cycles[name] = step
+					} else {
+						must.Equal(step%cycles[name], 0)
 					}
-					nImpulses[dst] = Impulse{value: nImp, from: cur}
-					// TODO: check if exists?
 				}
 			}
 			impulses = nImpulses
 		}
 	}
-	return highs * lows
-}
-
-func SolvePart2(lines []string) any {
-	_ = lines
-	return 0
+	must.Equal(len(cycles), len(conj[rxSrc]))
+	lcm := 1
+	for _, x := range cycles {
+		lcm = aoc.LCM(lcm, x)
+	}
+	return lcm
 }
 
 var (

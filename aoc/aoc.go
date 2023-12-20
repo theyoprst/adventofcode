@@ -106,7 +106,15 @@ func MapSortedKeys[K cmp.Ordered, V any](m map[K]V) []K {
 }
 
 // Greates Common Divisor.
-func GCD(a, b int) int {
+func GCD(a ...int) int {
+	res := a[0]
+	for i := 1; i < len(a); i++ {
+		res = gcd(res, a[i])
+	}
+	return res
+}
+
+func gcd(a, b int) int {
 	for b != 0 {
 		a, b = b, a%b
 	}
@@ -114,7 +122,15 @@ func GCD(a, b int) int {
 }
 
 // Least Common Multiple.
-func LCM(a, b int) int {
+func LCM(a ...int) int {
+	res := 1
+	for _, x := range a {
+		res = lcm(res, x)
+	}
+	return res
+}
+
+func lcm(a, b int) int {
 	a /= GCD(a, b)
 	must.Less(b, math.MaxInt/a)
 	return a * b
