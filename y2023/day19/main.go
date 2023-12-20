@@ -141,17 +141,18 @@ func SolvePart2(lines []string) any {
 			}
 
 			src := rect[rule.key]
-			if rule.opCode == "<" {
+			switch rule.opCode {
+			case "<":
 				// [first:T], [T:after]
 				rect[rule.key] = Interval{src.first, rule.threshold}
 				count += countAccepted(rule.next, rect)
 				rect[rule.key] = Interval{rule.threshold, src.after}
-			} else if rule.opCode == ">" {
+			case ">":
 				// [T+1:afterV], [firstV:T+1],
 				rect[rule.key] = Interval{rule.threshold + 1, src.after}
 				count += countAccepted(rule.next, rect)
 				rect[rule.key] = Interval{src.first, rule.threshold + 1}
-			} else {
+			default:
 				panic("Unreachable")
 			}
 		}

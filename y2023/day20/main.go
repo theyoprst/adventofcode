@@ -41,15 +41,16 @@ func SolvePart1(lines []string) any {
 	for _, line := range lines {
 		src, dstsStr := must.Split2(line, " -> ")
 		dsts := strings.Split(dstsStr, ", ")
-		if src[0] == '%' {
+		switch src[0] {
+		case '%':
 			// flip-flop
 			src = src[1:]
 			flip[src] = Off
-		} else if src[0] == '&' {
+		case '&':
 			// conjunction
 			src = src[1:]
 			conj[src] = map[string]Imp{}
-		} else {
+		default:
 			must.Equal(src, Broadcaster)
 		}
 		dispatch[src] = dsts
@@ -111,15 +112,16 @@ func SolvePart2(lines []string) any {
 	for _, line := range lines {
 		src, dstsStr := must.Split2(line, " -> ")
 		dsts := strings.Split(dstsStr, ", ")
-		if src[0] == '%' {
+		switch src[0] {
+		case '%':
 			// flip-flop
 			src = src[1:]
 			flip[src] = Off
-		} else if src[0] == '&' {
+		case '&':
 			// conjunction
 			src = src[1:]
 			conj[src] = map[string]Imp{}
-		} else {
+		default:
 			must.Equal(src, Broadcaster)
 		}
 		dispatch[src] = dsts
