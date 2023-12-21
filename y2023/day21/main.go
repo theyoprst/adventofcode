@@ -16,7 +16,66 @@ func SolvePart1(lines []string) any {
 var stepsPart2 int = 26501365
 
 func SolvePart2(lines []string) any {
+	return CountReachableInfiniteSmart(lines, stepsPart2)
+}
+
+func CountReachable(field fld.ByteField, start fld.Pos, steps int) int {
+	outEdges := func(pos fld.Pos) (edges []graphs.OutEdge[fld.Pos]) {
+		for _, dir := range fld.DirsSimple {
+			npos := pos.Add(dir)
+			if field.Inside(npos) && field.Get(npos) != '#' {
+				edges = append(edges, graphs.OutEdge[fld.Pos]{To: npos, Cost: 1})
+			}
+		}
+		return edges
+	}
+	res := 0
+	for _, path := range graphs.DijkstraHeap(start, outEdges, &steps) {
+		if path.MinCost <= steps && (path.MinCost+steps)%2 == 0 {
+			res++
+		}
+	}
+	return res
+}
+
+func CountReachableInfiniteNaive(lines []string, steps int) int {
 	field := fld.NewByteField(lines)
+	start := field.FindFirst('S')
+	normPos := func(pos fld.Pos) fld.Pos {
+		pos.Row %= field.Rows()
+		if pos.Row < 0 {
+			pos.Row += field.Rows()
+		}
+		pos.Col %= field.Cols()
+		if pos.Col < 0 {
+			pos.Col += field.Cols()
+		}
+		return pos
+	}
+	outEdges := func(pos fld.Pos) []graphs.OutEdge[fld.Pos] {
+		var edges []graphs.OutEdge[fld.Pos]
+		for _, dir := range fld.DirsSimple {
+			npos := pos.Add(dir)
+			if field.Get(normPos(npos)) != '#' {
+				edges = append(edges, graphs.OutEdge[fld.Pos]{To: npos, Cost: 1})
+			}
+		}
+		return edges
+	}
+	ans := 0
+	paths := graphs.DijkstraHeap(start, outEdges, &steps)
+	for _, path := range paths {
+		must.LessOrEqual(path.MinCost, steps)
+		if (path.MinCost+steps)%2 == 0 {
+			ans++
+		}
+	}
+	return ans
+}
+
+func CountReachableInfiniteSmart(lines []string, steps int) int {
+	field := fld.NewByteField(lines)
+	start := field.FindFirst('S')
 	// 26501365: 65 steps to reach all 4 edges.
 	// 26501300 / 131 = 202300 tiles are reachable in 4 directions, adjacent tiles has different parity.
 
@@ -76,9 +135,7 @@ func SolvePart2(lines []string) any {
 	size := field.Cols()
 	must.Equal(size, field.Rows())
 	// steps := size/2 + size*10
-	const steps = 26501365
 	tiles := (steps - size/2) / size // Number of extra tiles available in one direction.
-	start := field.FindFirst('S')
 	must.Equal(start, fld.NewPos(size/2, size/2))
 	must.Equal(size, field.Rows())
 	must.Equal(size, field.Cols())
@@ -124,62 +181,8 @@ func SolvePart2(lines []string) any {
 	return ans
 }
 
-func CountReachable(field fld.ByteField, start fld.Pos, steps int) int {
-	outEdges := func(pos fld.Pos) (edges []graphs.OutEdge[fld.Pos]) {
-		for _, dir := range fld.DirsSimple {
-			npos := pos.Add(dir)
-			if field.Inside(npos) && field.Get(npos) != '#' {
-				edges = append(edges, graphs.OutEdge[fld.Pos]{To: npos, Cost: 1})
-			}
-		}
-		return edges
-	}
-	res := 0
-	for _, path := range graphs.DijkstraHeap(start, outEdges, &steps) {
-		if path.MinCost <= steps && (path.MinCost+steps)%2 == 0 {
-			res++
-		}
-	}
-	return res
-}
-
-func CountReachableInfiniteNaive(field fld.ByteField, start fld.Pos, steps int) int {
-	normPos := func(pos fld.Pos) fld.Pos {
-		pos.Row %= field.Rows()
-		if pos.Row < 0 {
-			pos.Row += field.Rows()
-		}
-		pos.Col %= field.Cols()
-		if pos.Col < 0 {
-			pos.Col += field.Cols()
-		}
-		return pos
-	}
-	outEdges := func(pos fld.Pos) []graphs.OutEdge[fld.Pos] {
-		var edges []graphs.OutEdge[fld.Pos]
-		for _, dir := range fld.DirsSimple {
-			npos := pos.Add(dir)
-			if field.Get(normPos(npos)) != '#' {
-				edges = append(edges, graphs.OutEdge[fld.Pos]{To: npos, Cost: 1})
-			}
-		}
-		return edges
-	}
-	ans := 0
-	paths := graphs.DijkstraHeap(start, outEdges, &stepsPart2)
-	for _, path := range paths {
-		must.LessOrEqual(path.MinCost, stepsPart2)
-		if path.MinCost%2 == stepsPart2%2 {
-			ans++
-		}
-	}
-	return ans
-}
-
 func SolvePart2Naive(lines []string) any {
-	field := fld.NewByteField(lines)
-	start := field.FindFirst('S')
-	return CountReachableInfiniteNaive(field, start, stepsPart2)
+	return CountReachableInfiniteNaive(lines, stepsPart2)
 }
 
 var (
