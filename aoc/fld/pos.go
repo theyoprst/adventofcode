@@ -25,6 +25,10 @@ var (
 	NorthWest = UpLeft
 	SouthEast = DownRight
 	SouthWest = DownLeft
+
+	DirsSimple = []Pos{Left, Right, Up, Down}
+	DirsDiag   = []Pos{UpRight, UpLeft, DownRight, DownLeft}
+	DirsAll    = append(DirsSimple, DirsDiag...)
 )
 
 func NewPos(row, col int) Pos {

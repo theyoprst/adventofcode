@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/fld"
 	"github.com/theyoprst/adventofcode/aoc/graphs"
@@ -12,20 +10,7 @@ import (
 func SolvePart1(lines []string) any {
 	field := fld.NewByteField(lines)
 	start := field.FindFirst('S')
-	wave := map[fld.Pos]bool{start: true}
-	for step := 0; step < 64; step++ {
-		nWave := map[fld.Pos]bool{}
-		for pos := range wave {
-			for _, dir := range []fld.Pos{fld.Left, fld.Right, fld.Up, fld.Down} {
-				npos := pos.Add(dir)
-				if field.Inside(npos) && field.Get(npos) != '#' {
-					nWave[npos] = true
-				}
-			}
-		}
-		wave = nWave
-	}
-	return len(wave)
+	return CountReachable(field, start, 64)
 }
 
 var stepsPart2 int = 26501365
@@ -88,30 +73,6 @@ func SolvePart2(lines []string) any {
 	//
 	// We need 202300 tiles in each direction (404601x404601 tiles).
 	//
-	countFrom := func(name string, start fld.Pos, maxSteps int) int {
-		resField := field.Clone()
-		outEdges := func(pos fld.Pos) []graphs.OutEdge[fld.Pos] {
-			var edges []graphs.OutEdge[fld.Pos]
-			for _, dir := range []fld.Pos{fld.Left, fld.Right, fld.Up, fld.Down} {
-				npos := pos.Add(dir)
-				if field.Inside(npos) && field.Get(npos) != '#' {
-					edges = append(edges, graphs.OutEdge[fld.Pos]{To: npos, Cost: 1})
-				}
-			}
-			return edges
-		}
-		res := 0
-		paths := graphs.DijkstraHeap(start, outEdges, &maxSteps)
-		for pos, path := range paths {
-			if path.MinCost <= maxSteps && path.MinCost%2 == maxSteps%2 {
-				res++
-				resField.Set(pos, '+')
-			}
-			resField.Set(start, 'S')
-		}
-		return res
-	}
-
 	S := field.Cols()
 	must.Equal(S, field.Rows())
 	N := S / 2
@@ -123,22 +84,22 @@ func SolvePart2(lines []string) any {
 	must.Equal(S, field.Rows())
 	must.Equal(S, field.Cols())
 	ans := 0
-	ans += countFrom("Leftmost", fld.NewPos(N, 2*N), 2*N) // Leftmost
-	ans += countFrom("Rightmost", fld.NewPos(N, 0), 2*N)  // Rightmost
-	ans += countFrom("Upmost", fld.NewPos(2*N, N), 2*N)   // Upmost
-	ans += countFrom("Downmost", fld.NewPos(0, N), 2*N)   // Downmost
+	ans += CountReachable(field, fld.NewPos(N, 2*N), 2*N) // Leftmost
+	ans += CountReachable(field, fld.NewPos(N, 0), 2*N)   // Rightmost
+	ans += CountReachable(field, fld.NewPos(2*N, N), 2*N) // Upmost
+	ans += CountReachable(field, fld.NewPos(0, N), 2*N)   // Downmost
 	// Left-Top side:
-	ans += K * countFrom("Left-Top outer", fld.NewPos(2*N, 2*N), N-1)
-	ans += (K - 1) * countFrom("Left-Top inner", fld.NewPos(2*N, 2*N), 3*N)
+	ans += K * CountReachable(field, fld.NewPos(2*N, 2*N), N-1)
+	ans += (K - 1) * CountReachable(field, fld.NewPos(2*N, 2*N), 3*N)
 	// Right-Top side:
-	ans += K * countFrom("Right-Top outer", fld.NewPos(2*N, 0), N-1)
-	ans += (K - 1) * countFrom("Right-Top inner", fld.NewPos(2*N, 0), 3*N)
+	ans += K * CountReachable(field, fld.NewPos(2*N, 0), N-1)
+	ans += (K - 1) * CountReachable(field, fld.NewPos(2*N, 0), 3*N)
 	// Left-Bottom side:
-	ans += K * countFrom("Left-Bottom outer", fld.NewPos(0, 2*N), N-1)
-	ans += (K - 1) * countFrom("Left-Bottom inner", fld.NewPos(0, 2*N), 3*N)
+	ans += K * CountReachable(field, fld.NewPos(0, 2*N), N-1)
+	ans += (K - 1) * CountReachable(field, fld.NewPos(0, 2*N), 3*N)
 	// Right-Bottom side:
-	ans += K * countFrom("Right-Bottom outer", fld.NewPos(0, 0), N-1)
-	ans += (K - 1) * countFrom("Right-Bottom inner", fld.NewPos(0, 0), 3*N)
+	ans += K * CountReachable(field, fld.NewPos(0, 0), N-1)
+	ans += (K - 1) * CountReachable(field, fld.NewPos(0, 0), 3*N)
 	// Not full tiles.
 	// There are (K-1) full tiles to each direction.
 	// k=2:
@@ -157,15 +118,32 @@ func SolvePart2(lines []string) any {
 	// Even nodes: odd - 2k + 1. even(2) = 1, even(4) = 9.
 	odds := K*(K+1)/2 + K*(K-1)/2
 	evens := odds - 2*K + 1
-	ans += evens * countFrom("evens", start, steps)
-	ans += odds * countFrom("odds", fld.NewPos(0, N), steps)
+	ans += evens * CountReachable(field, start, steps)
+	ans += odds * CountReachable(field, fld.NewPos(0, N), steps)
 	return ans
 }
 
-func SolvePart2Naive(lines []string) any {
-	field := fld.NewByteField(lines)
-	start := field.FindFirst('S')
-	getInf := func(pos fld.Pos) byte {
+func CountReachable(field fld.ByteField, start fld.Pos, steps int) int {
+	outEdges := func(pos fld.Pos) (edges []graphs.OutEdge[fld.Pos]) {
+		for _, dir := range fld.DirsSimple {
+			npos := pos.Add(dir)
+			if field.Inside(npos) && field.Get(npos) != '#' {
+				edges = append(edges, graphs.OutEdge[fld.Pos]{To: npos, Cost: 1})
+			}
+		}
+		return edges
+	}
+	res := 0
+	for _, path := range graphs.DijkstraHeap(start, outEdges, &steps) {
+		if path.MinCost <= steps && (path.MinCost+steps)%2 == 0 {
+			res++
+		}
+	}
+	return res
+}
+
+func CountReachableInfiniteNaive(field fld.ByteField, start fld.Pos, steps int) int {
+	normPos := func(pos fld.Pos) fld.Pos {
 		pos.Row %= field.Rows()
 		if pos.Row < 0 {
 			pos.Row += field.Rows()
@@ -174,31 +152,33 @@ func SolvePart2Naive(lines []string) any {
 		if pos.Col < 0 {
 			pos.Col += field.Cols()
 		}
-		return field.Get(pos)
+		return pos
 	}
-	_ = getInf
 	outEdges := func(pos fld.Pos) []graphs.OutEdge[fld.Pos] {
 		var edges []graphs.OutEdge[fld.Pos]
-		for _, dir := range []fld.Pos{fld.Left, fld.Right, fld.Up, fld.Down} {
+		for _, dir := range fld.DirsSimple {
 			npos := pos.Add(dir)
-			if getInf(npos) != '#' {
-				// if field.Inside(npos) && field.Get(npos) != '#' {
+			if field.Get(normPos(npos)) != '#' {
 				edges = append(edges, graphs.OutEdge[fld.Pos]{To: npos, Cost: 1})
 			}
 		}
 		return edges
 	}
-	ansNaive := 0
+	ans := 0
 	paths := graphs.DijkstraHeap(start, outEdges, &stepsPart2)
 	for _, path := range paths {
 		must.LessOrEqual(path.MinCost, stepsPart2)
 		if path.MinCost%2 == stepsPart2%2 {
-			ansNaive++
+			ans++
 		}
 	}
-	fmt.Println("Naive: ", ansNaive)
-	// fmt.Println(fld.ToString(field))
-	return ansNaive
+	return ans
+}
+
+func SolvePart2Naive(lines []string) any {
+	field := fld.NewByteField(lines)
+	start := field.FindFirst('S')
+	return CountReachableInfiniteNaive(field, start, stepsPart2)
 }
 
 var (

@@ -177,3 +177,8 @@ func CountBinaryOnes[T constraints.Integer](n T) int {
 	}
 	return ones
 }
+
+func MapContains[K comparable, V any](m map[K]V, k K) bool {
+	_, ok := m[k]
+	return ok
+}
