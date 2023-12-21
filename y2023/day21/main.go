@@ -134,6 +134,7 @@ func CountReachableInfiniteSmart(lines []string, steps int) int {
 	//
 	size := field.Cols()
 	must.Equal(size, field.Rows())
+	must.Equal(size%2, 1)
 	// steps := size/2 + size*10
 	tiles := (steps - size/2) / size // Number of extra tiles available in one direction.
 	must.Equal(start, fld.NewPos(size/2, size/2))
@@ -176,6 +177,9 @@ func CountReachableInfiniteSmart(lines []string, steps int) int {
 	odds := tiles * tiles
 	// evens := odds - 2*tiles + 1
 	evens := (tiles - 1) * (tiles - 1)
+	if tiles%2 == 1 {
+		odds, evens = evens, odds
+	}
 	ans += evens * CountReachable(field, start, steps)
 	ans += odds * CountReachable(field, fld.NewPos(0, size/2), steps)
 	return ans
