@@ -73,34 +73,34 @@ func SolvePart2(lines []string) any {
 	//
 	// We need 202300 tiles in each direction (404601x404601 tiles).
 	//
-	S := field.Cols()
-	must.Equal(S, field.Rows())
-	N := S / 2
-	// steps := N + S*10
+	size := field.Cols()
+	must.Equal(size, field.Rows())
+	// steps := size/2 + size*10
 	const steps = 26501365
-	K := (steps - N) / (2*N + 1)
+	tiles := (steps - size/2) / size // Number of extra tiles available in one direction.
 	start := field.FindFirst('S')
-	must.Equal(start, fld.NewPos(N, N))
-	must.Equal(S, field.Rows())
-	must.Equal(S, field.Cols())
+	must.Equal(start, fld.NewPos(size/2, size/2))
+	must.Equal(size, field.Rows())
+	must.Equal(size, field.Cols())
 	ans := 0
-	ans += CountReachable(field, fld.NewPos(N, 2*N), 2*N) // Leftmost
-	ans += CountReachable(field, fld.NewPos(N, 0), 2*N)   // Rightmost
-	ans += CountReachable(field, fld.NewPos(2*N, N), 2*N) // Upmost
-	ans += CountReachable(field, fld.NewPos(0, N), 2*N)   // Downmost
+	ans += CountReachable(field, fld.NewPos(size/2, size-1), size-1) // Leftmost
+	ans += CountReachable(field, fld.NewPos(size/2, 0), size-1)      // Rightmost
+	ans += CountReachable(field, fld.NewPos(size-1, size/2), size-1) // Upmost
+	ans += CountReachable(field, fld.NewPos(0, size/2), size-1)      // Downmost
 	// Left-Top side:
-	ans += K * CountReachable(field, fld.NewPos(2*N, 2*N), N-1)
-	ans += (K - 1) * CountReachable(field, fld.NewPos(2*N, 2*N), 3*N)
+	ans += tiles * CountReachable(field, fld.NewPos(size-1, size-1), size/2-1)
+	ans += (tiles - 1) * CountReachable(field, fld.NewPos(size-1, size-1), 3*(size/2))
 	// Right-Top side:
-	ans += K * CountReachable(field, fld.NewPos(2*N, 0), N-1)
-	ans += (K - 1) * CountReachable(field, fld.NewPos(2*N, 0), 3*N)
+	ans += tiles * CountReachable(field, fld.NewPos(size-1, 0), size/2-1)
+	ans += (tiles - 1) * CountReachable(field, fld.NewPos(size-1, 0), 3*(size/2))
 	// Left-Bottom side:
-	ans += K * CountReachable(field, fld.NewPos(0, 2*N), N-1)
-	ans += (K - 1) * CountReachable(field, fld.NewPos(0, 2*N), 3*N)
+	ans += tiles * CountReachable(field, fld.NewPos(0, size-1), size/2-1)
+	ans += (tiles - 1) * CountReachable(field, fld.NewPos(0, size-1), 3*(size/2))
 	// Right-Bottom side:
-	ans += K * CountReachable(field, fld.NewPos(0, 0), N-1)
-	ans += (K - 1) * CountReachable(field, fld.NewPos(0, 0), 3*N)
+	ans += tiles * CountReachable(field, fld.NewPos(0, 0), size/2-1)
+	ans += (tiles - 1) * CountReachable(field, fld.NewPos(0, 0), 3*(size/2))
 	// Not full tiles.
+	// K = tiles
 	// There are (K-1) full tiles to each direction.
 	// k=2:
 	//  1
@@ -116,10 +116,11 @@ func SolvePart2(lines []string) any {
 	//    1
 	// n of odds: sum(1..k) + sum(1..k-1) = k*(k+1)/2 + k*(k-1)/2. odd(2) = 4, odd(4) = 16
 	// Even nodes: odd - 2k + 1. even(2) = 1, even(4) = 9.
-	odds := K*(K+1)/2 + K*(K-1)/2
-	evens := odds - 2*K + 1
+	odds := tiles * tiles
+	// evens := odds - 2*tiles + 1
+	evens := (tiles - 1) * (tiles - 1)
 	ans += evens * CountReachable(field, start, steps)
-	ans += odds * CountReachable(field, fld.NewPos(0, N), steps)
+	ans += odds * CountReachable(field, fld.NewPos(0, size/2), steps)
 	return ans
 }
 
