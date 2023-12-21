@@ -18,13 +18,16 @@ type MinPath[V comparable] struct {
 // DijkstraHeap has time complexity O(E*log(V)) which is perfect for sparse graphs like planar graphs, e.g. E=O(V).
 // If graph is dense, i.e. E=O(V^2), it has complexity O(V^2 log(V)) which is not perfect and implementation with
 // naive priority queue should be used. Although for advent of code puzzles it should be OK.
-func DijkstraHeap[V comparable](startV V, outEdges func(v V) []OutEdge[V]) map[V]MinPath[V] {
+func DijkstraHeap[V comparable](startV V, outEdges func(v V) []OutEdge[V], maxCost *int) map[V]MinPath[V] {
 	pq := queues.NewPriorityQueue[V, int]()
 	pq.Insert(startV, 0)
 	res := map[V]MinPath[V]{}
 	from := map[V]V{}
 	for pq.Len() > 0 {
 		minV, cost := pq.PopMin()
+		if maxCost != nil && cost > *maxCost {
+			return res
+		}
 		res[minV] = MinPath[V]{
 			MinCost: cost,
 			Prev:    from[minV],

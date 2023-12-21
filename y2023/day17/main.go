@@ -59,7 +59,7 @@ func SolveGeneric(lines []string, minSteps, maxSteps int) any {
 		return edges
 	}
 
-	minPaths := graphs.DijkstraHeap(Vertex{steps: minSteps}, outEdges)
+	minPaths := graphs.DijkstraHeap(Vertex{steps: minSteps}, outEdges, nil)
 
 	ans := math.MaxInt
 	var minV Vertex
