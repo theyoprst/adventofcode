@@ -15,7 +15,7 @@ func SolvePart1(lines []string) any {
 	return CountReachable(field, start, 64)
 }
 
-var stepsPart2 int = 26501365
+var stepsPart2 = 26501365
 
 func SolvePart2(lines []string) any {
 	return CountReachableInfiniteSmart(lines, stepsPart2)
