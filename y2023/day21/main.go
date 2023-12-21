@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/fld"
 	"github.com/theyoprst/adventofcode/aoc/graphs"
@@ -189,9 +191,44 @@ func SolvePart2Naive(lines []string) any {
 	return CountReachableInfiniteNaive(lines, stepsPart2)
 }
 
+func SolvePart2Quadratic(lines []string) any {
+	return CountReachableInfiniteQuadratic(lines, stepsPart2)
+}
+
+func CountReachableInfiniteQuadratic(lines []string, steps int) int {
+	field := fld.NewByteField(lines)
+	start := field.FindFirst('S')
+	size := field.Rows()
+	factor := 5
+	for row, line := range field {
+		field[row] = bytes.Repeat(line, factor)
+	}
+	for i := 1; i < factor; i++ {
+		field = append(field, field[:size]...)
+	}
+	start = start.Add(fld.NewPos((factor/2)*size, (factor/2)*size))
+	// Assume that it's quadratic polynom:
+	// count(t*size + size/2) = a*t*t + b*t + c
+	p0 := CountReachable(field, start, size/2)
+	p1 := CountReachable(field, start, 3*size/2)
+	p2 := CountReachable(field, start, 5*size/2)
+	c := p0
+	a := (p0 - 2*p1 + p2) / 2
+	b := p1 - p0 - a
+	predict := func(t int) int {
+		return a*t*t + b*t + c
+	}
+	// fmt.Println(CountReachable(field, start, size/2), predict(0))
+	// fmt.Println(CountReachable(field, start, size+size/2), predict(1))
+	// fmt.Println(CountReachable(field, start, 2*size+size/2), predict(2))
+	// fmt.Println(CountReachable(field, start, 3*size+size/2), predict(3))
+	// fmt.Println(CountReachable(field, start, 4*size+size/2), predict(4))
+	return predict(steps / size)
+}
+
 var (
 	solvers1 []aoc.Solver = []aoc.Solver{SolvePart1}
-	solvers2 []aoc.Solver = []aoc.Solver{SolvePart2}
+	solvers2 []aoc.Solver = []aoc.Solver{SolvePart2, SolvePart2Quadratic}
 )
 
 func main() {

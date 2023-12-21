@@ -47,8 +47,12 @@ func TestCmpWithNaive(t *testing.T) {
 				t.Run(fmt.Sprintf("steps=%d", steps), func(t *testing.T) {
 					naiveAns := CountReachableInfiniteNaive(lines, steps)
 					smartAns := CountReachableInfiniteSmart(lines, steps)
+					quadraticAns := CountReachableInfiniteQuadratic(lines, steps)
 					if naiveAns != smartAns {
 						t.Errorf("Answers mismatch: naive: %d, smart: %d", naiveAns, smartAns)
+					}
+					if naiveAns != quadraticAns {
+						t.Errorf("Answers mismatch: naive: %d, quadratic: %d", naiveAns, quadraticAns)
 					}
 				})
 			}
