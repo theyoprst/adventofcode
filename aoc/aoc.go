@@ -96,15 +96,6 @@ func MapSortedValues[K comparable, V cmp.Ordered](m map[K]V) []V {
 	return vv
 }
 
-func MapSortedKeys[K cmp.Ordered, V any](m map[K]V) []K {
-	kk := make([]K, 0, len(m))
-	for k := range m {
-		kk = append(kk, k)
-	}
-	slices.Sort(kk)
-	return kk
-}
-
 // Greates Common Divisor.
 func GCD(a ...int) int {
 	res := a[0]
