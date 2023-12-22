@@ -16,23 +16,24 @@ type Point2D struct {
 }
 
 type Brick struct {
-	first, last Point3D
-	below       map[int]bool
-	above       map[int]bool
+	first Point3D
+	last  Point3D
+	below map[int]bool
+	above map[int]bool
 }
 
 func SolvePart1(lines []string) any {
 	bricks := parseAndFallBricks(lines)
 
-	important := map[int]bool{}
+	supporting := map[int]bool{}
 	for _, brick := range bricks {
 		if len(brick.below) == 1 {
 			for belowI := range brick.below {
-				important[belowI] = true
+				supporting[belowI] = true
 			}
 		}
 	}
-	return len(bricks) - len(important)
+	return len(bricks) - len(supporting)
 }
 
 func SolvePart2(lines []string) any {
