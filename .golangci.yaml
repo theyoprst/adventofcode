@@ -30,10 +30,11 @@ linters:
     # Forces to put `.` at the end of the comment. Code is poetry.
     - godot
 
-    # Might not be that important but I prefer to keep all of them.
+    # Formatting and imports.
     - gofmt
     - gofumpt
     - goimports
+    - gci
 
     # Allow or ban replace directives in go.mod
     # or force explanation for retract directives.
@@ -117,7 +118,13 @@ linters:
     # Not relevant to this repository (don't need performance optimization).
     - prealloc
 
-issues:
+linters-settings:
+  gci:
+    sections:
+      - standard                       
+      - default                        
+      - prefix(github.com/theyoprst/adventofcode)
+
   exclude-rules:
     - path: day\d+
       linters:
