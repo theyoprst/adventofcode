@@ -210,8 +210,8 @@ func SolveByCompression(commands []Command) any {
 }
 
 var (
-	solvers1 []aoc.Solver = []aoc.Solver{SolvePart1, SolvePart1ByCompression, SolvePart1Gauss}
-	solvers2 []aoc.Solver = []aoc.Solver{SolvePart2, SolvePart2Gauss}
+	solvers1 = []aoc.Solver{SolvePart1, SolvePart1ByCompression, SolvePart1Gauss}
+	solvers2 = []aoc.Solver{SolvePart2, SolvePart2Gauss}
 )
 
 func main() {

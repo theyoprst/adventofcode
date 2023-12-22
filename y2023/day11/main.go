@@ -107,12 +107,12 @@ func solveGenericPartSum(lines []string, expandFactor int) int {
 	return ans
 }
 
-var solversPart1 []aoc.Solver = []aoc.Solver{
+var solversPart1 = []aoc.Solver{
 	SolvePart1,
 	SolvePart1Naive,
 }
 
-var solversPart2 []aoc.Solver = []aoc.Solver{
+var solversPart2 = []aoc.Solver{
 	SolvePart2,
 	SolvePart2Naive,
 }

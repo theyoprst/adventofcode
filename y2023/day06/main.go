@@ -72,8 +72,8 @@ func ParseSplittedInt(s string) int {
 }
 
 var (
-	solvers1 []aoc.Solver = []aoc.Solver{SolvePart1, SolvePart1Fast}
-	solvers2 []aoc.Solver = []aoc.Solver{SolvePart2, SolvePart2Fast}
+	solvers1 = []aoc.Solver{SolvePart1, SolvePart1Fast}
+	solvers2 = []aoc.Solver{SolvePart2, SolvePart2Fast}
 )
 
 func main() {

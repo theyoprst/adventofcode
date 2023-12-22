@@ -69,11 +69,11 @@ func SolveGeneric(lines []string, dup int) int {
 	return ans
 }
 
-var solversPart1 []aoc.Solver = []aoc.Solver{
+var solversPart1 = []aoc.Solver{
 	SolvePart1,
 }
 
-var solversPart2 []aoc.Solver = []aoc.Solver{
+var solversPart2 = []aoc.Solver{
 	SolvePart2,
 }
 

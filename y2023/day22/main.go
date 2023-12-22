@@ -121,8 +121,8 @@ func parseAndFallBricks(lines []string) []Brick {
 }
 
 var (
-	solvers1 []aoc.Solver = []aoc.Solver{SolvePart1}
-	solvers2 []aoc.Solver = []aoc.Solver{SolvePart2}
+	solvers1 = []aoc.Solver{SolvePart1}
+	solvers2 = []aoc.Solver{SolvePart2}
 )
 
 func main() {

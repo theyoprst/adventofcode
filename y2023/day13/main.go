@@ -101,12 +101,12 @@ func SolvePart2Transponse(lines []string) any {
 	return ans
 }
 
-var solversPart1 []aoc.Solver = []aoc.Solver{
+var solversPart1 = []aoc.Solver{
 	SolvePart1,
 	SolvePart1Transponse,
 }
 
-var solversPart2 []aoc.Solver = []aoc.Solver{
+var solversPart2 = []aoc.Solver{
 	SolvePart2,
 	SolvePart2Transponse,
 }

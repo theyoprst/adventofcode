@@ -15,8 +15,8 @@ func SolvePart2(lines []string) any {
 }
 
 var (
-	solvers1 []aoc.Solver = []aoc.Solver{SolvePart1}
-	solvers2 []aoc.Solver = []aoc.Solver{SolvePart2}
+	solvers1 = []aoc.Solver{SolvePart1}
+	solvers2 = []aoc.Solver{SolvePart2}
 )
 
 func main() {

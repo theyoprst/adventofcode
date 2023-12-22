@@ -227,8 +227,8 @@ func CountReachableInfiniteQuadratic(lines []string, steps int) int {
 }
 
 var (
-	solvers1 []aoc.Solver = []aoc.Solver{SolvePart1}
-	solvers2 []aoc.Solver = []aoc.Solver{SolvePart2, SolvePart2Quadratic}
+	solvers1 = []aoc.Solver{SolvePart1}
+	solvers2 = []aoc.Solver{SolvePart2, SolvePart2Quadratic}
 )
 
 func main() {

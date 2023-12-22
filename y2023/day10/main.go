@@ -104,11 +104,11 @@ func SolvePart2(lines []string) any {
 	return ans2
 }
 
-var solversPart1 []aoc.Solver = []aoc.Solver{
+var solversPart1 = []aoc.Solver{
 	SolvePart1,
 }
 
-var solversPart2 []aoc.Solver = []aoc.Solver{
+var solversPart2 = []aoc.Solver{
 	SolvePart2,
 	// TODO: try Shoelace formula and Pick's theorem: https://www.reddit.com/r/adventofcode/comments/18evyu9/comment/kcqu687/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
 }
