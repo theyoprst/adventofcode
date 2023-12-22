@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/theyoprst/adventofcode/aoc"
+	"github.com/theyoprst/adventofcode/aoc/containers"
 	"github.com/theyoprst/adventofcode/aoc/fld"
 )
 
@@ -42,19 +43,19 @@ func CountEnergized(field fld.ByteField, start, startDir fld.Pos) int {
 	type State struct {
 		p, dir fld.Pos
 	}
-	seen := map[State]bool{}
-	seenPoints := map[fld.Pos]bool{}
+	seen := containers.NewSet[State]()
+	seenPoints := containers.NewSet[fld.Pos]()
 	var dfs func(p, dir fld.Pos)
 	dfs = func(p, dir fld.Pos) {
 		if !field.Inside(p) {
 			return
 		}
-		if seen[State{p, dir}] {
+		if seen.Has(State{p, dir}) {
 			return
 		}
-		seen[State{p, dir}] = true
+		seen.Add(State{p, dir})
 		ch := field.Get(p)
-		seenPoints[p] = true
+		seenPoints.Add(p)
 
 		for _, ndir := range Map[ch][dir] {
 			np := p.Add(ndir)
