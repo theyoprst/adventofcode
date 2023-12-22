@@ -2,8 +2,10 @@ package containers
 
 type Set[K comparable] map[K]struct{}
 
-func NewSet[K comparable]() Set[K] {
-	return Set[K]{}
+func NewSet[K comparable](keys ...K) Set[K] {
+	s := Set[K]{}
+	s.Add(keys...)
+	return s
 }
 
 func (s Set[K]) Has(key K) bool {
@@ -11,8 +13,10 @@ func (s Set[K]) Has(key K) bool {
 	return ok
 }
 
-func (s Set[K]) Add(key K) {
-	s[key] = struct{}{}
+func (s Set[K]) Add(keys ...K) {
+	for _, key := range keys {
+		s[key] = struct{}{}
+	}
 }
 
 func (s Set[K]) Any() K {
@@ -20,4 +24,12 @@ func (s Set[K]) Any() K {
 		return key
 	}
 	panic("No values in the set")
+}
+
+func (s Set[K]) Slice() []K {
+	slice := make([]K, 0, len(s))
+	for key := range s {
+		slice = append(slice, key)
+	}
+	return slice
 }

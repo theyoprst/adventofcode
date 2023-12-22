@@ -1,7 +1,10 @@
 package main
 
 import (
+	"slices"
+
 	"github.com/theyoprst/adventofcode/aoc"
+	"github.com/theyoprst/adventofcode/aoc/containers"
 	"github.com/theyoprst/adventofcode/aoc/fld"
 	"github.com/theyoprst/adventofcode/must"
 )
@@ -141,22 +144,18 @@ func GetStartAndSize(commands []Command) (start fld.Pos, rows, cols int) {
 
 func SolveByCompression(commands []Command) any {
 	pos, _, _ := GetStartAndSize(commands)
-	rowSet := map[int]bool{
-		pos.Row: true,
-	}
-	colSet := map[int]bool{
-		pos.Col: true,
-	}
+	rowSet := containers.NewSet[int](pos.Row)
+	colSet := containers.NewSet[int](pos.Col)
 	for _, cmd := range commands {
 		pos = pos.Add(cmd.dir.Mult(cmd.steps))
-		rowSet[pos.Row] = true
-		rowSet[pos.Row+1] = true
-		colSet[pos.Col] = true
-		colSet[pos.Col+1] = true
+		rowSet.Add(pos.Row, pos.Row+1)
+		colSet.Add(pos.Col, pos.Col+1)
 	}
 
-	rowVals := aoc.MapSortedKeys(rowSet)
-	colVals := aoc.MapSortedKeys(colSet)
+	rowVals := rowSet.Slice()
+	colVals := colSet.Slice()
+	slices.Sort(rowVals)
+	slices.Sort(colVals)
 
 	rows := len(rowVals) - 1
 	cols := len(colVals) - 1
