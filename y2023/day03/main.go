@@ -1,9 +1,8 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/theyoprst/adventofcode/aoc"
+	"github.com/theyoprst/adventofcode/aoc/containers"
 	"github.com/theyoprst/adventofcode/aoc/fld"
 )
 
@@ -17,7 +16,7 @@ func Solve(lines []string) (ans1, ans2 int) {
 	for i, row := range field {
 		isN := false
 		isAdj := false
-		gears := map[Point]bool{}
+		gears := containers.NewSet[Point]()
 		var n int
 		for j, ch := range row {
 			if aoc.IsDigit(ch) {
@@ -30,7 +29,7 @@ func Solve(lines []string) (ans1, ans2 int) {
 							isAdj = true
 						}
 						if ch == '*' {
-							gears[Point{ni, nj}] = true
+							gears.Add(Point{ni, nj})
 						}
 					}
 				}
@@ -70,8 +69,11 @@ func SolvePart2(lines []string) any {
 	return ans2
 }
 
+var (
+	solvers1 = []aoc.Solver{SolvePart1}
+	solvers2 = []aoc.Solver{SolvePart2}
+)
+
 func main() {
-	ans1, ans2 := Solve(aoc.ReadInputLines())
-	fmt.Println("Part 1:", ans1)
-	fmt.Println("Part 2:", ans2)
+	aoc.Main(solvers1, solvers2)
 }
