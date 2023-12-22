@@ -7,20 +7,16 @@ import (
 	"github.com/theyoprst/adventofcode/must"
 )
 
-type Point3 struct {
+type Point3D struct {
 	x, y, z int
 }
 
-type Point2 struct {
+type Point2D struct {
 	x, y int
 }
 
 type Brick struct {
-	first, last Point3
-}
-
-type Brick2 struct {
-	first, last Point3
+	first, last Point3D
 	below       map[int]bool
 	above       map[int]bool
 }
@@ -31,8 +27,8 @@ func SolvePart1(lines []string) any {
 	important := map[int]bool{}
 	for _, brick := range bricks {
 		if len(brick.below) == 1 {
-			for brickI := range brick.below {
-				important[brickI] = true
+			for belowI := range brick.below {
+				important[belowI] = true
 			}
 		}
 	}
@@ -40,180 +36,86 @@ func SolvePart1(lines []string) any {
 }
 
 func SolvePart2(lines []string) any {
-	var bricks []Brick
-	type TopItem struct {
-		z     int
-		brick int
-	}
-	bottom := Brick{
-		first: Point3{0, 0, 0},
-		last:  Point3{0, 0, 0},
-	}
-	top := map[Point2]TopItem{}
+	bricks := parseAndFallBricks(lines)
 
-	for _, line := range lines {
-		nn := aoc.Ints(line)
-		brick := Brick{
-			first: Point3{x: nn[0], y: nn[1], z: nn[2]},
-			last:  Point3{x: nn[3], y: nn[4], z: nn[5]},
-		}
-		bricks = append(bricks, brick)
-		must.LessOrEqual(brick.first.x, brick.last.x)
-		bottom.first.x = min(bottom.first.x, brick.first.x)
-		bottom.last.x = max(bottom.last.x, brick.last.x)
-		bottom.first.y = min(bottom.first.y, brick.first.y)
-		bottom.last.y = max(bottom.last.y, brick.last.y)
-	}
-	bricks = append(bricks, bottom)
-	slices.SortFunc(bricks, func(a, b Brick) int {
-		return a.first.z - b.first.z
-	})
-	g := map[int]map[int]bool{0: {}}
-	below := map[int]map[int]bool{}
-	above := map[int]map[int]bool{0: {}}
-	for i := 1; i < len(bricks); i++ {
-		brick := bricks[i]
-		maxZ := 0
-		for x := brick.first.x; x <= brick.last.x; x++ {
-			for y := brick.first.y; y <= brick.last.y; y++ {
-				maxZ = max(maxZ, top[Point2{x, y}].z)
-			}
-		}
-		must.Less(maxZ, brick.first.z)
-		diff := brick.first.z - (maxZ + 1)
-		brick.first.z -= diff
-		brick.last.z -= diff
-		bricks[i] = brick
-		g[i] = map[int]bool{}
-		below[i] = map[int]bool{}
-		above[i] = map[int]bool{}
-		for x := brick.first.x; x <= brick.last.x; x++ {
-			for y := brick.first.y; y <= brick.last.y; y++ {
-				before := top[Point2{x, y}]
-				now := TopItem{
-					z:     brick.last.z,
-					brick: i,
-				}
-				top[Point2{x, y}] = now
-				if brick.first.z == before.z+1 {
-					g[before.brick][i] = true
-					g[i][before.brick] = true
-					below[i][before.brick] = true
-					above[before.brick][i] = true
-				}
-			}
-		}
-	}
-	timer := 0
-	seen := map[int]bool{}
-	tin := map[int]int{}
-	fup := map[int]int{}
-	cutpoints := map[int]bool{}
-	var dfs func(i int, prev int)
-	dfs = func(cur int, prev int) {
-		timer++
-		seen[cur] = true
-		tin[cur] = timer
-		fup[cur] = timer
-		children := 0
-		for to := range g[cur] {
-			if to == prev {
-				continue
-			}
-			if seen[to] {
-				fup[cur] = min(fup[cur], tin[to])
-			} else {
-				dfs(to, cur)
-				fup[cur] = min(fup[cur], fup[to])
-				if fup[to] >= tin[cur] && prev != -1 {
-					cutpoints[cur] = true
-				}
-				children++
-			}
-		}
-		if prev == -1 && children > 1 {
-			cutpoints[cur] = true
-		}
-	}
-	dfs(0, -1)
-	// return len(bricks) - len(cutpoints) - 1
-
-	var removed int
-	var dfs2 func(cur int)
-	var seen2 map[int]bool
-	dfs2 = func(cur int) {
-		if seen2[cur] || cur == removed {
+	var removedI int
+	var dfs func(curI int)
+	var seen map[int]bool
+	dfs = func(curI int) {
+		if seen[curI] || curI == removedI {
 			return
 		}
-		seen2[cur] = true
-		for next := range above[cur] {
-			dfs2(next)
+		seen[curI] = true
+		for nextI := range bricks[curI].above {
+			dfs(nextI)
 		}
 	}
 	ans := 0
-	for removed = 1; removed < len(bricks); removed++ {
-		seen2 = map[int]bool{}
-		dfs2(0)
-		if len(seen2) < len(bricks)-1 {
-			ans += len(bricks) - 1 - len(seen2)
-		}
+	for removedI = 1; removedI < len(bricks); removedI++ {
+		seen = map[int]bool{}
+		dfs(0)
+		// All the bricks which are reachable from the ground plus removed one are not falling.
+		// All the rest are falling.
+		ans += len(bricks) - 1 - len(seen)
 	}
 	return ans
 }
 
-func parseAndFallBricks(lines []string) []Brick2 {
-	bricks := []Brick2{
+func parseAndFallBricks(lines []string) []Brick {
+	bricks := []Brick{
 		{above: map[int]bool{}}, // Append virtual brick for the group first.
 	}
 	type TopItem struct {
-		z     int
-		brick int
+		z      int
+		brickI int
 	}
-	top := map[Point2]TopItem{}
+	topView := map[Point2D]TopItem{}
 
 	for _, line := range lines {
 		nn := aoc.Ints(line)
-		brick := Brick2{
-			first: Point3{x: nn[0], y: nn[1], z: nn[2]},
-			last:  Point3{x: nn[3], y: nn[4], z: nn[5]},
+		brick := Brick{
+			first: Point3D{x: nn[0], y: nn[1], z: nn[2]},
+			last:  Point3D{x: nn[3], y: nn[4], z: nn[5]},
 			below: map[int]bool{},
 			above: map[int]bool{},
 		}
 		bricks = append(bricks, brick)
 		must.LessOrEqual(brick.first.x, brick.last.x)
 	}
-	slices.SortFunc(bricks, func(a, b Brick2) int {
+	slices.SortFunc(bricks, func(a, b Brick) int {
 		return a.first.z - b.first.z
 	})
 
 	// Fall
-	for i := 1; i < len(bricks); i++ { // Skip i=0 which is ground.
-		brick := bricks[i]
+	for brickI := 1; brickI < len(bricks); brickI++ { // Skip brickI=0 which is ground.
+		brick := bricks[brickI]
 		maxZ := 0
 		for x := brick.first.x; x <= brick.last.x; x++ {
 			for y := brick.first.y; y <= brick.last.y; y++ {
-				maxZ = max(maxZ, top[Point2{x, y}].z)
+				maxZ = max(maxZ, topView[Point2D{x, y}].z)
 			}
 		}
 		must.Less(maxZ, brick.first.z)
 		diff := brick.first.z - (maxZ + 1)
 		brick.first.z -= diff
 		brick.last.z -= diff
+
+		// Update top view and find bricks below the current one.
+		now := TopItem{
+			z:      brick.last.z,
+			brickI: brickI,
+		}
 		for x := brick.first.x; x <= brick.last.x; x++ {
 			for y := brick.first.y; y <= brick.last.y; y++ {
-				before := top[Point2{x, y}]
-				now := TopItem{
-					z:     brick.last.z,
-					brick: i,
-				}
-				top[Point2{x, y}] = now
+				before := topView[Point2D{x, y}]
+				topView[Point2D{x, y}] = now
 				if brick.first.z == before.z+1 {
-					brick.below[before.brick] = true
-					bricks[before.brick].above[i] = true
+					brick.below[before.brickI] = true
+					bricks[before.brickI].above[brickI] = true
 				}
 			}
 		}
-		bricks[i] = brick
+		bricks[brickI] = brick
 	}
 	return bricks
 }
