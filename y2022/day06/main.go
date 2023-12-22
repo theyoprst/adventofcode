@@ -6,6 +6,7 @@ import (
 	"slices"
 
 	"github.com/theyoprst/adventofcode/aoc"
+	"github.com/theyoprst/adventofcode/aoc/containers"
 )
 
 func SolveGeneric(lines []string, limit int) []int {
@@ -13,7 +14,7 @@ func SolveGeneric(lines []string, limit int) []int {
 	for _, line := range lines {
 		for i := limit; i < len(line); i++ {
 			sub := []byte(line[i-limit : i])
-			if len(aoc.ToSet(sub)) == len(sub) {
+			if len(containers.NewSet[byte](sub...)) == len(sub) {
 				res = append(res, i)
 				break
 			}

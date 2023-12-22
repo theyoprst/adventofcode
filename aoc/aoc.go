@@ -142,14 +142,6 @@ func Reversed[S ~[]E, E any](a S) []E {
 	return r
 }
 
-func ToSet[S ~[]E, E comparable](a S) map[E]bool {
-	set := map[E]bool{}
-	for _, x := range a {
-		set[x] = true
-	}
-	return set
-}
-
 func Abs[T constraints.Signed | constraints.Float](a T) T {
 	if a < 0 {
 		return -a

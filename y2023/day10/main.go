@@ -4,17 +4,18 @@ import (
 	"bytes"
 
 	"github.com/theyoprst/adventofcode/aoc"
+	"github.com/theyoprst/adventofcode/aoc/containers"
 	"github.com/theyoprst/adventofcode/aoc/fld"
 )
 
-var Dirs map[byte]map[fld.Pos]bool = map[byte]map[fld.Pos]bool{
-	'S': aoc.ToSet([]fld.Pos{fld.North, fld.South, fld.East, fld.West}),
-	'|': aoc.ToSet([]fld.Pos{fld.North, fld.South}),
-	'-': aoc.ToSet([]fld.Pos{fld.East, fld.West}),
-	'L': aoc.ToSet([]fld.Pos{fld.East, fld.North}),
-	'J': aoc.ToSet([]fld.Pos{fld.West, fld.North}),
-	'7': aoc.ToSet([]fld.Pos{fld.South, fld.West}),
-	'F': aoc.ToSet([]fld.Pos{fld.South, fld.East}),
+var Dirs map[byte]containers.Set[fld.Pos] = map[byte]containers.Set[fld.Pos]{
+	'S': containers.NewSet[fld.Pos](fld.North, fld.South, fld.East, fld.West),
+	'|': containers.NewSet[fld.Pos](fld.North, fld.South),
+	'-': containers.NewSet[fld.Pos](fld.East, fld.West),
+	'L': containers.NewSet[fld.Pos](fld.East, fld.North),
+	'J': containers.NewSet[fld.Pos](fld.West, fld.North),
+	'7': containers.NewSet[fld.Pos](fld.South, fld.West),
+	'F': containers.NewSet[fld.Pos](fld.South, fld.East),
 }
 
 func SolvePart1(lines []string) any {
@@ -29,7 +30,7 @@ func SolvePart1(lines []string) any {
 		for dir := range Dirs[ch] {
 			rev := dir.Mult(-1)
 			np := p.Add(dir)
-			if dir != noway && Dirs[f[np.Row][np.Col]][rev] {
+			if dir != noway && Dirs[f[np.Row][np.Col]].Has(rev) {
 				p = np
 				noway = rev
 				break
@@ -64,7 +65,7 @@ func SolvePart2(lines []string) any {
 			rev := dir.Mult(-1)
 			np := p.Add(dir)
 			np2 := p.Add(dir.Mult(2))
-			if dir != noway && Dirs[f[np2.Row][np2.Col]][rev] {
+			if dir != noway && Dirs[f[np2.Row][np2.Col]].Has(rev) {
 				p = np2
 				f.Set(np, 'S')
 				noway = rev
