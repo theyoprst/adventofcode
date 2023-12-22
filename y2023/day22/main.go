@@ -4,6 +4,7 @@ import (
 	"slices"
 
 	"github.com/theyoprst/adventofcode/aoc"
+	"github.com/theyoprst/adventofcode/aoc/containers"
 	"github.com/theyoprst/adventofcode/must"
 )
 
@@ -18,19 +19,17 @@ type Point2D struct {
 type Brick struct {
 	first Point3D
 	last  Point3D
-	below map[int]bool
-	above map[int]bool
+	below containers.Set[int]
+	above containers.Set[int]
 }
 
 func SolvePart1(lines []string) any {
 	bricks := parseAndFallBricks(lines)
 
-	supporting := map[int]bool{}
+	supporting := containers.NewSet[int]()
 	for _, brick := range bricks {
 		if len(brick.below) == 1 {
-			for belowI := range brick.below {
-				supporting[belowI] = true
-			}
+			supporting.Add(brick.below.Any())
 		}
 	}
 	return len(bricks) - len(supporting)
@@ -41,19 +40,19 @@ func SolvePart2(lines []string) any {
 
 	var removedI int
 	var dfs func(curI int)
-	var seen map[int]bool
+	var seen containers.Set[int]
 	dfs = func(curI int) {
-		if seen[curI] || curI == removedI {
+		if seen.Has(curI) || curI == removedI {
 			return
 		}
-		seen[curI] = true
+		seen.Add(curI)
 		for nextI := range bricks[curI].above {
 			dfs(nextI)
 		}
 	}
 	ans := 0
 	for removedI = 1; removedI < len(bricks); removedI++ {
-		seen = map[int]bool{}
+		seen = containers.NewSet[int]()
 		dfs(0)
 		// All the bricks which are reachable from the ground plus removed one are not falling.
 		// All the rest are falling.
@@ -64,7 +63,7 @@ func SolvePart2(lines []string) any {
 
 func parseAndFallBricks(lines []string) []Brick {
 	bricks := []Brick{
-		{above: map[int]bool{}}, // Append virtual brick for the group first.
+		{above: containers.NewSet[int]()}, // Append virtual brick for the group first.
 	}
 	type TopItem struct {
 		z      int
@@ -77,8 +76,8 @@ func parseAndFallBricks(lines []string) []Brick {
 		brick := Brick{
 			first: Point3D{x: nn[0], y: nn[1], z: nn[2]},
 			last:  Point3D{x: nn[3], y: nn[4], z: nn[5]},
-			below: map[int]bool{},
-			above: map[int]bool{},
+			below: containers.NewSet[int](),
+			above: containers.NewSet[int](),
 		}
 		bricks = append(bricks, brick)
 		must.LessOrEqual(brick.first.x, brick.last.x)
@@ -111,8 +110,8 @@ func parseAndFallBricks(lines []string) []Brick {
 				before := topView[Point2D{x, y}]
 				topView[Point2D{x, y}] = now
 				if brick.first.z == before.z+1 {
-					brick.below[before.brickI] = true
-					bricks[before.brickI].above[brickI] = true
+					brick.below.Add(before.brickI)
+					bricks[before.brickI].above.Add(brickI)
 				}
 			}
 		}
