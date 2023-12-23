@@ -37,6 +37,8 @@ func SolvePart1BruteForce(lines []string) any {
 
 func SolvePart1(lines []string) any {
 	field := fld.NewByteField(lines)
+
+	// Remove forbidden directions, make DFS-based topsort.
 	var topsort []fld.Pos
 	var dfs func(p fld.Pos)
 	seen := containers.NewSet[fld.Pos]()
@@ -57,43 +59,29 @@ func SolvePart1(lines []string) any {
 	startPos := fld.NewPos(0, 1)
 	dfs(startPos)
 	slices.Reverse(topsort)
-	// fmt.Println(topsort)
 
 	dp := map[fld.Pos]int{startPos: 0}
-	prevs := map[fld.Pos]fld.Pos{}
-	for i := 1; i < len(topsort); i++ { // skip start point
+	for i := 1; i < len(topsort); i++ { // Skip startPos.
 		cur := topsort[i]
 		must.True(field.Inside(cur))
 		maxLen := -1
-		var from fld.Pos
 		for _, dir := range fld.DirsSimple {
 			prev := cur.Add(dir)
 			if !field.Inside(prev) {
 				continue
 			}
 			for _, dir := range dirsPart1(field, prev) {
-				if prev.Add(dir) == cur {
+				if prev.Add(dir) == cur { // Only look at cells from which current cell is reachable.
 					if val, ok := dp[prev]; ok && val > maxLen {
 						maxLen = val
-						from = prev
 					}
 					break
 				}
 			}
 		}
 		dp[cur] = maxLen + 1
-		prevs[cur] = from
-		// fmt.Println(cur, dp[cur])
 	}
 	finishPos := fld.NewPos(field.Rows()-1, field.Cols()-2)
-	pos := finishPos
-	for pos != startPos {
-		// fmt.Println(pos)
-		field.Set(pos, 'O')
-		pos = prevs[pos]
-	}
-	field.Set(startPos, 'S')
-	// fmt.Println(fld.ToString(field))
 	return dp[finishPos]
 }
 
