@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"slices"
 
 	"github.com/theyoprst/adventofcode/aoc"
@@ -90,7 +91,7 @@ func SolvePart2(lines []string) any {
 	startPos := fld.NewPos(0, 1)
 	finishPos := fld.NewPos(field.Rows()-1, field.Cols()-2)
 
-	crossroads := containers.NewSet[fld.Pos](startPos, finishPos)
+	junctions := containers.NewSet[fld.Pos](startPos, finishPos)
 	for row, line := range field {
 		for col, ch := range line {
 			pos := fld.NewPos(row, col)
@@ -105,7 +106,7 @@ func SolvePart2(lines []string) any {
 				}
 			}
 			if count > 2 {
-				crossroads.Add(pos)
+				junctions.Add(pos)
 			}
 		}
 	}
@@ -114,31 +115,51 @@ func SolvePart2(lines []string) any {
 		dist int
 	}
 	seen := containers.NewSet[fld.Pos]()
-	var adjCrossroads func(pos fld.Pos, dist int) []PosDist
-	adjCrossroads = func(pos fld.Pos, dist int) []PosDist {
+	var adjJunctions func(pos fld.Pos, dist int) []PosDist
+	adjJunctions = func(pos fld.Pos, dist int) []PosDist {
 		seen.Add(pos)
 		var res []PosDist
 		for _, dir := range fld.DirsSimple {
 			npos := pos.Add(dir)
 			if field.Inside(npos) && field.Get(npos) != '#' && !seen.Has(npos) {
-				if crossroads.Has(npos) {
+				if junctions.Has(npos) {
 					// Memoize the connection and stop.
 					res = append(res, PosDist{pos: npos, dist: dist + 1})
 				} else {
-					res = append(res, adjCrossroads(npos, dist+1)...)
+					res = append(res, adjJunctions(npos, dist+1)...)
 				}
 			}
 		}
 		return res
 	}
 	g := map[fld.Pos][]PosDist{}
-	for first := range crossroads {
+	for first := range junctions {
 		clear(seen)
-		g[first] = adjCrossroads(first, 0)
-		// fmt.Println("Crossroad:", first, " Adjacents:", g[first])
+		g[first] = adjJunctions(first, 0)
+		fmt.Println(first, g[first])
 	}
-	// fmt.Printf("%v\n", g)
 
+	// startPos and finishPos have only one neighbour, change them to speed up brute force.
+	saveDist := 0
+	removeSinglePath := func(cur fld.Pos) fld.Pos {
+		for len(g[cur]) == 1 {
+			saveDist += g[cur][0].dist
+			next := g[cur][0].pos
+			for i, pd := range g[next] {
+				if pd.pos == cur {
+					g[next] = slices.Delete(g[next], i, i+1)
+					break
+				}
+			}
+			cur = next
+		}
+		return cur
+	}
+
+	startPos = removeSinglePath(startPos)
+	finishPos = removeSinglePath(finishPos)
+
+	// Now brute-force on junctions graphs.
 	clear(seen)
 	maxDist := 0
 	var dfs func(cur fld.Pos, dist int)
@@ -147,7 +168,6 @@ func SolvePart2(lines []string) any {
 		if cur == finishPos {
 			if dist > maxDist {
 				maxDist = dist
-				// fmt.Print(dist, " ")
 			}
 		} else {
 			for _, next := range g[cur] {
@@ -159,9 +179,8 @@ func SolvePart2(lines []string) any {
 		seen.Remove(cur)
 	}
 	dfs(startPos, 0)
-	// fmt.Println()
 
-	return maxDist
+	return saveDist + maxDist
 }
 
 func dirsPart1(field fld.ByteField, p fld.Pos) []fld.Pos {
