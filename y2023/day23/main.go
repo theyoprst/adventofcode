@@ -9,35 +9,47 @@ import (
 	"github.com/theyoprst/adventofcode/must"
 )
 
+func SolvePart1BruteForce(lines []string) any {
+	field := fld.NewByteField(lines)
+	startPos := fld.NewPos(0, 1)
+	finishPos := fld.NewPos(field.Rows()-1, field.Cols()-2)
+
+	seen := containers.NewSet[fld.Pos]()
+	var maxPathDFS func(cur fld.Pos, dist int) int
+	maxPathDFS = func(cur fld.Pos, dist int) int {
+		seen.Add(cur)
+		defer seen.Remove(cur)
+		if cur == finishPos {
+			return dist
+		}
+		maxPath := -1
+		for _, dir := range dirsPart1(field, cur) {
+			next := cur.Add(dir)
+			if field.Inside(next) && field.Get(next) != '#' && !seen.Has(next) {
+				maxPath = max(maxPath, maxPathDFS(next, dist+1))
+			}
+		}
+		return maxPath
+	}
+
+	return maxPathDFS(startPos, 0)
+}
+
 func SolvePart1(lines []string) any {
 	field := fld.NewByteField(lines)
 	var topsort []fld.Pos
 	var dfs func(p fld.Pos)
 	seen := containers.NewSet[fld.Pos]()
-	getDirs := func(p fld.Pos) []fld.Pos {
-		var dirs []fld.Pos
-		switch field.Get(p) {
-		case '.':
-			dirs = fld.DirsSimple
-		case '>':
-			dirs = []fld.Pos{fld.Right}
-		case 'v':
-			dirs = []fld.Pos{fld.Down}
-		case '#':
-			dirs = nil
-		default:
-			panic(string(field.Get(p)))
-		}
-		return dirs
-	}
 	dfs = func(p fld.Pos) {
 		seen.Add(p)
-		for _, dir := range getDirs(p) {
+		for _, dir := range dirsPart1(field, p) {
 			np := p.Add(dir)
 			if field.Inside(np) && field.Get(np) != '#' && !seen.Has(np) {
-				if !slices.Equal(getDirs(np), []fld.Pos{dir.Reverse()}) {
-					dfs(np)
+				// Hack: forbid moving to `>` from the right and to `v` from the bottom.
+				if field.Get(np) == '>' && dir == fld.Left || field.Get(np) == 'v' && dir == fld.Up {
+					continue
 				}
+				dfs(np)
 			}
 		}
 		topsort = append(topsort, p)
@@ -59,7 +71,7 @@ func SolvePart1(lines []string) any {
 			if !field.Inside(prev) {
 				continue
 			}
-			for _, dir := range getDirs(prev) {
+			for _, dir := range dirsPart1(field, prev) {
 				if prev.Add(dir) == cur {
 					if val, ok := dp[prev]; ok && val > maxLen {
 						maxLen = val
@@ -164,8 +176,25 @@ func SolvePart2(lines []string) any {
 	return maxDist
 }
 
+func dirsPart1(field fld.ByteField, p fld.Pos) []fld.Pos {
+	var dirs []fld.Pos
+	switch field.Get(p) {
+	case '.':
+		dirs = fld.DirsSimple
+	case '>':
+		dirs = []fld.Pos{fld.Right}
+	case 'v':
+		dirs = []fld.Pos{fld.Down}
+	case '#':
+		dirs = nil
+	default:
+		panic(string(field.Get(p)))
+	}
+	return dirs
+}
+
 var (
-	solvers1 = []aoc.Solver{SolvePart1}
+	solvers1 = []aoc.Solver{SolvePart1, SolvePart1BruteForce}
 	solvers2 = []aoc.Solver{SolvePart2}
 )
 
