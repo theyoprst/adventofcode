@@ -19,6 +19,12 @@ func (s Set[K]) Add(keys ...K) {
 	}
 }
 
+func (s Set[K]) Remove(keys ...K) {
+	for _, key := range keys {
+		delete(s, key)
+	}
+}
+
 func (s Set[K]) Any() K {
 	for key := range s {
 		return key

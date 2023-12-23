@@ -48,6 +48,12 @@ func Equal[T comparable](got, target T) {
 	}
 }
 
+func True(b bool) {
+	if !b {
+		panic("Contition is false, want true")
+	}
+}
+
 func NotEqual[T comparable](got, target T) {
 	if got == target {
 		panic(fmt.Sprintf("Got %v, want not equal to %v", got, target))

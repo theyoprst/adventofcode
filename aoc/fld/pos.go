@@ -49,3 +49,7 @@ func (p Pos) Mult(mult int) Pos {
 	p.Col *= mult
 	return p
 }
+
+func (p Pos) Reverse() Pos {
+	return p.Mult(-1)
+}
