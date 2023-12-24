@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 
 	"github.com/theyoprst/adventofcode/aoc"
@@ -76,6 +75,10 @@ type Vector3D struct {
 	x, y, z float64
 }
 
+type Vector3DInt struct {
+	x, y, z int
+}
+
 func (v Vector3D) Scalar(u Vector3D) float64 {
 	return v.x*u.x + v.y*u.y + v.z*u.z
 }
@@ -101,6 +104,14 @@ func (v Vector3D) Sub(u Vector3D) Vector3D {
 		x: v.x - u.x,
 		y: v.y - u.y,
 		z: v.z - u.z,
+	}
+}
+
+func (v Vector3D) Round() Vector3DInt {
+	return Vector3DInt{
+		x: int(math.Round(v.x)),
+		y: int(math.Round(v.y)),
+		z: int(math.Round(v.z)),
 	}
 }
 
@@ -202,18 +213,10 @@ func SolvePart2(lines []string) any {
 	a[5], b[5] = []float64{a3.y, -a3.x, 0, b3.y, -b3.x, 0}, c3.z
 
 	SolveLinearSystem(a, b)
-	v0 := Vector3D{
-		x: math.Round(b[0]),
-		y: math.Round(b[1]),
-		z: math.Round(b[2]),
-	}
-	p0 := Vector3D{
-		x: math.Round(b[3]),
-		y: math.Round(b[4]),
-		z: math.Round(b[5]),
-	}
-	fmt.Printf("Found p=%v, v=%v\n", p0, v0)
-	return int(math.Round((p0.x + p0.y + p0.z)))
+	// v0 := Vector3D{x: b[0], y: b[1], z: b[2]}.Round()
+	p0 := Vector3D{x: b[3], y: b[4], z: b[5]}.Round()
+	// fmt.Printf("Found p=%v, v=%v\n", p0, v0)
+	return p0.x + p0.y + p0.z
 }
 
 var (
