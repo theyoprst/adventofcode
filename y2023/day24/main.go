@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 
 	"github.com/theyoprst/adventofcode/aoc"
@@ -103,6 +104,44 @@ func (v Vector3D) Sub(u Vector3D) Vector3D {
 	}
 }
 
+// Solve linear system nxn:
+//
+// a[0][0]*x[0] + a[0][1]*x[1] + ... + a[0][n-1]*x[n-1] = b[0]
+// a[1][0]*x[0] + a[1][1]*x[1] + ... + a[1][n-1]*x[n-1] = b[1]
+// ...
+// a[n-1][0]*x[0] + a[n-1][1]*x[1] + ... + a[n-1][n-1]*x[n-1] = b[n-1]
+//
+// Result vector will be in `b`.
+func SolveLinearSystem(a [][]float64, b []float64) {
+	n := len(a)
+	for v := 0; v < n-1; v++ {
+		for u := v; u < n; u++ {
+			if a[u][v] != 0 {
+				a[v], a[u] = a[u], a[v]
+				b[v], b[u] = b[u], b[v]
+				break
+			}
+		}
+		for row := v + 1; row < n; row++ {
+			k := a[row][v] / a[v][v]
+			for col := v; col < len(a[row]); col++ {
+				a[row][col] -= k * a[v][col]
+			}
+			b[row] -= k * b[v]
+		}
+	}
+
+	for row := n - 1; row >= 0; row-- {
+		b[row] /= a[row][row]
+		a[row][row] = 1.0
+		val := b[row]
+		for up := row - 1; up >= 0; up-- {
+			b[up] -= val * a[up][row]
+			a[up][row] = 0
+		}
+	}
+}
+
 func SolvePart2(lines []string) any {
 	var p []Vector3D
 	var v []Vector3D
@@ -146,49 +185,35 @@ func SolvePart2(lines []string) any {
 	c2 := p1.Cross(v1).Sub(p2.Cross(v2))
 	c3 := p1.Cross(v1).Sub(p3.Cross(v3))
 
+	// TODO: there is a simple vector solution:
+	// https://www.reddit.com/r/adventofcode/comments/18pnycy/comment/kepu26z/?utm_source=share&utm_medium=web2x&context=3
+
 	// Order in the system: v.x, v.y, v.z, p.x, p.y, p.z
-	system := [][]float64{
-		// x: v.y * ai.z - v.z * ai.y + p.y * bi.z - p.z * bi.y = ci.x
-		{0, a2.z, -a2.y, 0, b2.z, -b2.y, c2.x},
-		{0, a3.z, -a3.y, 0, b3.z, -b3.y, c3.x},
-		// y: v.z * ai.x - v.x * ai.z + p.z * bi.x - p.x * bi.z = ci.y
-		{-a2.z, 0, a2.x, -b2.z, 0, b2.x, c2.y},
-		{-a3.z, 0, a3.x, -b3.z, 0, b3.x, c3.y},
-		// z: v.x * ai.y - v.y * ai.x + p.x * bi.y - p.y * bi.x = ci.z
-		{a2.y, -a2.x, 0, b2.y, -b2.x, 0, c2.z},
-		{a3.y, -a3.x, 0, b3.y, -b3.x, 0, c3.z},
-	}
-	for v := 0; v < len(system)-1; v++ {
-		for u := v; u < len(system); u++ {
-			if system[u][v] != 0 {
-				system[v], system[u] = system[u], system[v]
-				break
-			}
-		}
-		for row := v + 1; row < len(system); row++ {
-			k := system[row][v] / system[v][v]
-			for col := v; col < len(system[row]); col++ {
-				system[row][col] -= k * system[v][col]
-			}
-		}
-	}
+	a := make([][]float64, 6)
+	b := make([]float64, 6)
+	// x: v.y * ai.z - v.z * ai.y + p.y * bi.z - p.z * bi.y = ci.x
+	a[0], b[0] = []float64{0, a2.z, -a2.y, 0, b2.z, -b2.y}, c2.x
+	a[1], b[1] = []float64{0, a3.z, -a3.y, 0, b3.z, -b3.y}, c3.x
+	// y: v.z * ai.x - v.x * ai.z + p.z * bi.x - p.x * bi.z = ci.y
+	a[2], b[2] = []float64{-a2.z, 0, a2.x, -b2.z, 0, b2.x}, c2.y
+	a[3], b[3] = []float64{-a3.z, 0, a3.x, -b3.z, 0, b3.x}, c3.y
+	// z: v.x * ai.y - v.y * ai.x + p.x * bi.y - p.y * bi.x = ci.z
+	a[4], b[4] = []float64{a2.y, -a2.x, 0, b2.y, -b2.x, 0}, c2.z
+	a[5], b[5] = []float64{a3.y, -a3.x, 0, b3.y, -b3.x, 0}, c3.z
 
-	lastCol := len(system)
-	for row := len(system) - 1; row >= 0; row-- {
-		system[row][lastCol] /= system[row][row]
-		system[row][row] = 1.0
-		val := system[row][lastCol]
-		for up := row - 1; up >= 0; up-- {
-			system[up][lastCol] -= val * system[up][row]
-			system[up][row] = 0
-		}
+	SolveLinearSystem(a, b)
+	v0 := Vector3D{
+		x: math.Round(b[0]),
+		y: math.Round(b[1]),
+		z: math.Round(b[2]),
 	}
-
-	var sol []float64
-	for _, line := range system {
-		sol = append(sol, math.Round(line[lastCol]))
+	p0 := Vector3D{
+		x: math.Round(b[3]),
+		y: math.Round(b[4]),
+		z: math.Round(b[5]),
 	}
-	return int(sol[3] + sol[4] + sol[5])
+	fmt.Printf("Found p=%v, v=%v\n", p0, v0)
+	return int(math.Round((p0.x + p0.y + p0.z)))
 }
 
 var (
