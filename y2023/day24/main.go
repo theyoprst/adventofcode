@@ -115,17 +115,18 @@ func (v Vector3D) Round() Vector3DInt {
 	}
 }
 
-// Solve linear system nxn:
+// Solve linear system nxn, i.e. finds vector x satifsying these conditions:
 //
 // a[0][0]*x[0] + a[0][1]*x[1] + ... + a[0][n-1]*x[n-1] = b[0]
 // a[1][0]*x[0] + a[1][1]*x[1] + ... + a[1][n-1]*x[n-1] = b[1]
 // ...
 // a[n-1][0]*x[0] + a[n-1][1]*x[1] + ... + a[n-1][n-1]*x[n-1] = b[n-1]
 //
-// Result vector will be in `b`.
+// Result vector for x will be in `b`.
 func SolveLinearSystem(a [][]float64, b []float64) {
 	n := len(a)
 	for v := 0; v < n-1; v++ {
+		// Ensure that diag element [v][v] is nonzero, do swap if needed.
 		for u := v; u < n; u++ {
 			if a[u][v] != 0 {
 				a[v], a[u] = a[u], a[v]
@@ -133,6 +134,7 @@ func SolveLinearSystem(a [][]float64, b []float64) {
 				break
 			}
 		}
+		// Now zero all the elements in v-th column below v-th row.
 		for row := v + 1; row < n; row++ {
 			k := a[row][v] / a[v][v]
 			for col := v; col < len(a[row]); col++ {
@@ -142,6 +144,7 @@ func SolveLinearSystem(a [][]float64, b []float64) {
 		}
 	}
 
+	// Now zero all the elements wich are not in the main diagonal.
 	for row := n - 1; row >= 0; row-- {
 		b[row] /= a[row][row]
 		a[row][row] = 1.0
