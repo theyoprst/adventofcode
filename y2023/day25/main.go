@@ -83,6 +83,7 @@ func SolvePart1FFA(lines []string) any {
 
 	const maxFlow = 3
 
+	var c1, c2 int
 	for t = range graph {
 		if t == s {
 			continue
@@ -100,17 +101,92 @@ func SolvePart1FFA(lines []string) any {
 		}
 		if flowSize == maxFlow {
 			// Found max flow and min cut.
-			reachable := len(seen)
-			notReachable := len(graph) - reachable
-			log.Printf("Found two components: %d, %d", reachable, notReachable)
-			return reachable * notReachable
+			c1 = len(seen)
+			c2 = len(graph) - c1
+			break
 		}
 	}
-	panic("Impossible")
+	log.Printf("Found two components: %d, %d", c1, c2)
+	return c1 * c2
+}
+
+// Same as FFA, but BFS instead of DFS was used. 20% faster than FFA because a more short paths are chosen.
+func SolvePart1EdmondsKarp(lines []string) any {
+	type Edge struct{ from, to string }
+	cap := map[Edge]int{}
+	graph := map[string]containers.Set[string]{}
+	for _, line := range lines {
+		first, rest := must.Split2(line, ": ")
+		seconds := strings.Split(rest, " ")
+		for _, second := range seconds {
+			cap[Edge{first, second}] = 1
+			cap[Edge{second, first}] = 1
+			graph[first] = graph[first].Add(second)
+			graph[second] = graph[second].Add(first)
+		}
+	}
+
+	var s string // source node
+	for v := range graph {
+		s = v
+		break
+	}
+	const maxFlow = 3
+
+	var c1, c2 int
+	for t := range graph { // Sink node.
+		if t == s {
+			continue
+		}
+		log.Printf("Checking max flow from %q to %q", s, t)
+
+		// Run Edmunds-Karp.
+		flow := map[Edge]int{}
+		flowSize := 0
+		var prev map[string]string
+		for flowSize <= maxFlow { // Early exit if flow is too large, i.e. bigger than 3.
+			// Run BFS.
+			prev = map[string]string{s: ""}
+			queue := []string{s}
+			for prev[t] == "" && len(queue) > 0 {
+				cur := queue[0]
+				queue = queue[1:]
+
+				for next := range graph[cur] {
+					edge := Edge{cur, next}
+					if next != s && prev[next] == "" && cap[edge] > flow[edge] {
+						prev[next] = cur
+						queue = append(queue, next)
+					}
+				}
+			}
+			if prev[t] == "" {
+				break // No augmented path found by the BFS.
+			}
+			minResidualCap := math.MaxInt
+			for v := t; v != s; v = prev[v] {
+				edge := Edge{prev[v], v}
+				minResidualCap = min(minResidualCap, cap[edge]-flow[edge])
+			}
+			for v := t; v != s; v = prev[v] {
+				flow[Edge{prev[v], v}] += minResidualCap
+				flow[Edge{v, prev[v]}] -= minResidualCap
+			}
+			flowSize += minResidualCap
+		}
+		if flowSize == maxFlow {
+			// Found max flow and min cut.
+			c1 = len(prev)
+			c2 = len(graph) - c1
+			break
+		}
+	}
+	log.Printf("Found two components: %d, %d", c1, c2)
+	return c1 * c2
 }
 
 var (
-	solvers1 = []aoc.Solver{SolvePart1FFA}
+	solvers1 = []aoc.Solver{SolvePart1FFA, SolvePart1EdmondsKarp}
 	solvers2 = []aoc.Solver{}
 )
 
