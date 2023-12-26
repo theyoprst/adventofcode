@@ -13,10 +13,14 @@ func (s Set[K]) Has(key K) bool {
 	return ok
 }
 
-func (s Set[K]) Add(keys ...K) {
+func (s Set[K]) Add(keys ...K) Set[K] {
+	if s == nil {
+		s = NewSet[K]()
+	}
 	for _, key := range keys {
 		s[key] = struct{}{}
 	}
+	return s
 }
 
 func (s Set[K]) Remove(keys ...K) {
