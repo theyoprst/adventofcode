@@ -46,16 +46,19 @@ func SolvePart1FFA(lines []string) any {
 			graph[second] = graph[second].Add(first)
 		}
 	}
-	var s string
+
+	var s string // source node
 	for v := range graph {
 		s = v
 		break
 	}
+	var t string // sink node
+
 	flow := map[Edge]int{}
 	seen := containers.NewSet[string]()
-	var t string
-	var dfs func(v string, inc int) int
-	dfs = func(v string, curMin int) int {
+
+	var dfsFFA func(v string, inc int) int
+	dfsFFA = func(v string, curMin int) int {
 		if seen.Has(v) {
 			return 0
 		}
@@ -67,7 +70,7 @@ func SolvePart1FFA(lines []string) any {
 			edge := Edge{v, u}
 			residualCap := cap[edge] - flow[edge]
 			if residualCap > 0 {
-				totalMin := dfs(u, min(curMin, residualCap))
+				totalMin := dfsFFA(u, min(curMin, residualCap))
 				if totalMin > 0 {
 					flow[edge] += totalMin
 					flow[Edge{u, v}] -= totalMin
@@ -77,7 +80,9 @@ func SolvePart1FFA(lines []string) any {
 		}
 		return 0
 	}
+
 	const maxFlow = 3
+
 	for t = range graph {
 		if t == s {
 			continue
@@ -85,26 +90,23 @@ func SolvePart1FFA(lines []string) any {
 		log.Printf("Checking max flow from %q to %q", s, t)
 		flowSize := 0
 		clear(flow)
-		for {
+		for flowSize <= maxFlow {
 			clear(seen)
-			dFlow := dfs(s, math.MaxInt)
+			dFlow := dfsFFA(s, math.MaxInt)
 			if dFlow == 0 {
 				break
 			}
 			flowSize += dFlow
-			if flowSize > maxFlow {
-				break
-			}
 		}
 		if flowSize == maxFlow {
 			// Found max flow and min cut.
-			sLen := len(seen)
-			tLen := len(graph) - sLen
-			log.Printf("Found two components: %d, %d", sLen, tLen)
-			return sLen * tLen
+			reachable := len(seen)
+			notReachable := len(graph) - reachable
+			log.Printf("Found two components: %d, %d", reachable, notReachable)
+			return reachable * notReachable
 		}
 	}
-	panic("Unreachable")
+	panic("Impossible")
 }
 
 var (
