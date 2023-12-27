@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -19,15 +20,9 @@ func SolvePart1(lines []string) any {
 func SolvePart2(lines []string) any {
 	ans := 0
 	for _, s := range lines {
-		s = strings.ReplaceAll(s, "one", "o1e")
-		s = strings.ReplaceAll(s, "two", "t2o")
-		s = strings.ReplaceAll(s, "three", "t3e")
-		s = strings.ReplaceAll(s, "four", "f4r")
-		s = strings.ReplaceAll(s, "five", "f5e")
-		s = strings.ReplaceAll(s, "six", "s6x")
-		s = strings.ReplaceAll(s, "seven", "s7n")
-		s = strings.ReplaceAll(s, "eight", "e8t")
-		s = strings.ReplaceAll(s, "nine", "n9e")
+		for i, word := range []string{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"} {
+			s = strings.ReplaceAll(s, word, fmt.Sprintf("%s%d%s", word, i+1, word))
+		}
 		ans += s2i(s)
 	}
 	return ans
