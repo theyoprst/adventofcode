@@ -1,11 +1,10 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	"os"
+	"log"
 	"strings"
 
+	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
 
@@ -13,7 +12,40 @@ type Handful struct {
 	r, g, b int
 }
 
+func union(hh []Handful) Handful {
+	var res Handful
+	for _, h := range hh {
+		res.r = max(res.r, h.r)
+		res.g = max(res.g, h.g)
+		res.b = max(res.b, h.b)
+	}
+	return res
+}
+
+func SolvePart1(lines []string) any {
+	var ans int
+	for gameI, line := range lines {
+		handfuls := parseGame(line)
+		u := union(handfuls)
+		if u.r <= 12 && u.g <= 13 && u.b <= 14 {
+			ans += gameI + 1
+		}
+	}
+	return ans
+}
+
+func SolvePart2(lines []string) any {
+	var ans int
+	for _, line := range lines {
+		handfuls := parseGame(line)
+		u := union(handfuls)
+		ans += u.r * u.b * u.g
+	}
+	return ans
+}
+
 func parseGame(game string) []Handful {
+	_, game = must.Split2(game, ":")
 	var handfuls []Handful
 	for _, try := range strings.Split(game, ";") {
 		var handful Handful
@@ -21,8 +53,6 @@ func parseGame(game string) []Handful {
 			colorN = strings.TrimSpace(colorN)
 			nStr, color := must.Split2(colorN, " ")
 			n := must.Atoi(nStr)
-			must.Greater(n, 0)
-			must.Less(n, 100000)
 			switch color {
 			case "red":
 				must.Equal(handful.r, 0)
@@ -42,39 +72,12 @@ func parseGame(game string) []Handful {
 	return handfuls
 }
 
-func isPossible(hh []Handful) bool {
-	for _, h := range hh {
-		if h.r > 12 || h.g > 13 || h.b > 14 {
-			return false
-		}
-	}
-	return true
-}
-
-func union(hh []Handful) Handful {
-	var res Handful
-	for _, h := range hh {
-		res.r = max(res.r, h.r)
-		res.g = max(res.g, h.g)
-		res.b = max(res.b, h.b)
-	}
-	return res
-}
+var (
+	solvers1 = []aoc.Solver{SolvePart1}
+	solvers2 = []aoc.Solver{SolvePart2}
+)
 
 func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Split(bufio.ScanLines)
-	var sum1, sum2 int
-	for scanner.Scan() {
-		line := must.RemovePrefix(scanner.Text(), "Game ")
-		gameI, game := must.Split2(line, ":")
-		handfuls := parseGame(game)
-		if isPossible(handfuls) {
-			sum1 += must.Atoi(gameI)
-		}
-		u := union(handfuls)
-		sum2 += u.r * u.b * u.g
-	}
-	fmt.Println("Ans1:", sum1)
-	fmt.Println("Ans2:", sum2)
+	log.SetFlags(0)
+	aoc.Main(solvers1, solvers2)
 }
