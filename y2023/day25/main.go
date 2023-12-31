@@ -10,6 +10,11 @@ import (
 	"github.com/theyoprst/adventofcode/must"
 )
 
+const (
+	maxFlow   = 3
+	checkAllT = false // Check all t instead of early exit when found some s/t cut of size 3.
+)
+
 // General considerations:
 // We know that minimum cut of that graph is 3 (otherwise we would have more than 1 answer which is not common in AOC).
 // And we need to find this cut, at least we need sizes of two vertices sets.
@@ -103,7 +108,9 @@ func SolvePart1FFA(lines []string) any {
 			// Found max flow and min cut.
 			c1 = len(seen)
 			c2 = len(graph) - c1
-			break
+			if !checkAllT {
+				break
+			}
 		}
 	}
 	log.Printf("Found two components: %d, %d", c1, c2)
@@ -126,12 +133,7 @@ func SolvePart1EdmondsKarp(lines []string) any {
 		}
 	}
 
-	var s string // source node
-	for v := range graph {
-		s = v
-		break
-	}
-	const maxFlow = 3
+	s := anyKey(graph)
 
 	var c1, c2 int
 	for t := range graph { // Sink node.
@@ -178,15 +180,140 @@ func SolvePart1EdmondsKarp(lines []string) any {
 			// Found max flow and min cut.
 			c1 = len(prev)
 			c2 = len(graph) - c1
-			break
+			if !checkAllT {
+				break
+			}
 		}
 	}
 	log.Printf("Found two components: %d, %d", c1, c2)
 	return c1 * c2
 }
 
+type Edge struct {
+	from, to string
+}
+
+func (e Edge) Reversed() Edge {
+	return Edge{from: e.to, to: e.from}
+}
+
+// For some reason it's 5 times slower than Edmonds-Karp if check all sink nodes t.
+// Maybe because BFS finds t on average much more faster than traversing all the graph for building layered network.
+func SolvePart1Dinic(lines []string) any {
+	cap := map[Edge]int{}
+	graph := map[string]containers.Set[string]{}
+	for _, line := range lines {
+		first, rest := must.Split2(line, ": ")
+		seconds := strings.Split(rest, " ")
+		for _, second := range seconds {
+			cap[Edge{first, second}] = 1
+			cap[Edge{second, first}] = 1
+			graph[first] = graph[first].Add(second)
+			graph[second] = graph[second].Add(first)
+		}
+	}
+
+	var comp1, comp2 int
+
+	const inf = 1000000000
+
+	s := anyKey(graph)
+	for t := range graph {
+		flow := map[Edge]int{}
+		flowVal := 0
+		if t == s {
+			continue
+		}
+	phase:
+		for {
+			// Find minimal distance to each vertex.
+			dist := map[string]int{}
+			for v := range graph {
+				dist[v] = inf
+			}
+			dist[s] = 0
+			reachable := 1
+			queue := []string{s}
+			for len(queue) > 0 {
+				cur := queue[0]
+				queue = queue[1:]
+				for next := range graph[cur] {
+					edge := Edge{cur, next}
+					if flow[edge] < cap[edge] && dist[next] == inf {
+						dist[next] = dist[cur] + 1
+						queue = append(queue, next)
+						reachable++
+					}
+				}
+			}
+			if dist[t] == inf { // If t is not reachable, exit from phases loop.
+				if flowVal == maxFlow {
+					comp1 = reachable
+					comp2 = len(graph) - comp1
+				}
+				break phase
+			}
+			// Build layered network.
+			next := map[string][]string{}
+			for u := range graph {
+				for v := range graph[u] {
+					if dist[u]+1 == dist[v] {
+						next[u] = append(next[u], v)
+					}
+				}
+			}
+
+			// Find paths in layered network
+			var dfs func(string, int) int
+			dfs = func(v string, curMin int) int { // Returns added flow value.
+				if curMin == 0 {
+					return 0
+				}
+				if v == t {
+					return curMin
+				}
+				for len(next[v]) > 0 {
+					u := next[v][0]
+					edge := Edge{v, u}
+					totalMin := dfs(u, min(curMin, cap[edge]-flow[edge]))
+					if totalMin == 0 {
+						next[v] = next[v][1:]
+						continue
+					}
+					flow[edge] += totalMin
+					flow[edge.Reversed()] -= totalMin
+					return totalMin
+				}
+				return 0
+			}
+
+			for {
+				diff := dfs(s, math.MaxInt)
+				if diff == 0 {
+					continue phase
+				}
+				flowVal += diff
+				if flowVal > maxFlow {
+					break phase
+				}
+			}
+		} // Phase.
+		if flowVal == maxFlow && !checkAllT {
+			break
+		}
+	} // Iterate over t.
+	return comp1 * comp2
+}
+
+func anyKey[K comparable, V any](m map[K]V) K {
+	for k := range m {
+		return k
+	}
+	panic("map is empty")
+}
+
 var (
-	solvers1 = []aoc.Solver{SolvePart1FFA, SolvePart1EdmondsKarp}
+	solvers1 = []aoc.Solver{SolvePart1FFA, SolvePart1EdmondsKarp, SolvePart1Dinic}
 	solvers2 = []aoc.Solver{}
 )
 
