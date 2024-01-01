@@ -1,14 +1,62 @@
-// 6:00 - 6:12 - 6:40
 package main
 
 import (
-	"fmt"
+	"log"
 	"slices"
 	"strings"
 
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
+
+func SolvePart1(lines []string) any {
+	var ans int
+	for _, line := range lines {
+		_, line = must.Split2(line, ":")
+		winsStr, haveStr := must.Split2(line, "|")
+		wins := aoc.Ints(strings.TrimSpace(winsStr))
+		have := aoc.Ints(strings.TrimSpace(haveStr))
+		k := len(intersect(wins, have))
+		if k > 0 {
+			ans += 1 << (k - 1)
+		}
+	}
+	return ans
+}
+
+func SolvePart2(lines []string) any {
+	var ans int
+	copies := map[int]int{}
+	for i, line := range lines {
+		_, line = must.Split2(line, ":")
+		winsStr, haveStr := must.Split2(line, "|")
+		wins := aoc.Ints(strings.TrimSpace(winsStr))
+		have := aoc.Ints(strings.TrimSpace(haveStr))
+		k := len(intersect(wins, have))
+		copies[i]++
+		ans += copies[i]
+		for j := 0; j < k; j++ {
+			copies[i+j+1] += copies[i]
+		}
+	}
+	return ans
+}
+
+func SolvePart2SegmentTree(lines []string) any {
+	var ans int
+	tree := NewSTree(len(lines))
+	tree.Inc(0, len(lines), 1)
+	for i, line := range lines {
+		_, line = must.Split2(line, ":")
+		winsStr, haveStr := must.Split2(line, "|")
+		wins := aoc.Ints(strings.TrimSpace(winsStr))
+		have := aoc.Ints(strings.TrimSpace(haveStr))
+		k := len(intersect(wins, have))
+		ans += tree.Get(i)
+		tree.Inc(i+1, min(i+k+1, len(lines)), tree.Get(i))
+	}
+	return ans
+}
 
 type STree struct {
 	n int
@@ -57,30 +105,12 @@ func intersect(a, b []int) []int {
 	return res
 }
 
+var (
+	solvers1 = []aoc.Solver{SolvePart1}
+	solvers2 = []aoc.Solver{SolvePart2, SolvePart2SegmentTree}
+)
+
 func main() {
-	var ans1, ans2, ans2V2 int
-	lines := aoc.ReadInputLines()
-	copies := map[int]int{}
-	tree := NewSTree(len(lines))
-	tree.Inc(0, len(lines), 1)
-	for i, line := range lines {
-		_, line = must.Split2(line, ":")
-		winsStr, haveStr := must.Split2(line, "|")
-		wins := aoc.Ints(strings.TrimSpace(winsStr))
-		have := aoc.Ints(strings.TrimSpace(haveStr))
-		k := len(intersect(wins, have))
-		copies[i]++
-		ans2 += copies[i]
-		ans2V2 += tree.Get(i)
-		if k > 0 {
-			ans1 += 1 << (k - 1)
-		}
-		for j := 0; j < k; j++ {
-			copies[i+j+1] += copies[i]
-		}
-		tree.Inc(i+1, min(i+k+1, len(lines)), tree.Get(i))
-	}
-	fmt.Println("Part 1:", ans1)
-	fmt.Println("Part 2:", ans2)
-	fmt.Println("Part 2 v2:", ans2V2)
+	log.SetFlags(0)
+	aoc.Main(solvers1, solvers2)
 }
