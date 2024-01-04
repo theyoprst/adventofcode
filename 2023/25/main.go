@@ -7,6 +7,7 @@ import (
 
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/containers"
+	"github.com/theyoprst/adventofcode/aoc/queues"
 	"github.com/theyoprst/adventofcode/must"
 )
 
@@ -305,6 +306,74 @@ func SolvePart1Dinic(lines []string) any {
 	return comp1 * comp2
 }
 
+// Stoer-Wagner algorithm: O(V) phases, each O(E log V) by using binary heap queue.
+// Total complexity: O(V E log V).
+// To find minimal cut = 3 it has to reduce graph by 80%, there is (probably) no way to reduce it.
+// The slowest solution for this problem.
+func SolveStoerWagner(lines []string) any {
+	graph := map[string]map[string]int{}
+	for _, line := range lines {
+		first, rest := must.Split2(line, ": ")
+		seconds := strings.Split(rest, " ")
+		if _, ok := graph[first]; !ok {
+			graph[first] = map[string]int{}
+		}
+		for _, second := range seconds {
+			graph[first][second] = 1
+			if _, ok := graph[second]; !ok {
+				graph[second] = map[string]int{}
+			}
+			graph[second][first] = 1
+		}
+	}
+	n := len(graph)
+
+	merged := map[string][]string{}
+	for v := range graph {
+		merged[v] = []string{v}
+	}
+	for len(graph) >= 2 { // phase: found s and t
+		a := containers.NewSet[string]()
+		queue := queues.NewPriorityQueue[string, int]()
+		for v := range graph {
+			queue.Insert(v, 0)
+		}
+		prev := ""
+		for i := 0; i < len(graph)-1; i++ {
+			sel, _ := queue.PopMin()
+			must.NotEqual(sel, "")
+			a.Add(sel)
+			for v, cap := range graph[sel] {
+				if queue.Has(v) {
+					queue.Inc(v, -cap)
+				}
+			}
+			prev = sel
+		}
+		sel, minusW := queue.PopMin()
+		must.NotEqual(sel, "")
+		must.Equal(queue.Len(), 0)
+		if minusW == -3 {
+			comp1 := len(merged[sel])
+			comp2 := n - comp1
+			log.Printf("Found components: %d * %d after %d (max=%d) iterations", comp1, comp2, n-len(graph)+1, n-1)
+			return comp1 * comp2
+		}
+		// Merge sel and prev
+		must.NotEqual(sel, prev)
+		for v, cap := range graph[prev] {
+			if v != sel {
+				graph[sel][v] += cap
+				graph[v][sel] += cap
+			}
+			delete(graph[v], prev)
+		}
+		delete(graph, prev)
+		merged[sel] = append(merged[sel], merged[prev]...)
+	} // phase
+	panic("unreachable")
+}
+
 func anyKey[K comparable, V any](m map[K]V) K {
 	for k := range m {
 		return k
@@ -313,7 +382,7 @@ func anyKey[K comparable, V any](m map[K]V) K {
 }
 
 var (
-	solvers1 = []aoc.Solver{SolvePart1FFA, SolvePart1EdmondsKarp, SolvePart1Dinic}
+	solvers1 = []aoc.Solver{SolvePart1FFA, SolvePart1EdmondsKarp, SolvePart1Dinic, SolveStoerWagner}
 	solvers2 = []aoc.Solver{}
 )
 

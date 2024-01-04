@@ -69,6 +69,16 @@ func (q *PriorityQueue[T, P]) Lookup(item T) (index int, priority P) {
 	return index, q.items[index].priority
 }
 
+func (q *PriorityQueue[T, P]) Has(item T) bool {
+	_, has := q.lookup[item]
+	return has
+}
+
+func (q *PriorityQueue[T, P]) Inc(item T, inc P) {
+	idx, p := q.Lookup(item)
+	q.SetByIndex(idx, p+inc)
+}
+
 func (q *PriorityQueue[T, P]) SetByIndex(index int, priority P) {
 	q.items[index].priority = priority
 	q.siftUp(index)
