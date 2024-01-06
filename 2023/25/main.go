@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"math"
+	"math/rand"
 	"strings"
 
 	"github.com/theyoprst/adventofcode/aoc"
@@ -374,6 +375,57 @@ func SolveStoerWagner(lines []string) any {
 	panic("unreachable")
 }
 
+// SolveKarger uses probabilistic Karger algorithm of finding minimal global cut.
+// Disjoint Set union is used to merge vertices.
+// Single phase has time O(E), theoretical upper bound for number of phases is O(V^2).
+// But for this graph number of phases were always less than V (after several dozens of runs).
+// So looks like it is O(V*E) for the test graph.
+func SolveKarger(lines []string) any {
+	var edges []Edge
+	vertices := containers.NewSet[string]()
+	for _, line := range lines {
+		first, rest := must.Split2(line, ": ")
+		vertices.Add(first)
+		seconds := strings.Split(rest, " ")
+		for _, second := range seconds {
+			edges = append(edges, Edge{first, second})
+			vertices.Add(second)
+		}
+	}
+
+	for phase := 0; true; phase++ {
+		edges := edges
+		dsu := containers.NewDisjointSet[string]()
+		for v := range vertices {
+			dsu.Add(v)
+		}
+		for dsu.Components() > 2 {
+			k := rand.Intn(len(edges))
+			edges[0], edges[k] = edges[k], edges[0]
+			edge := edges[0]
+			edges = edges[1:]
+			dsu.Union(edge.from, edge.to)
+		}
+		cutSize := 0
+		var comp1, comp2 int
+		for _, edge := range edges {
+			if dsu.Root(edge.from) != dsu.Root(edge.to) {
+				cutSize++
+				if cutSize > 3 {
+					break
+				}
+				comp1 = dsu.Size(edge.from)
+				comp2 = dsu.Size(edge.to)
+			}
+		}
+		if cutSize == 3 {
+			log.Printf("Found two components after %d phases: %d * %d.", phase+1, comp1, comp2)
+			return comp1 * comp2
+		}
+	} // phase
+	panic("Unreachable")
+}
+
 func anyKey[K comparable, V any](m map[K]V) K {
 	for k := range m {
 		return k
@@ -382,7 +434,7 @@ func anyKey[K comparable, V any](m map[K]V) K {
 }
 
 var (
-	solvers1 = []aoc.Solver{SolvePart1FFA, SolvePart1EdmondsKarp, SolvePart1Dinic, SolveStoerWagner}
+	solvers1 = []aoc.Solver{SolvePart1FFA, SolvePart1EdmondsKarp, SolvePart1Dinic /*SolveStoerWagner,*/, SolveKarger}
 	solvers2 = []aoc.Solver{}
 )
 
