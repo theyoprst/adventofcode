@@ -393,6 +393,7 @@ func SolveKarger(lines []string) any {
 		}
 	}
 
+	randoms := 0
 	for phase := 0; true; phase++ {
 		edges := edges
 		dsu := containers.NewDisjointSet[string]()
@@ -400,6 +401,7 @@ func SolveKarger(lines []string) any {
 			dsu.Add(v)
 		}
 		for dsu.Components() > 2 {
+			randoms++
 			k := rand.Intn(len(edges))
 			edges[0], edges[k] = edges[k], edges[0]
 			edge := edges[0]
@@ -419,7 +421,82 @@ func SolveKarger(lines []string) any {
 			}
 		}
 		if cutSize == 3 {
-			log.Printf("Found two components after %d phases: %d * %d.", phase+1, comp1, comp2)
+			log.Printf("Found two components after %d phases, %d randomizations: %d * %d.", phase+1, randoms, comp1, comp2)
+			return comp1 * comp2
+		}
+	} // phase
+	panic("Unreachable")
+}
+
+// Recursive optimization of Karger algorithm: it doubles execution tree after contraction to
+// n/sqrt(2), n/2, n/(2sqrt(2)), n/4, et cetera.
+// It works very slow this way. But it works better if:
+// - divide by 2: beats original Karger in 33% cases
+// - divide by 3: beats original Karger in 85% cases
+// Possible reasons:
+// - one of the min cut edges was removed in the beginning and we spent lots of time in a wrong branch of recursion.
+// - randomization is slow.
+func SolveKargerStein(lines []string) any {
+	var edges []Edge
+	vertices := containers.NewSet[string]()
+	for _, line := range lines {
+		first, rest := must.Split2(line, ": ")
+		vertices.Add(first)
+		seconds := strings.Split(rest, " ")
+		for _, second := range seconds {
+			edges = append(edges, Edge{first, second})
+			vertices.Add(second)
+		}
+	}
+
+	randoms := 0
+	contract := func(edges []Edge, dsu *containers.DisjointSet[string], wantSize int) []Edge {
+		for dsu.Components() > wantSize {
+			k := rand.Intn(len(edges))
+			randoms++
+			edges[0], edges[k] = edges[k], edges[0]
+			edge := edges[0]
+			edges = edges[1:]
+			dsu.Union(edge.from, edge.to)
+		}
+		return edges
+	}
+
+	var comp1, comp2 int
+
+	var findMinCut func(edges []Edge, dsu *containers.DisjointSet[string]) bool
+	findMinCut = func(edges []Edge, dsu *containers.DisjointSet[string]) bool {
+		if dsu.Components() <= 6 {
+			edges = contract(edges, dsu, 2)
+			cutSize := 0
+			for _, edge := range edges {
+				if dsu.Root(edge.from) != dsu.Root(edge.to) {
+					cutSize++
+					if cutSize > 3 {
+						break
+					}
+					comp1 = dsu.Size(edge.from)
+					comp2 = dsu.Size(edge.to)
+				}
+			}
+			return cutSize == 3
+		}
+		// Note: In original Karger-Stein there is division by sqrt(2). But in this problem it works too slow.
+		// nextComponents := int(float64(dsu.Components()) / math.Sqrt2)
+		nextComponents := int(float64(dsu.Components()) / 3)
+		dsu2 := dsu.Clone()
+		return findMinCut(contract(edges, dsu2, nextComponents), dsu2) ||
+			findMinCut(contract(edges, dsu, nextComponents), dsu)
+	}
+
+	for phase := 1; true; phase++ {
+		edges := edges
+		dsu := containers.NewDisjointSet[string]()
+		for v := range vertices {
+			dsu.Add(v)
+		}
+		if findMinCut(edges, dsu) {
+			log.Printf("Found two components after %d phases, %d randomizations: %d * %d.", phase, randoms, comp1, comp2)
 			return comp1 * comp2
 		}
 	} // phase
@@ -434,7 +511,7 @@ func anyKey[K comparable, V any](m map[K]V) K {
 }
 
 var (
-	solvers1 = []aoc.Solver{SolvePart1FFA, SolvePart1EdmondsKarp, SolvePart1Dinic /*SolveStoerWagner,*/, SolveKarger}
+	solvers1 = []aoc.Solver{SolvePart1FFA, SolvePart1EdmondsKarp, SolvePart1Dinic, SolveStoerWagner, SolveKarger, SolveKargerStein}
 	solvers2 = []aoc.Solver{}
 )
 

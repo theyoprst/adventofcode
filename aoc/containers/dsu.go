@@ -8,16 +8,16 @@ type DisjointSet[T comparable] struct {
 	n      int
 }
 
-func NewDisjointSet[T comparable]() DisjointSet[T] {
-	return DisjointSet[T]{
+func NewDisjointSet[T comparable]() *DisjointSet[T] {
+	return &DisjointSet[T]{
 		parent: map[T]T{},
 		count:  map[T]int{},
 		n:      0,
 	}
 }
 
-func (ds *DisjointSet[T]) Clone() DisjointSet[T] {
-	return DisjointSet[T]{
+func (ds *DisjointSet[T]) Clone() *DisjointSet[T] {
+	return &DisjointSet[T]{
 		parent: maps.Clone(ds.parent),
 		count:  maps.Clone(ds.count),
 		n:      ds.n,
