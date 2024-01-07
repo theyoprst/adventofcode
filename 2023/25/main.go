@@ -41,14 +41,14 @@ const (
 // Expected running time is `O(|E|)`.
 func SolvePart1FFA(lines []string) any {
 	type Edge struct{ from, to string }
-	cap := map[Edge]int{}
+	c := map[Edge]int{}
 	graph := map[string]containers.Set[string]{}
 	for _, line := range lines {
 		first, rest := must.Split2(line, ": ")
 		seconds := strings.Split(rest, " ")
 		for _, second := range seconds {
-			cap[Edge{first, second}] = 1
-			cap[Edge{second, first}] = 1
+			c[Edge{first, second}] = 1
+			c[Edge{second, first}] = 1
 			graph[first] = graph[first].Add(second)
 			graph[second] = graph[second].Add(first)
 		}
@@ -75,7 +75,7 @@ func SolvePart1FFA(lines []string) any {
 		}
 		for u := range graph[v] {
 			edge := Edge{v, u}
-			residualCap := cap[edge] - flow[edge]
+			residualCap := c[edge] - flow[edge]
 			if residualCap > 0 {
 				totalMin := dfsFFA(u, min(curMin, residualCap))
 				if totalMin > 0 {
@@ -122,14 +122,14 @@ func SolvePart1FFA(lines []string) any {
 // Same as FFA, but BFS instead of DFS was used. 20% faster than FFA because a more short paths are chosen.
 func SolvePart1EdmondsKarp(lines []string) any {
 	type Edge struct{ from, to string }
-	cap := map[Edge]int{}
+	c := map[Edge]int{}
 	graph := map[string]containers.Set[string]{}
 	for _, line := range lines {
 		first, rest := must.Split2(line, ": ")
 		seconds := strings.Split(rest, " ")
 		for _, second := range seconds {
-			cap[Edge{first, second}] = 1
-			cap[Edge{second, first}] = 1
+			c[Edge{first, second}] = 1
+			c[Edge{second, first}] = 1
 			graph[first] = graph[first].Add(second)
 			graph[second] = graph[second].Add(first)
 		}
@@ -158,7 +158,7 @@ func SolvePart1EdmondsKarp(lines []string) any {
 
 				for next := range graph[cur] {
 					edge := Edge{cur, next}
-					if next != s && prev[next] == "" && cap[edge] > flow[edge] {
+					if next != s && prev[next] == "" && c[edge] > flow[edge] {
 						prev[next] = cur
 						queue = append(queue, next)
 					}
@@ -170,7 +170,7 @@ func SolvePart1EdmondsKarp(lines []string) any {
 			minResidualCap := math.MaxInt
 			for v := t; v != s; v = prev[v] {
 				edge := Edge{prev[v], v}
-				minResidualCap = min(minResidualCap, cap[edge]-flow[edge])
+				minResidualCap = min(minResidualCap, c[edge]-flow[edge])
 			}
 			for v := t; v != s; v = prev[v] {
 				flow[Edge{prev[v], v}] += minResidualCap
@@ -202,14 +202,14 @@ func (e Edge) Reversed() Edge {
 // For some reason it's 5 times slower than Edmonds-Karp if check all sink nodes t.
 // Maybe because BFS finds t on average much more faster than traversing all the graph for building layered network.
 func SolvePart1Dinic(lines []string) any {
-	cap := map[Edge]int{}
+	c := map[Edge]int{}
 	graph := map[string]containers.Set[string]{}
 	for _, line := range lines {
 		first, rest := must.Split2(line, ": ")
 		seconds := strings.Split(rest, " ")
 		for _, second := range seconds {
-			cap[Edge{first, second}] = 1
-			cap[Edge{second, first}] = 1
+			c[Edge{first, second}] = 1
+			c[Edge{second, first}] = 1
 			graph[first] = graph[first].Add(second)
 			graph[second] = graph[second].Add(first)
 		}
@@ -241,7 +241,7 @@ func SolvePart1Dinic(lines []string) any {
 				queue = queue[1:]
 				for next := range graph[cur] {
 					edge := Edge{cur, next}
-					if flow[edge] < cap[edge] && dist[next] == inf {
+					if flow[edge] < c[edge] && dist[next] == inf {
 						dist[next] = dist[cur] + 1
 						queue = append(queue, next)
 						reachable++
@@ -277,7 +277,7 @@ func SolvePart1Dinic(lines []string) any {
 				for len(next[v]) > 0 {
 					u := next[v][0]
 					edge := Edge{v, u}
-					totalMin := dfs(u, min(curMin, cap[edge]-flow[edge]))
+					totalMin := dfs(u, min(curMin, c[edge]-flow[edge]))
 					if totalMin == 0 {
 						next[v] = next[v][1:]
 						continue

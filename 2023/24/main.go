@@ -38,8 +38,8 @@ func Intersect2D(l1, l2 Line2D) (x, y float64) {
 const (
 	MinCoord = 200000000000000
 	MaxCoord = 400000000000000
-	// MinCoord = 7
-	// MaxCoord = 27
+	// MinCoord = 7 //nolint(godot): false positive.
+	// MaxCoord = 27 //nolint(godot): false positive.
 )
 
 func SolvePart1(lines []string) any {
@@ -115,7 +115,7 @@ func (v Vector3D) Round() Vector3DInt {
 	}
 }
 
-// Solve linear system nxn, i.e. finds vector x satifsying these conditions:
+// Solve linear system nxn, i.e. finds vector x satisfying these conditions:
 //
 // a[0][0]*x[0] + a[0][1]*x[1] + ... + a[0][n-1]*x[n-1] = b[0]
 // a[1][0]*x[0] + a[1][1]*x[1] + ... + a[1][n-1]*x[n-1] = b[1]
@@ -144,7 +144,7 @@ func SolveLinearSystem(a [][]float64, b []float64) {
 		}
 	}
 
-	// Now zero all the elements wich are not in the main diagonal.
+	// Now zero all the elements which are not in the main diagonal.
 	for row := n - 1; row >= 0; row-- {
 		b[row] /= a[row][row]
 		a[row][row] = 1.0

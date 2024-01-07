@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,7 +16,7 @@ import (
 )
 
 type Config struct {
-	SessionCookie string `json:"session-cookie"`
+	SessionCookie string `json:"sessionCookie"`
 }
 
 type YearDay struct {
@@ -69,7 +70,7 @@ func humanReadableDays(yearDays []YearDay) string {
 	for _, yd := range yearDays {
 		years[yd.Year] = append(years[yd.Year], yd.Day)
 	}
-	var strs []string
+	strs := make([]string, 0, len(years))
 	for year, days := range years {
 		var daysS []string
 		for _, d := range days {
@@ -92,7 +93,7 @@ func do() error {
 		return err
 	}
 	var yearDays []YearDay
-	filepath.Walk(curDir, filepath.WalkFunc(func(path string, info fs.FileInfo, err error) error {
+	err = filepath.Walk(curDir, filepath.WalkFunc(func(path string, info fs.FileInfo, err error) error {
 		if info.IsDir() {
 			yd := parseYearDay(path)
 			if yd.IsValid() {
@@ -101,9 +102,12 @@ func do() error {
 		}
 		return nil
 	}))
+	if err != nil {
+		return err
+	}
 	log.Printf("Downloading inputs for %d days: \n%s", len(yearDays), humanReadableDays(yearDays))
 	for _, yd := range yearDays {
-		req, err := http.NewRequest(http.MethodGet, yd.URL(), nil)
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, yd.URL(), nil)
 		if err != nil {
 			return err
 		}
@@ -118,7 +122,7 @@ func do() error {
 			return err
 		}
 		targetPath := filepath.Join(yd.Path, "input.txt")
-		if err := os.WriteFile(targetPath, inputData, 0o666); err != nil {
+		if err := os.WriteFile(targetPath, inputData, 0o600); err != nil {
 			return err
 		}
 		log.Printf("Successfully wrote to %q: %d bytes", targetPath, len(inputData))

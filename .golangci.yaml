@@ -18,9 +18,6 @@ linters:
     # Checks `Err-` prefix for var and `-Error` suffix for error type.
     - errname
 
-    # Suggests to use `%w` for error-wrapping.
-    - errorlint
-
     # Checks for pointers to enclosing loop variables.
     - exportloopref
 
@@ -124,11 +121,15 @@ linters-settings:
       - standard                       
       - default                        
       - prefix(github.com/theyoprst/adventofcode)
+  gosec:
+    excludes:
+      - G404 # Insecure random number source (rand)
 
+issues:
   exclude-rules:
-    - path: day\d+
-      linters:
-        - prealloc  # Does not require prealloc for actual solutions
+  - path: \d+/main.go
+    linters:
+    - prealloc  # Does not require prealloc for actual solutions
 
 disable:
     # Checks whether HTTP response body is closed successfully.
@@ -143,4 +144,7 @@ disable:
     # Not relevant to this reposirory.
     - rowserrcheck
     - sqlclosecheck
+
+    # Suggests to use `%w` for error-wrapping everywhere. IMO it is a bad practice leading to interface leaks.
+    - errorlint
 

@@ -1,8 +1,9 @@
 package queues
 
 import (
-	"github.com/theyoprst/adventofcode/must"
 	"golang.org/x/exp/constraints"
+
+	"github.com/theyoprst/adventofcode/must"
 )
 
 type PriorityType interface {

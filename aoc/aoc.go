@@ -9,8 +9,9 @@ import (
 	"regexp"
 	"slices"
 
-	"github.com/theyoprst/adventofcode/must"
 	"golang.org/x/exp/constraints"
+
+	"github.com/theyoprst/adventofcode/must"
 )
 
 func ReadInputLines() []string {
