@@ -37,8 +37,7 @@ func CountWins(times, records []int) int {
 		r := records[i]
 		wins := 0
 		for x := 0; x <= t; x++ {
-			y := times[i] - x
-			wins += aoc.BoolToInt(x*y > r)
+			wins += aoc.BoolToInt(x*(t-x) > r)
 		}
 		ans *= wins
 	}
@@ -50,11 +49,11 @@ func CountWinsFast(times, records []int) int {
 	for i := range times {
 		t := times[i]
 		r := records[i]
-		// x * (t - x) > r <=> -x*x +tx -r > 0
+		// x * (t - x) > r  ==>  -x*x +tx -r > 0
 		x1, x2 := aoc.SolveQuadratic(-1, t, -r)
 		const eps = 1e-10
-		p1 := int(math.Ceil(*x1 + eps))
-		p2 := int(math.Floor(*x2 - eps))
+		p1 := int(math.Ceil(x1 + eps))
+		p2 := int(math.Floor(x2 - eps))
 		ans *= p2 - p1 + 1
 	}
 	return ans
