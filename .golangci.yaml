@@ -13,7 +13,7 @@ linters:
     - durationcheck
 
     # Forces to not skip error check.
-    - errcheck 
+    - errcheck
 
     # Checks `Err-` prefix for var and `-Error` suffix for error type.
     - errname
@@ -44,7 +44,7 @@ linters:
     # Linter that specializes in simplifying code.
     - gosimple
 
-    # Official Go tool. Must have. 
+    # Official Go tool. Must have.
     - govet
 
     # Detects when assignments to existing variables are not used
@@ -118,8 +118,8 @@ linters:
 linters-settings:
   gci:
     sections:
-      - standard                       
-      - default                        
+      - standard
+      - default
       - prefix(github.com/theyoprst/adventofcode)
   gosec:
     excludes:
@@ -127,24 +127,23 @@ linters-settings:
 
 issues:
   exclude-rules:
-  - path: \d+/main.go
-    linters:
-    - prealloc  # Does not require prealloc for actual solutions
+    - path: \d+/main.go
+      linters:
+        - prealloc # Does not require prealloc for actual solutions
 
-disable:
-    # Checks whether HTTP response body is closed successfully.
-    # Not relevant to this repository.
-    - bodyclose
+        # disable:
+        #     # Checks whether HTTP response body is closed successfully.
+        #     # Not relevant to this repository.
+        - bodyclose
 
-    # Check whether the function uses a non-inherited context.
-    # Not relevant to this repository.
-    - contextcheck
+        # Check whether the function uses a non-inherited context.
+        # Not relevant to this repository.
+        - contextcheck
 
-    # Somewhat similar to `bodyclose` but for `database/sql` package.
-    # Not relevant to this reposirory.
-    - rowserrcheck
-    - sqlclosecheck
+        # Somewhat similar to `bodyclose` but for `database/sql` package.
+        # Not relevant to this reposirory.
+        - rowserrcheck
+        - sqlclosecheck
 
-    # Suggests to use `%w` for error-wrapping everywhere. IMO it is a bad practice leading to interface leaks.
-    - errorlint
-
+        # Suggests to use `%w` for error-wrapping everywhere. IMO it is a bad practice leading to interface leaks.
+        - errorlint
