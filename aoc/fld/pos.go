@@ -44,6 +44,10 @@ func (p Pos) Add(dir Pos) Pos {
 	return p
 }
 
+func (p Pos) Sub(other Pos) Pos {
+	return p.Add(other.Reverse())
+}
+
 func (p Pos) Mult(mult int) Pos {
 	p.Row *= mult
 	p.Col *= mult
