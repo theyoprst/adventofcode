@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 type Input struct {
@@ -71,8 +73,8 @@ func RunTests(t *testing.T, inputs []Input, solversPart1 []Solver, solversPart2 
 					}()
 					ans := suite.solver(ReadLines(f))
 					ansStr := fmt.Sprint(ans)
-					if ansStr != testCase.want {
-						t.Errorf("Got answer %q, want %q", ansStr, testCase.want)
+					if diff := cmp.Diff(ansStr, testCase.want); diff != "" {
+						t.Errorf("Unexpected answer, diff (-got +want):\n%s", diff)
 					}
 				})
 			}
