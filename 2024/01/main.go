@@ -2,10 +2,10 @@ package main
 
 import (
 	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/theyoprst/adventofcode/aoc"
+	"github.com/theyoprst/adventofcode/must"
 )
 
 func SolvePart1(lines []string) any {
@@ -39,53 +39,52 @@ func SolvePart2(lines []string) any {
 	return score
 }
 
-func SolvePart1Qwen32B(lines []string) any {
-	left := make([]int, 0)
-	right := make([]int, 0)
+func SolvePart1AI(lines []string) any {
+	leftList := make([]int, 0, len(lines))
+	rightList := make([]int, 0, len(lines))
 	for _, line := range lines {
-		parts := strings.Fields(line)
-		left = append(left, atoi(parts[0]))
-		right = append(right, atoi(parts[1]))
+		fields := strings.Fields(line)
+		leftList = append(leftList, must.Atoi(fields[0]))
+		rightList = append(rightList, must.Atoi(fields[1]))
 	}
-	sort.Ints(left)
-	sort.Ints(right)
+	sort.Ints(leftList)
+	sort.Ints(rightList)
+
 	totalDistance := 0
-	for i := range left {
-		totalDistance += abs(left[i] - right[i])
+	for i := range leftList {
+		totalDistance += aoc.Abs(leftList[i] - rightList[i])
 	}
+
 	return totalDistance
 }
 
-func SolvePart2Qwen32B(lines []string) any {
-	left := make([]int, 0)
-	rightCount := make(map[int]int)
+func SolvePart2AI(lines []string) any {
+	leftList := make([]int, 0, len(lines))
+	rightList := make([]int, 0, len(lines))
 	for _, line := range lines {
-		parts := strings.Fields(line)
-		left = append(left, atoi(parts[0]))
-		rightCount[atoi(parts[1])]++
+		fields := strings.Fields(line)
+		leftList = append(leftList, must.Atoi(fields[0]))
+		rightList = append(rightList, must.Atoi(fields[1]))
 	}
+	sort.Ints(leftList)
+	sort.Ints(rightList)
+
+	rightCount := make(map[int]int)
+	for _, num := range rightList {
+		rightCount[num]++
+	}
+
 	similarityScore := 0
-	for _, num := range left {
+	for _, num := range leftList {
 		similarityScore += num * rightCount[num]
 	}
+
 	return similarityScore
 }
 
-func atoi(s string) int {
-	n, _ := strconv.Atoi(s)
-	return n
-}
-
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
-}
-
 var (
-	solvers1 = []aoc.Solver{SolvePart1, SolvePart1Qwen32B}
-	solvers2 = []aoc.Solver{SolvePart2, SolvePart2Qwen32B}
+	solvers1 = []aoc.Solver{SolvePart1, SolvePart1AI}
+	solvers2 = []aoc.Solver{SolvePart2, SolvePart2AI}
 )
 
 func main() {
