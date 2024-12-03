@@ -26,7 +26,7 @@ func removeDisabled(text string) string {
 		enable = true
 		edited = make([]byte, 0, len(text))
 	)
-	for i := range text {
+	for i := range len(text) { // Note: iterating over bytes, not runes, because there is string indexing inside.
 		if strings.HasPrefix(text[i:], do) {
 			enable = true
 		} else if strings.HasPrefix(text[i:], dont) {
