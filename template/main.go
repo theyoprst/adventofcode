@@ -4,6 +4,12 @@ import (
 	"github.com/theyoprst/adventofcode/aoc"
 )
 
+// Cheatsheet:
+//
+// Human readable regex:
+//   rex.New(rex.Common.RawVerbose(``)).MustCompile()
+//
+
 func SolvePart1(lines []string) any {
 	_ = lines
 	return 0
