@@ -13,6 +13,9 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+
+	htmltomarkdown "github.com/JohannesKaufmann/html-to-markdown/v2"
+	"github.com/anaskhan96/soup"
 )
 
 type Config struct {
@@ -30,6 +33,10 @@ func (yd YearDay) IsValid() bool {
 
 func (yd YearDay) URL() string {
 	return fmt.Sprintf("https://adventofcode.com/%d/day/%d/input", yd.Year, yd.Day)
+}
+
+func (yd YearDay) ProblemURL() string {
+	return fmt.Sprintf("https://adventofcode.com/%d/day/%d", yd.Year, yd.Day)
 }
 
 func parseYearDay(path string) YearDay {
@@ -92,12 +99,19 @@ func do() error {
 	if err != nil {
 		return err
 	}
-	var yearDays []YearDay
+	var downloadInput []YearDay
+	var downloadProblem []YearDay
 	err = filepath.Walk(curDir, filepath.WalkFunc(func(path string, info fs.FileInfo, err error) error {
 		if info.IsDir() {
 			yd := parseYearDay(path)
 			if yd.IsValid() {
-				yearDays = append(yearDays, yd)
+				// Check that file input.txt exists in this path:
+				if _, err := os.Stat(filepath.Join(yd.Path, "input.txt")); os.IsNotExist(err) {
+					downloadInput = append(downloadInput, yd)
+				}
+				if _, err := os.Stat(filepath.Join(yd.Path, "part1.html")); os.IsNotExist(err) {
+					downloadProblem = append(downloadProblem, yd)
+				}
 			}
 		}
 		return nil
@@ -105,8 +119,9 @@ func do() error {
 	if err != nil {
 		return err
 	}
-	log.Printf("Downloading inputs for %d days: \n%s", len(yearDays), humanReadableDays(yearDays))
-	for _, yd := range yearDays {
+
+	log.Printf("Downloading inputs for %d days: \n%s", len(downloadInput), humanReadableDays(downloadInput))
+	for _, yd := range downloadInput {
 		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, yd.URL(), nil)
 		if err != nil {
 			return err
@@ -116,6 +131,9 @@ func do() error {
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			return err
+		}
+		if resp.StatusCode != http.StatusOK {
+			return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 		}
 		inputData, err := io.ReadAll(resp.Body)
 		if err != nil {
@@ -128,7 +146,59 @@ func do() error {
 		log.Printf("Successfully wrote to %q: %d bytes", targetPath, len(inputData))
 	}
 
+	log.Printf("Downloading problems for %d days: \n%s", len(downloadProblem), humanReadableDays(downloadProblem))
+	for _, yd := range downloadProblem {
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, yd.ProblemURL(), nil)
+		if err != nil {
+			return err
+		}
+		req.Header.Add("User-Agent", "aoc-input/1.0 Go-http-client/1.1")
+		req.AddCookie(&http.Cookie{Name: "session", Value: config.SessionCookie})
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			return err
+		}
+		if resp.StatusCode != http.StatusOK {
+			return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		}
+		html, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		doc := soup.HTMLParse(string(html))
+		articles := doc.FindAll("article")
+		if len(articles) != 2 {
+			return fmt.Errorf("got %d articles, want 2", len(articles))
+		}
+		for i, article := range articles {
+			articleHTMLPath := filepath.Join(yd.Path, fmt.Sprintf("part%d.html", i+1))
+			html := innerHTML(article)
+			if err := os.WriteFile(articleHTMLPath, []byte(html), 0o644); err != nil {
+				return err
+			}
+			log.Printf("Successfully wrote to %q: %d bytes", articleHTMLPath, len(html))
+
+			articleMDPath := filepath.Join(yd.Path, fmt.Sprintf("part%d.md", i+1))
+			markdown, err := htmltomarkdown.ConvertString(article.HTML())
+			if err != nil {
+				return err
+			}
+			if err := os.WriteFile(articleMDPath, []byte(markdown), 0o644); err != nil {
+				return err
+			}
+			log.Printf("Successfully wrote to %q: %d bytes", articleMDPath, len(markdown))
+		}
+	}
+
 	return nil
+}
+
+func innerHTML(node soup.Root) string {
+	var sb strings.Builder
+	for _, c := range node.Children() {
+		sb.WriteString(c.HTML())
+	}
+	return sb.String()
 }
 
 func main() {
