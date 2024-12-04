@@ -9,12 +9,16 @@ import (
 )
 
 type Input struct {
-	Path      string
-	WantPart1 string
-	WantPart2 string
+	Path      string `yaml:"path"`
+	WantPart1 string `yaml:"wantPart1"`
+	WantPart2 string `yaml:"wantPart2"`
 }
 
-func RunTests(t *testing.T, inputs []Input, solversPart1 []Solver, solversPart2 []Solver) {
+type Tests struct {
+	Inputs []Input `yaml:"tests"`
+}
+
+func RunTests(t *testing.T, tests Tests, solversPart1 []Solver, solversPart2 []Solver) {
 	t.Helper()
 
 	type testCase struct {
@@ -23,7 +27,7 @@ func RunTests(t *testing.T, inputs []Input, solversPart1 []Solver, solversPart2 
 	}
 	var testCasesPart1 []testCase
 	var testCasesPart2 []testCase
-	for _, input := range inputs {
+	for _, input := range tests.Inputs {
 		if input.WantPart1 != "" {
 			testCasesPart1 = append(testCasesPart1, testCase{
 				path: input.Path,

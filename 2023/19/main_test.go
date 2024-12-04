@@ -7,7 +7,7 @@ import (
 )
 
 func Test(t *testing.T) {
-	inputs := []aoc.Input{
+	tests := aoc.Tests{Inputs: []aoc.Input{
 		{
 			Path:      "input_ex1.txt",
 			WantPart1: "19114",
@@ -18,6 +18,6 @@ func Test(t *testing.T) {
 			WantPart1: "373302",
 			WantPart2: "130262715574114",
 		},
-	}
-	aoc.RunTests(t, inputs, solvers1, solvers2)
+	}}
+	aoc.RunTests(t, tests, solvers1, solvers2)
 }
