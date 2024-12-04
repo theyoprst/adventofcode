@@ -5,6 +5,8 @@ import (
 	"os"
 	"testing"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -15,11 +17,21 @@ type Input struct {
 }
 
 type Tests struct {
-	Inputs []Input `yaml:"tests"`
+	Inputs []Input `yaml:"inputs"`
 }
 
-func RunTests(t *testing.T, tests Tests, solversPart1 []Solver, solversPart2 []Solver) {
+func RunTests(t *testing.T, solversPart1 []Solver, solversPart2 []Solver) {
 	t.Helper()
+
+	data, err := os.ReadFile("tests.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var tests Tests
+	if err := yaml.Unmarshal(data, &tests); err != nil {
+		t.Fatal(err)
+	}
 
 	type testCase struct {
 		path string

@@ -9,18 +9,7 @@ import (
 )
 
 func Test(t *testing.T) {
-	tests := aoc.Tests{Inputs: []aoc.Input{
-		{
-			Path:      "input_ex1.txt",
-			WantPart1: "42",
-		},
-		{
-			Path:      "input.txt",
-			WantPart1: "3632",
-			WantPart2: "600336060511101",
-		},
-	}}
-	aoc.RunTests(t, tests, solvers1, solvers2)
+	aoc.RunTests(t, solvers1, solvers2)
 }
 
 func TestCmpWithNaive(t *testing.T) {
