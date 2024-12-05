@@ -20,27 +20,32 @@ func newOrderRules(lines []string) containers.Set[OrderRule] {
 	return orders
 }
 
-func isOrderCorrect(rules containers.Set[OrderRule], pages []int) bool {
-	for i, left := range pages {
-		for _, right := range pages[i+1:] {
-			reversed := OrderRule{Before: right, After: left}
-			if rules.Has(reversed) {
-				return false
-			}
+// orderComparator is used both for checking and imposing order rules.
+// Happily, order rules define total order, not just a partial one. There are even n*(n-1)/2 rules for sequences of n pages.
+// If there were less rules, or the order was just partical, more sophisticated algorithms should be used,
+// like topsort and check for topsorted.
+func orderComparator(orderRules containers.Set[OrderRule]) func(int, int) int {
+	return func(pageA, pageB int) int {
+		if orderRules.Has(OrderRule{Before: pageA, After: pageB}) {
+			return -1
 		}
+		if orderRules.Has(OrderRule{Before: pageB, After: pageA}) {
+			return 1
+		}
+		return 0
 	}
-	return true
 }
 
 func SolvePart1(lines []string) any {
 	blocks := aoc.Split(lines, "")
 	rulesBlock, updatesBlock := blocks[0], blocks[1]
 	orderRules := newOrderRules(rulesBlock)
+	cmp := orderComparator(orderRules)
 
 	ans := 0
 	for _, update := range updatesBlock {
 		pages := aoc.Ints(update)
-		if isOrderCorrect(orderRules, pages) {
+		if slices.IsSortedFunc(pages, cmp) {
 			ans += pages[len(pages)/2]
 		}
 	}
@@ -51,23 +56,15 @@ func SolvePart2(lines []string) any {
 	blocks := aoc.Split(lines, "")
 	rulesBlock, updatesBlock := blocks[0], blocks[1]
 	orderRules := newOrderRules(rulesBlock)
+	cmp := orderComparator(orderRules)
 
 	ans := 0
 	for _, update := range updatesBlock {
 		pages := aoc.Ints(update)
-		if isOrderCorrect(orderRules, pages) {
-			continue
+		if !slices.IsSortedFunc(pages, cmp) {
+			slices.SortFunc(pages, cmp)
+			ans += pages[len(pages)/2]
 		}
-		slices.SortFunc(pages, func(pageA, pageB int) int {
-			if orderRules.Has(OrderRule{Before: pageA, After: pageB}) {
-				return -1
-			}
-			if orderRules.Has(OrderRule{Before: pageB, After: pageA}) {
-				return 1
-			}
-			return 0
-		})
-		ans += pages[len(pages)/2]
 	}
 	return ans
 }
