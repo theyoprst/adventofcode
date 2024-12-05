@@ -1,5 +1,5 @@
 inputs:
-    - path: input_t1.txt
+    - path: input_ex1.txt
       wantPart1: "4361"
       wantPart2: "467835"
     - path: input.txt

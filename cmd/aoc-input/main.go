@@ -16,6 +16,7 @@ import (
 
 	htmltomarkdown "github.com/JohannesKaufmann/html-to-markdown/v2"
 	"github.com/anaskhan96/soup"
+	"github.com/theyoprst/adventofcode/aoc/htmlparser"
 )
 
 type Config struct {
@@ -109,7 +110,7 @@ func do() error {
 				if _, err := os.Stat(filepath.Join(yd.Path, "input.txt")); os.IsNotExist(err) {
 					downloadInput = append(downloadInput, yd)
 				}
-				if _, err := os.Stat(filepath.Join(yd.Path, "part1.html")); os.IsNotExist(err) {
+				if _, err := os.Stat(filepath.Join(yd.Path, "part2.md")); os.IsNotExist(err) {
 					downloadProblem = append(downloadProblem, yd)
 				}
 			}
@@ -167,9 +168,7 @@ func do() error {
 		}
 		doc := soup.HTMLParse(string(html))
 		articles := doc.FindAll("article")
-		if len(articles) != 2 {
-			return fmt.Errorf("got %d articles, want 2", len(articles))
-		}
+		var paragraphs []soup.Root
 		for i, article := range articles {
 			articleHTMLPath := filepath.Join(yd.Path, fmt.Sprintf("part%d.html", i+1))
 			html := innerHTML(article)
@@ -187,6 +186,22 @@ func do() error {
 				return err
 			}
 			log.Printf("Successfully wrote to %q: %d bytes", articleMDPath, len(markdown))
+
+			paragraphs = append(paragraphs, article.Children()...)
+		}
+		examples, err := htmlparser.ExtractExamples(paragraphs)
+		if err != nil {
+			return fmt.Errorf("extract examples: %w", err)
+		}
+		if len(examples) == 0 {
+			return fmt.Errorf("no examples found")
+		}
+		for i, example := range examples {
+			examplePath := filepath.Join(yd.Path, fmt.Sprintf("input_ex%d.txt", i+1))
+			if err := os.WriteFile(examplePath, []byte(example), 0o644); err != nil {
+				return err
+			}
+			log.Printf("Successfully wrote to %q: %d bytes", examplePath, len(example))
 		}
 	}
 
