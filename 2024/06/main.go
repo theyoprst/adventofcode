@@ -7,7 +7,6 @@ import (
 )
 
 const (
-	borderCh   = ' '
 	guardCh    = '^'
 	obstacleCh = '#'
 	freeCh     = '.'
@@ -17,14 +16,12 @@ var dirs = []fld.Pos{fld.Up, fld.Right, fld.Down, fld.Left}
 
 func SolvePart1(lines []string) any {
 	field := fld.NewByteField(lines)
-	field = field.AddBorder(borderCh)
 	guardPos := field.FindFirst(guardCh)
 	return len(visitedPositionsUntilGone(field, guardPos))
 }
 
 func SolvePart2(lines []string) any {
 	field := fld.NewByteField(lines)
-	field = field.AddBorder(borderCh)
 	guardPos := field.FindFirst(guardCh)
 
 	ans := 0
@@ -43,40 +40,42 @@ func SolvePart2(lines []string) any {
 
 func visitedPositionsUntilGone(field fld.ByteField, guardPos fld.Pos) containers.Set[fld.Pos] {
 	dirIdx := 0
-	visited := containers.NewSet[fld.Pos]()
-	for field.Get(guardPos) != borderCh {
+	visited := containers.NewSet(guardPos)
+	for {
 		npos := guardPos.Add(dirs[dirIdx])
+		if !field.Inside(npos) {
+			break
+		}
 		if field.Get(npos) == obstacleCh {
 			dirIdx = (dirIdx + 1) % len(dirs) // Turn right.
-			continue
+		} else {
+			guardPos = npos
+			visited.Add(guardPos)
 		}
-		visited.Add(guardPos)
-		guardPos = npos
 	}
 	return visited
 }
 
 func isLooped(field fld.ByteField, guardPos fld.Pos) bool {
-	dirIdx := 0
-	type state struct {
+	type State struct {
 		pos    fld.Pos
 		dirIdx int
 	}
-	seen := containers.NewSet[state]()
-	for field.Get(guardPos) != borderCh {
-		curState := state{pos: guardPos, dirIdx: dirIdx}
-		if seen.Has(curState) {
-			return true
+	state := State{pos: guardPos, dirIdx: 0}
+	seen := containers.NewSet[State]()
+	for !seen.Has(state) {
+		seen.Add(state)
+		npos := state.pos.Add(dirs[state.dirIdx])
+		if !field.Inside(npos) {
+			return false
 		}
-		npos := guardPos.Add(dirs[dirIdx])
 		if field.Get(npos) == obstacleCh {
-			dirIdx = (dirIdx + 1) % len(dirs) // Turn right.
-			continue
+			state.dirIdx = (state.dirIdx + 1) % len(dirs) // Turn right.
+		} else {
+			state.pos = npos
 		}
-		seen.Add(curState)
-		guardPos = npos
 	}
-	return false
+	return true
 }
 
 var (
