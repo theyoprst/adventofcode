@@ -2,10 +2,7 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	"os"
-
+	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
 
@@ -79,16 +76,29 @@ func score2(f Figure, outcome Outcome) int {
 	panic("Unreachable")
 }
 
-func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Split(bufio.ScanLines)
-	var ans1, ans2 int
-	for scanner.Scan() {
-		line := scanner.Text()
+func SolvePart1(lines []string) any {
+	var ans int
+	for _, line := range lines {
 		c1, c2 := must.Split2(line, " ")
-		ans1 += score(norm(c1), norm(c2))
-		ans2 += score2(norm(c1), Outcome(c2))
+		ans += score(norm(c1), norm(c2))
 	}
-	fmt.Println("Part 1:", ans1)
-	fmt.Println("Part 2:", ans2)
+	return ans
+}
+
+func SolvePart2(lines []string) any {
+	var ans int
+	for _, line := range lines {
+		c1, c2 := must.Split2(line, " ")
+		ans += score2(norm(c1), Outcome(c2))
+	}
+	return ans
+}
+
+var (
+	solvers1 = []aoc.Solver{SolvePart1}
+	solvers2 = []aoc.Solver{SolvePart2}
+)
+
+func main() {
+	aoc.Main(solvers1, solvers2)
 }
