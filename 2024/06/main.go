@@ -17,31 +17,6 @@ var dirs = []fld.Pos{fld.Up, fld.Right, fld.Down, fld.Left}
 func SolvePart1(lines []string) any {
 	field := fld.NewByteField(lines)
 	guardPos := field.FindFirst(guardCh)
-	return len(visitedPositionsUntilGone(field, guardPos))
-}
-
-func SolvePart2(lines []string) any {
-	field := fld.NewByteField(lines)
-	guardPos := field.FindFirst(guardCh)
-
-	ans := 0
-	// Iterate over visited in part1 positions only: speeds up ~4 times.
-	for curPos, dirIdx := range visitedPositionsAndDirsUntilGone(field, guardPos) {
-		if field.Get(curPos) != freeCh {
-			continue
-		}
-		field.Set(curPos, obstacleCh)
-
-		prevPos := curPos.Add(dirs[dirIdx].Reverse())
-		ans += aoc.BoolToInt(isLooped(field, prevPos, dirIdx))
-
-		field.Set(curPos, freeCh)
-	}
-
-	return ans
-}
-
-func visitedPositionsUntilGone(field fld.ByteField, guardPos fld.Pos) containers.Set[fld.Pos] {
 	dirIdx := 0
 	visited := containers.NewSet(guardPos)
 	for {
@@ -56,13 +31,23 @@ func visitedPositionsUntilGone(field fld.ByteField, guardPos fld.Pos) containers
 			visited.Add(guardPos)
 		}
 	}
-	return visited
+	return len(visited)
 }
 
-func visitedPositionsAndDirsUntilGone(field fld.ByteField, guardPos fld.Pos) map[fld.Pos]int {
+func SolvePart2(lines []string) any {
+	// Brute force. Put obstacles on the path and check if the guard will loop.
+	// Optimizations:
+	// 1. Put obstacles only on the path from part1, not on the whole field (speedup x4)
+	// 2. Remember visited states only on turns, not on every step (speedup x3)
+	// 3. Start loop detection from the new obstacle, not from the initial guard position (speedup x3)
+	// Total: 0.13s for the input (from 5s without optimizations).
+	// TODO: implement jumps to the obstacle.
+	field := fld.NewByteField(lines)
+	guardPos := field.FindFirst(guardCh)
+
+	ans := 0
 	dirIdx := 0
-	visited := make(map[fld.Pos]int)
-	visited[guardPos] = dirIdx
+	visited := containers.NewSet(guardPos)
 	for {
 		npos := guardPos.Add(dirs[dirIdx])
 		if !field.Inside(npos) {
@@ -71,13 +56,18 @@ func visitedPositionsAndDirsUntilGone(field fld.ByteField, guardPos fld.Pos) map
 		if field.Get(npos) == obstacleCh {
 			dirIdx = (dirIdx + 1) % len(dirs) // Turn right.
 		} else {
-			if _, ok := visited[npos]; !ok {
-				visited[npos] = dirIdx
+			if !visited.Has(npos) {
+				field.Set(npos, obstacleCh)
+				if isLooped(field, guardPos, dirIdx) {
+					ans++
+				}
+				field.Set(npos, freeCh)
+				visited.Add(npos)
 			}
 			guardPos = npos
 		}
 	}
-	return visited
+	return ans
 }
 
 func isLooped(field fld.ByteField, guardPos fld.Pos, dirIdx int) bool {
@@ -93,8 +83,8 @@ func isLooped(field fld.ByteField, guardPos fld.Pos, dirIdx int) bool {
 			return false
 		}
 		if field.Get(npos) == obstacleCh {
-			seen.Add(state)                               // Remember the state only on turn (speeds up 2.5-3 times).
-			state.dirIdx = (state.dirIdx + 1) % len(dirs) // Turn right.
+			seen.Add(state) // Remember the state only on turn (speeds up 3 times).
+			state.dirIdx = (state.dirIdx + 1) % len(dirs)
 		} else {
 			state.pos = npos
 		}
