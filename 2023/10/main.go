@@ -19,7 +19,7 @@ var Dirs map[byte]containers.Set[fld.Pos] = map[byte]containers.Set[fld.Pos]{
 }
 
 func SolvePart1(lines []string) any {
-	f := fld.NewByteField(lines).AddBorder('*')
+	f := fld.NewByteField(lines).NewFieldWithBorder('*')
 	start := f.FindFirst('S')
 	p := start
 	noway := fld.Pos{}
@@ -50,7 +50,7 @@ func SolvePart2(lines []string) any {
 			f[2*row][2*col] = lines[row][col]
 		}
 	}
-	f = f.AddBorder('*').AddBorder('*')
+	f = f.NewFieldWithBorder('*').NewFieldWithBorder('*')
 
 	start := f.FindFirst('S')
 

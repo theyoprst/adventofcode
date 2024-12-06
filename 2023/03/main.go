@@ -7,7 +7,7 @@ import (
 )
 
 func SolvePart1(lines []string) any {
-	field := fld.NewByteField(lines).AddBorder('.')
+	field := fld.NewByteField(lines).NewFieldWithBorder('.')
 	var ans int
 	for i, row := range field {
 		isN := false
@@ -40,7 +40,7 @@ func SolvePart1(lines []string) any {
 }
 
 func SolvePart2(lines []string) any {
-	field := fld.NewByteField(lines).AddBorder('.')
+	field := fld.NewByteField(lines).NewFieldWithBorder('.')
 	allGears := map[fld.Pos][]int{}
 	for i, row := range field {
 		isN := false

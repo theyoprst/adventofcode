@@ -29,7 +29,7 @@ func (f Field[T]) Cols() int {
 	return len(f[0])
 }
 
-func (f Field[T]) AddBorder(b T) Field[T] {
+func (f Field[T]) NewFieldWithBorder(b T) Field[T] {
 	cols := f.Cols() + 2
 	res := make([][]T, 0, len(f)+2)
 	res = append(res, aoc.MakeSlice(b, cols))
