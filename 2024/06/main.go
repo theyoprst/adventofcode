@@ -64,12 +64,12 @@ func isLooped(field fld.ByteField, guardPos fld.Pos) bool {
 	state := State{pos: guardPos, dirIdx: 0}
 	seen := containers.NewSet[State]()
 	for !seen.Has(state) {
-		seen.Add(state)
 		npos := state.pos.Add(dirs[state.dirIdx])
 		if !field.Inside(npos) {
 			return false
 		}
 		if field.Get(npos) == obstacleCh {
+			seen.Add(state)                               // Remember the state only on turn (speeds up 2.5-3 times).
 			state.dirIdx = (state.dirIdx + 1) % len(dirs) // Turn right.
 		} else {
 			state.pos = npos
