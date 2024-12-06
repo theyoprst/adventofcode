@@ -41,7 +41,7 @@ func (f Field[T]) NewFieldWithBorder(b T) Field[T] {
 	return res
 }
 
-func (f Field[T]) Transpose() Field[T] {
+func (f Field[T]) NewFieldTransposed() Field[T] {
 	rows := len(f)
 	cols := len(f[0])
 	t := make([][]T, cols)
