@@ -1,38 +1,43 @@
-// 12:16 - 12:21 - 12:24
 package main
 
 import (
-	"bufio"
-	"fmt"
-	"os"
 	"slices"
 
+	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Split(bufio.ScanLines)
-	var ans1, ans2 int
-	var sum int
+func SolvePart1(lines []string) any {
+	return slices.Max(blockSums(lines))
+}
+
+func SolvePart2(lines []string) any {
+	sums := blockSums(lines)
+	slices.Sort(sums)
+	var ans int
+	for _, s := range sums[len(sums)-3:] {
+		ans += s
+	}
+	return ans
+}
+
+func blockSums(lines []string) []int {
 	var sums []int
-	for scanner.Scan() {
-		line := scanner.Text()
-		if line == "" {
-			ans1 = max(ans1, sum)
-			sums = append(sums, sum)
-			sum = 0
-		} else {
+	for _, block := range aoc.Split(lines, "") {
+		sum := 0
+		for _, line := range block {
 			sum += must.Atoi(line)
 		}
+		sums = append(sums, sum)
 	}
-	ans1 = max(ans1, sum)
-	sums = append(sums, sum)
-	slices.Sort(sums)
-	slices.Reverse(sums)
-	for _, s := range sums[:3] {
-		ans2 += s
-	}
-	fmt.Println("Part 1:", ans1)
-	fmt.Println("Part 2:", ans2)
+	return sums
+}
+
+var (
+	solvers1 = []aoc.Solver{SolvePart1}
+	solvers2 = []aoc.Solver{SolvePart2}
+)
+
+func main() {
+	aoc.Main(solvers1, solvers2)
 }
