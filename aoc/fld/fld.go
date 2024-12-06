@@ -29,6 +29,7 @@ func (f Field[T]) Cols() int {
 	return len(f[0])
 }
 
+// NewFieldWoBorder adds a border of size 1 to the field and returns it as a new field.
 func (f Field[T]) NewFieldWithBorder(b T) Field[T] {
 	cols := f.Cols() + 2
 	res := make([][]T, 0, len(f)+2)
@@ -41,6 +42,7 @@ func (f Field[T]) NewFieldWithBorder(b T) Field[T] {
 	return res
 }
 
+// NewFieldWoBorder transposes the field (matrix) and returns it as a new field.
 func (f Field[T]) NewFieldTransposed() Field[T] {
 	rows := len(f)
 	cols := len(f[0])
@@ -75,7 +77,7 @@ func (f Field[T]) Clone() Field[T] {
 }
 
 // Rotates the field clockwise.
-func (f Field[T]) RotateRight() Field[T] {
+func (f Field[T]) NewFieldRotatedRight() Field[T] {
 	cols := len(f[0])
 	ncols := len(f)
 	nf := make([][]T, cols)
@@ -91,7 +93,7 @@ func (f Field[T]) RotateRight() Field[T] {
 }
 
 // Rotates the field counter-clockwise.
-func (f Field[T]) RotateLeft() Field[T] {
+func (f Field[T]) NewFieldRotatedLeft() Field[T] {
 	cols := len(f[0])
 	ncols := len(f)
 	nf := make([][]T, cols)
@@ -116,19 +118,24 @@ func (f Field[T]) Swap(a, b Pos) {
 	f[a.Row][a.Col], f[b.Row][b.Col] = f[b.Row][b.Col], f[a.Row][a.Col]
 }
 
+// Inside retruns true if the position is inside the field.
 func (f Field[T]) Inside(pos Pos) bool {
 	return 0 <= pos.Row && pos.Row < len(f) &&
 		0 <= pos.Col && pos.Col < len(f[pos.Row])
 }
 
+// Get returns the value at the position.
 func (f Field[T]) Get(p Pos) T {
 	return f[p.Row][p.Col]
 }
 
+// Set sets the value at the position.
 func (f Field[T]) Set(p Pos, val T) {
 	f[p.Row][p.Col] = val
 }
 
+// FindFirst returns the first position of the value in the field.
+// Panics if the value is not found.
 func (f Field[T]) FindFirst(val T) Pos {
 	var p Pos
 	for row := range f {

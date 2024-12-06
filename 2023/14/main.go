@@ -61,7 +61,7 @@ func SolvePart2(lines []string) any {
 	for i := 1; i <= iters; i++ {
 		for k := 0; k < 4; k++ {
 			TiltNorth(field)
-			field = field.RotateRight()
+			field = field.NewFieldRotatedRight()
 		}
 		fieldStr := fld.ToString(field)
 		if seen[fieldStr] == 0 {
