@@ -2,10 +2,7 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	"os"
-
+	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
 
@@ -38,13 +35,9 @@ func priority(r rune) int {
 	return int(r - 'A' + 27)
 }
 
-func main() {
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Split(bufio.ScanLines)
-	var ans1, ans2 int
-	var lines []string
-	for scanner.Scan() {
-		line := scanner.Text()
+func SolvePart1(lines []string) any {
+	ans := 0
+	for _, line := range lines {
 		lines = append(lines, line)
 		must.Equal(len(line)%2, 0)
 		s1, s2 := line[:len(line)/2], line[len(line)/2:]
@@ -52,11 +45,14 @@ func main() {
 		i := intersect(m1, m2)
 		must.Equal(len(i), 1)
 		for r := range i {
-			ans1 += priority(r)
+			ans += priority(r)
 		}
 	}
-	fmt.Println("Part 1:", ans1)
+	return ans
+}
 
+func SolvePart2(lines []string) any {
+	ans := 0
 	must.Equal(len(lines)%3, 0)
 	for i := 0; i < len(lines)/3; i++ {
 		ll := lines[i*3 : i*3+3]
@@ -64,8 +60,17 @@ func main() {
 		i := intersect(intersect(m1, m2), m3)
 		must.Equal(len(i), 1)
 		for r := range i {
-			ans2 += priority(r)
+			ans += priority(r)
 		}
 	}
-	fmt.Println("Part 2:", ans2)
+	return ans
+}
+
+var (
+	solvers1 = []aoc.Solver{SolvePart1}
+	solvers2 = []aoc.Solver{SolvePart2}
+)
+
+func main() {
+	aoc.Main(solvers1, solvers2)
 }
