@@ -40,10 +40,40 @@ func SolvePart2(lines []string) any {
 	// 1. Put obstacles only on the path from part1, not on the whole field (speedup x4)
 	// 2. Remember visited states only on turns, not on every step (speedup x3)
 	// 3. Start loop detection from the new obstacle, not from the initial guard position (speedup x3)
-	// Total: 0.13s for the input (from 5s without optimizations).
-	// TODO: implement jumps to the obstacle.
+	// 4. Jump to the next obstable using precomputed obstacles positions (speedup x3)
+	// Total: 0.04s for the input (from 5s without optimizations).
 	field := fld.NewByteField(lines)
 	guardPos := field.FindFirst(guardCh)
+
+	scanRowObstacles := func(row int) []int {
+		var cols []int
+		for col := range field.Cols() {
+			if field.Get(fld.NewPos(row, col)) == obstacleCh {
+				cols = append(cols, col)
+			}
+		}
+		return cols
+	}
+
+	scanColObstacles := func(col int) []int {
+		var rows []int
+		for row := range field.Rows() {
+			if field.Get(fld.NewPos(row, col)) == obstacleCh {
+				rows = append(rows, row)
+			}
+		}
+		return rows
+	}
+
+	rowObstacles := make([][]int, field.Rows())
+	for row := range field.Rows() {
+		rowObstacles[row] = scanRowObstacles(row)
+	}
+
+	colObstacles := make([][]int, field.Cols())
+	for col := range field.Cols() {
+		colObstacles[col] = scanColObstacles(col)
+	}
 
 	ans := 0
 	dirIdx := 0
@@ -58,10 +88,14 @@ func SolvePart2(lines []string) any {
 		} else {
 			if !visited.Has(npos) {
 				field.Set(npos, obstacleCh)
-				if isLooped(field, guardPos, dirIdx) {
+				rowObstacles[npos.Row] = scanRowObstacles(npos.Row)
+				colObstacles[npos.Col] = scanColObstacles(npos.Col)
+				if isLooped(rowObstacles, colObstacles, guardPos, dirIdx) {
 					ans++
 				}
 				field.Set(npos, freeCh)
+				rowObstacles[npos.Row] = scanRowObstacles(npos.Row)
+				colObstacles[npos.Col] = scanColObstacles(npos.Col)
 				visited.Add(npos)
 			}
 			guardPos = npos
@@ -70,7 +104,7 @@ func SolvePart2(lines []string) any {
 	return ans
 }
 
-func isLooped(field fld.ByteField, guardPos fld.Pos, dirIdx int) bool {
+func isLooped(rowObstacles, colObstacles [][]int, guardPos fld.Pos, dirIdx int) bool {
 	type State struct {
 		pos    fld.Pos
 		dirIdx int
@@ -78,18 +112,56 @@ func isLooped(field fld.ByteField, guardPos fld.Pos, dirIdx int) bool {
 	state := State{pos: guardPos, dirIdx: dirIdx}
 	seen := containers.NewSet[State]()
 	for !seen.Has(state) {
-		npos := state.pos.Add(dirs[state.dirIdx])
-		if !field.Inside(npos) {
+		seen.Add(state)
+		switch state.dirIdx {
+		case 0: // UP
+			// Find obstable in this col above the guard (row value less than guard's row).
+			state.pos.Row = lowerBound(colObstacles[state.pos.Col], state.pos.Row, -100) + 1
+		case 1: // RIGHT
+			// Find obstable in this row to the right of the guard (col value greater than guard's col).
+			state.pos.Col = upperBound(rowObstacles[state.pos.Row], state.pos.Col, -100) - 1
+		case 2: // DOWN
+			// Find obstable in this col below the guard (row value greater than guard's row).
+			state.pos.Row = upperBound(colObstacles[state.pos.Col], state.pos.Row, -100) - 1
+		case 3: // LEFT
+			// Find obstable in this row to the left of the guard (col value less than guard's col).
+			state.pos.Col = lowerBound(rowObstacles[state.pos.Row], state.pos.Col, -100) + 1
+		default:
+			panic("invalid direction")
+		}
+		if state.pos.Row < 0 || state.pos.Col < 0 {
 			return false
 		}
-		if field.Get(npos) == obstacleCh {
-			seen.Add(state) // Remember the state only on turn (speeds up 3 times).
-			state.dirIdx = (state.dirIdx + 1) % len(dirs)
-		} else {
-			state.pos = npos
-		}
+		// Turn right
+		state.dirIdx = (state.dirIdx + 1) % len(dirs)
 	}
 	return true
+}
+
+// lowerBound returns the maximum value in `arr` which is less than `value`.
+// `arr` is not empty and sorted in ascending order.
+func lowerBound(arr []int, value int, defaultValue int) int {
+	// Binary search doesn't make sense here because the array is small.
+	ans := defaultValue
+	for _, x := range arr {
+		if x >= value {
+			break
+		}
+		ans = x
+	}
+	return ans
+}
+
+// upperBound returns the minimun value in `arr` which is greater than `value`.
+// `arr` is not empty and sorted in ascending order.
+func upperBound(arr []int, value int, defaultValue int) int {
+	// Binary search doesn't make sense here because the array is small.
+	for _, x := range arr {
+		if x > value {
+			return x
+		}
+	}
+	return defaultValue
 }
 
 var (
