@@ -1,0 +1,7 @@
+inputs:
+- path: input_ex1.txt
+  wantPart1: "31"
+  wantPart2: "29"
+- path: input.txt
+  wantPart1: "408"
+  wantPart2: "399"
