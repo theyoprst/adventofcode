@@ -1,0 +1,7 @@
+inputs:
+- path: input_ex1.txt
+  wantPart1: "CMZ"
+  wantPart2: "MCD"
+- path: input.txt
+  wantPart1: "RLFNRTNFB"
+  wantPart2: "MHQTLJRLB"
