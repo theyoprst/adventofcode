@@ -1,10 +1,10 @@
 inputs:
-    - path: input_ex1.txt
-      wantPart1: "13"
-      wantPart2: "1"
-    - path: input_ex2.txt
-      wantPart1: "88"
-      wantPart2: "36"
-    - path: input.txt
-      wantPart1: "6339"
-      wantPart2: "2541"
+- path: input_ex1.txt
+  wantPart1: "13"
+  wantPart2: "1"
+- path: input_ex2.txt
+  wantPart1: "88"
+  wantPart2: "36"
+- path: input.txt
+  wantPart1: "6339"
+  wantPart2: "2541"
