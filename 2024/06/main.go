@@ -41,7 +41,8 @@ func SolvePart2(lines []string) any {
 	// 2. Remember visited states only on turns, not on every step (speedup x3)
 	// 3. Start loop detection from the new obstacle, not from the initial guard position (speedup x3)
 	// 4. Jump to the next obstable using precomputed obstacles positions (speedup x3)
-	// Total: 0.04s for the input (from 5s without optimizations).
+	// 5. Track only visited states on turns from UP directions (speedup x2)
+	// Total: 0.02s for the input (from 5s without optimizations).
 	field := fld.NewByteField(lines)
 	guardPos := field.FindFirst(guardCh)
 
@@ -110,11 +111,12 @@ func isLooped(rowObstacles, colObstacles [][]int, guardPos fld.Pos, dirIdx int) 
 		dirIdx int
 	}
 	state := State{pos: guardPos, dirIdx: dirIdx}
-	seen := containers.NewSet[State]()
-	for !seen.Has(state) {
-		seen.Add(state)
+	// Only track visited states on turns from UP directions, to speed up overall execution.
+	visitedUp := containers.NewSet[fld.Pos]()
+	for state.dirIdx != 0 || !visitedUp.Has(state.pos) {
 		switch state.dirIdx {
 		case 0: // UP
+			visitedUp.Add(state.pos)
 			// Find obstable in this col above the guard (row value less than guard's row).
 			state.pos.Row = lowerBound(colObstacles[state.pos.Col], state.pos.Row, -100) + 1
 		case 1: // RIGHT
