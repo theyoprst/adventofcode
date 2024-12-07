@@ -3,5 +3,5 @@ inputs:
   wantPart1: "0"
   wantPart2: "0"
 # - path: input.txt
-#   wantPart1: "246424613"
-#   wantPart2: "248256639"
+#   wantPart1: "0"
+#   wantPart2: "0"
