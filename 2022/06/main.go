@@ -1,47 +1,35 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"slices"
-
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/containers"
 )
 
-func SolveGeneric(lines []string, limit int) []int {
-	var res []int
+func SolvePart1(lines []string) any {
+	return solve(lines, 4)
+}
+
+func SolvePart2(lines []string) any {
+	return solve(lines, 14)
+}
+
+func solve(lines []string, width int) int {
 	for _, line := range lines {
-		for i := limit; i < len(line); i++ {
-			sub := []byte(line[i-limit : i])
+		for i := width; i < len(line); i++ {
+			sub := []byte(line[i-width : i])
 			if len(containers.NewSet[byte](sub...)) == len(sub) {
-				res = append(res, i)
-				break
+				return i
 			}
 		}
 	}
-	return res
+	panic("unreachable")
 }
 
-func SolvePart1(lines []string) []int {
-	return SolveGeneric(lines, 4)
-}
-
-func SolvePart2(lines []string) []int {
-	return SolveGeneric(lines, 14)
-}
+var (
+	solvers1 = []aoc.Solver{SolvePart1}
+	solvers2 = []aoc.Solver{SolvePart2}
+)
 
 func main() {
-	lines1 := aoc.ReadInputLines()
-	lines2 := slices.Clone(lines1)
-	var cmd string
-	if len(os.Args) > 1 {
-		cmd = os.Args[1]
-	}
-	if cmd != "part2" || cmd == "part1" {
-		fmt.Println("Part 1:", SolvePart1(lines1))
-	}
-	if cmd != "part1" || cmd == "part2" {
-		fmt.Println("Part 2:", SolvePart2(lines2))
-	}
+	aoc.Main(solvers1, solvers2)
 }
