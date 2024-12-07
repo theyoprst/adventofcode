@@ -1,0 +1,7 @@
+inputs:
+- path: input_ex1.txt
+  wantPart1: "3749"
+  wantPart2: "11387"
+- path: input.txt
+  wantPart1: "1620690235709"
+  wantPart2: "145397611075341"
