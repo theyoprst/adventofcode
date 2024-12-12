@@ -67,9 +67,8 @@ func SolvePart2(lines []string) any {
 
 	countSides := func(perimeter containers.Set[FenceSection]) int {
 		count := 0
-		for len(perimeter) > 0 {
+		for section := range perimeter {
 			count++
-			section := perimeter.Any()
 			perimeter.Remove(section)
 			perpendiculars := []fld.Pos{
 				section.outsideDir.RotateClockwise(),
