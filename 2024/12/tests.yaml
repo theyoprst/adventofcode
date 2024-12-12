@@ -1,0 +1,19 @@
+inputs:
+- path: input_ex1.txt
+  wantPart1: "140"
+  wantPart2: "80"
+- path: input_ex2.txt
+  wantPart1: "772"
+  wantPart2: "436"
+- path: input_ex3.txt
+  wantPart1: "1930"
+  wantPart2: "1206"
+- path: input_ex4.txt
+  wantPart1: "692"
+  wantPart2: "236"
+- path: input_ex5.txt
+  wantPart1: "1184"
+  wantPart2: "368"
+- path: input.txt
+  wantPart1: "1477924"
+  wantPart2: "841934"
