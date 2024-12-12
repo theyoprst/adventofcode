@@ -62,3 +62,23 @@ func (p Pos) Mult(mult int) Pos {
 func (p Pos) Reverse() Pos {
 	return p.Mult(-1)
 }
+
+// RotateClockwise returns the Pos rotated 90 degrees clockwise.
+// The rotation is done around the origin (0, 0).
+// Mind that the Row axis is pointing down and the Col axis is pointing right.
+func (p Pos) RotateClockwise() Pos {
+	return Pos{
+		Row: p.Col,
+		Col: -p.Row,
+	}
+}
+
+// RotateCounterClockwise returns the Pos rotated 90 degrees counter-clockwise.
+// The rotation is done around the origin (0, 0).
+// Mind that the Row axis is pointing down and the Col axis is pointing right.
+func (p Pos) RotateCounterClockwise() Pos {
+	return Pos{
+		Row: -p.Col,
+		Col: p.Row,
+	}
+}
