@@ -10,7 +10,7 @@ import (
 )
 
 func SolvePart1(lines []string) any {
-	blocks := aoc.Split(lines, "")
+	blocks := aoc.Blocks(lines)
 	ans := 0
 	for i, block := range blocks {
 		first := parsePacket(block[0])
@@ -23,7 +23,7 @@ func SolvePart1(lines []string) any {
 }
 
 func SolvePart1JSON(lines []string) any {
-	blocks := aoc.Split(lines, "")
+	blocks := aoc.Blocks(lines)
 	ans := 0
 	for i, block := range blocks {
 		first := parsePacketJSON(block[0])
@@ -36,7 +36,7 @@ func SolvePart1JSON(lines []string) any {
 }
 
 func SolvePart2(lines []string) any {
-	blocks := aoc.Split(lines, "")
+	blocks := aoc.Blocks(lines)
 	div1 := parsePacket("[[2]]")
 	div2 := parsePacket("[[6]]")
 	packets := []Packet{div1, div2}
@@ -54,7 +54,7 @@ func SolvePart2(lines []string) any {
 }
 
 func SolvePart2JSON(lines []string) any {
-	blocks := aoc.Split(lines, "")
+	blocks := aoc.Blocks(lines)
 	div1 := parsePacketJSON("[[2]]")
 	div2 := parsePacketJSON("[[6]]")
 	packets := []any{div1, div2}

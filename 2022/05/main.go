@@ -7,7 +7,7 @@ import (
 )
 
 func SolvePart1(lines []string) any {
-	blocks := aoc.Split(lines, "")
+	blocks := aoc.Blocks(lines)
 	must.Equal(len(blocks), 2)
 	stacks := parseStacks(blocks[0])
 	steps := blocks[1]
@@ -30,7 +30,7 @@ func SolvePart1(lines []string) any {
 }
 
 func SolvePart2(lines []string) any {
-	blocks := aoc.Split(lines, "")
+	blocks := aoc.Blocks(lines)
 	must.Equal(len(blocks), 2)
 	stacks := parseStacks(blocks[0])
 	steps := blocks[1]

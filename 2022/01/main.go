@@ -23,7 +23,7 @@ func SolvePart2(lines []string) any {
 
 func blockSums(lines []string) []int {
 	var sums []int
-	for _, block := range aoc.Split(lines, "") {
+	for _, block := range aoc.Blocks(lines) {
 		sum := 0
 		for _, line := range block {
 			sum += must.Atoi(line)

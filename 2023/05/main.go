@@ -25,7 +25,7 @@ func ParseInput(lines []string) (seeds []int, maps [][]MapItem) {
 		segs[i] = Seg{seeds[2*i], seeds[2*i] + seeds[2*i+1]}
 	}
 	lines = lines[2:]
-	for _, g := range aoc.Split(lines, "") {
+	for _, g := range aoc.Blocks(lines) {
 		var items []MapItem
 		for _, line := range g[1:] {
 			ints := aoc.Ints(line)

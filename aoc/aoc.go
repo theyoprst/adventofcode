@@ -60,6 +60,11 @@ func Split[T comparable](a []T, by T) [][]T {
 	return gg
 }
 
+// Blocks splits lines in blocks by an empty line.
+func Blocks(lines []string) [][]string {
+	return Split(lines, "")
+}
+
 var allIntsRe = regexp.MustCompile(`[-+]?\d+`)
 
 // Ints returns all integer numbers in s, no matter which delimitters are used.

@@ -15,7 +15,7 @@ func SolvePart2(lines []string) any {
 
 func solve(lines []string, shift int) int {
 	sum := 0
-	for _, block := range aoc.Split(lines, "") {
+	for _, block := range aoc.Blocks(lines) {
 		ax, ay := parseTwoInts(block[0])
 		bx, by := parseTwoInts(block[1])
 		tx, ty := parseTwoInts(block[2])

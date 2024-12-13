@@ -64,7 +64,7 @@ func parseRule(s string) Rule {
 }
 
 func SolvePart1(lines []string) any {
-	groups := aoc.Split(lines, "")
+	groups := aoc.Blocks(lines)
 	workflows := map[string][]Rule{}
 	for _, workflowStr := range groups[0] {
 		key, workflow := parseWorkflow(workflowStr)
@@ -101,7 +101,7 @@ func SolvePart1(lines []string) any {
 }
 
 func SolvePart2(lines []string) any {
-	groups := aoc.Split(lines, "")
+	groups := aoc.Blocks(lines)
 	workflows := map[string][]Rule{}
 	for _, workflowStr := range groups[0] {
 		key, workflow := parseWorkflow(workflowStr)

@@ -37,7 +37,7 @@ func orderComparator(orderRules containers.Set[OrderRule]) func(int, int) int {
 }
 
 func SolvePart1(lines []string) any {
-	blocks := aoc.Split(lines, "")
+	blocks := aoc.Blocks(lines)
 	rulesBlock, updatesBlock := blocks[0], blocks[1]
 	orderRules := newOrderRules(rulesBlock)
 	cmp := orderComparator(orderRules)
@@ -53,7 +53,7 @@ func SolvePart1(lines []string) any {
 }
 
 func SolvePart2(lines []string) any {
-	blocks := aoc.Split(lines, "")
+	blocks := aoc.Blocks(lines)
 	rulesBlock, updatesBlock := blocks[0], blocks[1]
 	orderRules := newOrderRules(rulesBlock)
 	cmp := orderComparator(orderRules)
