@@ -1,6 +1,7 @@
 package main
 
 import (
+	"iter"
 	"strings"
 
 	"github.com/theyoprst/adventofcode/aoc"
@@ -12,7 +13,7 @@ func SolvePart1(lines []string) any {
 	blocks := aoc.Blocks(lines)
 	field := fld.NewByteField(blocks[0])
 	robotPos := field.FindFirst('@')
-	for _, dir := range parseCommands(blocks[1]) {
+	for dir := range parseCommands(blocks[1]) {
 		// find first no box space in the direction dir:
 		noBoxPos := robotPos.Add(dir)
 		for field.Get(noBoxPos) == 'O' {
@@ -67,7 +68,7 @@ func SolvePart2(lines []string) any {
 		return topRevSorted
 	}
 
-	for _, dir := range parseCommands(blocks[1]) {
+	for dir := range parseCommands(blocks[1]) {
 		for _, src := range toPush(dir) {
 			// Because items to push are sorted (the further item is the first in the list),
 			// there is no overlapping during pushing.
@@ -81,25 +82,27 @@ func SolvePart2(lines []string) any {
 	return score(field, '[')
 }
 
-func parseCommands(lines []string) []fld.Pos {
-	var commands []fld.Pos
-	for _, command := range strings.Join(lines, "") {
-		var dir fld.Pos
-		switch command {
-		case '^':
-			dir = fld.Up
-		case 'v':
-			dir = fld.Down
-		case '<':
-			dir = fld.Left
-		case '>':
-			dir = fld.Right
-		default:
-			panic("invalid command")
+func parseCommands(lines []string) iter.Seq[fld.Pos] {
+	return func(yield func(fld.Pos) bool) {
+		for _, command := range strings.Join(lines, "") {
+			var dir fld.Pos
+			switch command {
+			case '^':
+				dir = fld.Up
+			case 'v':
+				dir = fld.Down
+			case '<':
+				dir = fld.Left
+			case '>':
+				dir = fld.Right
+			default:
+				panic("invalid command")
+			}
+			if !yield(dir) {
+				break
+			}
 		}
-		commands = append(commands, dir)
 	}
-	return commands
 }
 
 func enlarge(lines []string) []string {
