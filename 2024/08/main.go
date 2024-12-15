@@ -9,14 +9,12 @@ import (
 func SolvePart1(lines []string) any {
 	field := fld.NewByteField(lines)
 	antennas := make(map[byte][]fld.Pos)
-	for row := range field.Rows() {
-		for col := range field.Cols() {
-			pos := fld.NewPos(row, col)
-			ch := field.Get(pos)
-			if ch != '.' {
-				antennas[ch] = append(antennas[ch], pos)
-			}
+	for pos := range field.IterPositions() {
+		ch := field.Get(pos)
+		if ch != '.' {
+			antennas[ch] = append(antennas[ch], pos)
 		}
+
 	}
 	antinodes := containers.NewSet[fld.Pos]()
 	for _, positions := range antennas {

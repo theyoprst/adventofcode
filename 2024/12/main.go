@@ -26,13 +26,10 @@ func SolvePart1(lines []string) any {
 		return s, p
 	}
 	sum := 0
-	for row := 1; row < field.Rows()-1; row++ {
-		for col := 1; col < field.Cols()-1; col++ {
-			pos := fld.NewPos(row, col)
-			if !visited.Has(pos) {
-				s, p := dfs(pos)
-				sum += s * p
-			}
+	for pos := range field.IterPositionsWithPadding(1) {
+		if !visited.Has(pos) {
+			s, p := dfs(pos)
+			sum += s * p
 		}
 	}
 	return sum
@@ -87,17 +84,13 @@ func SolvePart2(lines []string) any {
 	}
 
 	sum := 0
-	for row := 1; row < field.Rows()-1; row++ {
-		for col := 1; col < field.Cols()-1; col++ {
-			pos := fld.NewPos(row, col)
-			if !visited.Has(pos) {
-				perimeter := containers.NewSet[FenceSection]()
-				area := dfs(pos, perimeter)
-				sum += area * countSides(perimeter)
-			}
+	for pos := range field.IterPositionsWithPadding(1) {
+		if !visited.Has(pos) {
+			perimeter := containers.NewSet[FenceSection]()
+			area := dfs(pos, perimeter)
+			sum += area * countSides(perimeter)
 		}
 	}
-
 	return sum
 }
 

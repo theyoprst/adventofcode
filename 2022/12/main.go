@@ -33,13 +33,10 @@ func solve(lines []string, startFromZeros bool) any {
 	dist := map[fld.Pos]int{start: 0}
 	queue := []fld.Pos{start}
 	if startFromZeros {
-		for row := range field.Rows() {
-			for col := range field.Cols() {
-				pos := fld.NewPos(row, col)
-				if height(pos) == 0 {
-					dist[pos] = 0
-					queue = append(queue, pos)
-				}
+		for pos := range field.IterPositions() {
+			if height(pos) == 0 {
+				dist[pos] = 0
+				queue = append(queue, pos)
 			}
 		}
 	}

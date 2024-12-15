@@ -33,12 +33,9 @@ func SolvePart1(lines []string) any {
 	}
 
 	sum := 0
-	for row := range field.Rows() {
-		for col := range field.Cols() {
-			pos := fld.NewPos(row, col)
-			if field.Get(pos) == '0' {
-				sum += score(pos)
-			}
+	for pos := range field.IterPositions() {
+		if field.Get(pos) == '0' {
+			sum += score(pos)
 		}
 	}
 	return sum
@@ -73,12 +70,9 @@ func SolvePart2(lines []string) any {
 	}
 
 	sum := 0
-	for row := range field.Rows() {
-		for col := range field.Cols() {
-			pos := fld.NewPos(row, col)
-			if field.Get(pos) == '0' {
-				sum += rating(pos)
-			}
+	for pos := range field.IterPositions() {
+		if field.Get(pos) == '0' {
+			sum += rating(pos)
 		}
 	}
 	return sum

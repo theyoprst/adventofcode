@@ -128,12 +128,9 @@ func enlarge(lines []string) []string {
 
 func score(field fld.ByteField, boxCh byte) int {
 	sum := 0
-	for row := range field.Rows() {
-		for col := range field.Cols() {
-			pos := fld.NewPos(row, col)
-			if field.Get(pos) == boxCh {
-				sum += 100*row + col
-			}
+	for pos := range field.IterPositions() {
+		if field.Get(pos) == boxCh {
+			sum += 100*pos.Row + pos.Col
 		}
 	}
 	return sum

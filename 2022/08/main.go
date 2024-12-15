@@ -55,27 +55,24 @@ func SolvePart1(lines []string) any {
 func SolvePart2(lines []string) any {
 	field := fld.NewByteField(lines)
 	maxProduct := 0
-	for row := 0; row < field.Rows(); row++ {
-		for col := 0; col < field.Cols(); col++ {
-			pos := fld.NewPos(row, col)
-			p := 1
-			for _, dir := range fld.DirsSimple {
-				c := 0
-				next := pos
-				for {
-					next = next.Add(dir)
-					if !field.Inside(next) {
-						break
-					}
-					c++
-					if field.Get(next) >= field.Get(pos) {
-						break
-					}
+	for pos := range field.IterPositions() {
+		p := 1
+		for _, dir := range fld.DirsSimple {
+			c := 0
+			next := pos
+			for {
+				next = next.Add(dir)
+				if !field.Inside(next) {
+					break
 				}
-				p *= c
+				c++
+				if field.Get(next) >= field.Get(pos) {
+					break
+				}
 			}
-			maxProduct = max(maxProduct, p)
+			p *= c
 		}
+		maxProduct = max(maxProduct, p)
 	}
 	return maxProduct
 }
