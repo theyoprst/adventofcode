@@ -1,0 +1,15 @@
+Register A: 729
+Register B: 0
+Register C: 0
+
+Program: 0,1,5,4,3,0
+
+Go version:
+a := 729
+for {
+    a /= 2
+    print a % 8
+    if a == 0 {
+        break
+    }
+}

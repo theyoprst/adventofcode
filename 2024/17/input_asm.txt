@@ -1,0 +1,19 @@
+Register A: 28066687
+Register B: 0
+Register C: 0
+
+Program:
+b = a % 8    -- 2,4, bst
+b ^= 1       -- 1,1, bxl
+c = a >> b   -- 7,5
+b ^= c       -- 4,6,
+a = a >> 3   -- 0,3,
+b ^= 4       -- 1,4,
+out b % 8    -- 5,5,
+a!=0: jump 0 -- 3,0
+
+for ; a != 0; a >> 3 {
+    b := (a & 7) ^ 1
+    b = b ^ 4 ^ (a >> b)
+    out b & 7
+}
