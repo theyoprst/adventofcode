@@ -22,6 +22,14 @@ func NewByteField(lines []string) Field[byte] {
 	return field
 }
 
+func NewFieldRowsCols[T comparable](rows, cols int, fill T) Field[T] {
+	field := make([][]T, rows)
+	for i := range field {
+		field[i] = slices.Repeat([]T{fill}, cols)
+	}
+	return field
+}
+
 func (f Field[T]) Rows() int {
 	return len(f)
 }
@@ -132,6 +140,9 @@ func (f Field[T]) Get(p Pos) T {
 
 // Set sets the value at the position.
 func (f Field[T]) Set(p Pos, val T) {
+	if !f.Inside(p) {
+		must.NoError(fmt.Errorf("position %v is outside the field", p))
+	}
 	f[p.Row][p.Col] = val
 }
 
