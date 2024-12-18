@@ -1,0 +1,14 @@
+inputs:
+# TODO: Uncomment when params are implemented
+#- path: input_ex1.txt
+#  params:
+#    gridSize: 7
+#    firstLines: 12
+#  wantPart1: "22"
+#  wantPart2: "6,1"
+- path: input.txt
+#  params:
+#    gridSize: 71
+#    firstLines: 1024
+  wantPart1: "320"
+  wantPart2: "34,40"
