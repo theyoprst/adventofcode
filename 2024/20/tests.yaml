@@ -1,0 +1,13 @@
+inputs:
+- path: input_ex1.txt
+  params:
+    cheatsSavingAtLeastPart1: 2
+    cheatsSavingAtLeastPart2: 50
+  wantPart1: "0" # TODO: Update this value when params are implemented.
+  wantPart2: "0" # TODO: Update this value when params are implemented.
+- path: input.txt
+  params:
+    cheatsSavingAtLeastPart1: 100
+    cheatsSavingAtLeastPart2: 100
+  wantPart1: "1389"
+  wantPart2: "1005068"
