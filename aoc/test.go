@@ -6,15 +6,15 @@ import (
 	"os"
 	"testing"
 
-	"gopkg.in/yaml.v3"
-
 	"github.com/google/go-cmp/cmp"
+	"gopkg.in/yaml.v3"
 )
 
 type Input struct {
 	Path      string `yaml:"path"`
 	WantPart1 string `yaml:"wantPart1"`
 	WantPart2 string `yaml:"wantPart2"`
+	Params    Params `yaml:"params"`
 }
 
 type Tests struct {
@@ -35,22 +35,25 @@ func RunTests(t *testing.T, solversPart1 []Solver, solversPart2 []Solver) {
 	}
 
 	type testCase struct {
-		path string
-		want string
+		path   string
+		want   string
+		params Params
 	}
 	var testCasesPart1 []testCase
 	var testCasesPart2 []testCase
 	for _, input := range tests.Inputs {
 		if input.WantPart1 != "" {
 			testCasesPart1 = append(testCasesPart1, testCase{
-				path: input.Path,
-				want: input.WantPart1,
+				path:   input.Path,
+				want:   input.WantPart1,
+				params: input.Params,
 			})
 		}
 		if input.WantPart2 != "" {
 			testCasesPart2 = append(testCasesPart2, testCase{
-				path: input.Path,
-				want: input.WantPart2,
+				path:   input.Path,
+				want:   input.WantPart2,
+				params: input.Params,
 			})
 		}
 	}
@@ -88,7 +91,11 @@ func RunTests(t *testing.T, solversPart1 []Solver, solversPart2 []Solver) {
 					defer func() {
 						_ = f.Close()
 					}()
-					ans := suite.solver(context.Background(), ReadLines(f))
+					ctx := context.Background()
+					if testCase.params != nil {
+						ctx = contextWithParams(ctx, testCase.params)
+					}
+					ans := suite.solver(ctx, ReadLines(f))
 					ansStr := fmt.Sprint(ans)
 					if diff := cmp.Diff(ansStr, testCase.want); diff != "" {
 						t.Errorf("Unexpected answer, diff (-got +want):\n%s", diff)

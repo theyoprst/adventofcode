@@ -21,7 +21,7 @@ func getFunctionName(temp interface{}) string {
 func Main(solversPart1, solversPart2 []Solver) {
 	inputFlag := flag.String("input", "", "input file path")
 	flag.Parse()
-	lines := ReadInputLines(inputFlag)
+	lines := ReadInputLines(*inputFlag)
 	var cmd string
 	if len(os.Args) > 1 {
 		cmd = os.Args[1]
@@ -33,7 +33,11 @@ func Main(solversPart1, solversPart2 []Solver) {
 	if cmd != "part1" || cmd == "part2" {
 		solvers = append(solvers, solversPart2...)
 	}
+	ctx := context.Background()
+	if *inputFlag != "" {
+		ctx = contextWithParams(ctx, paramsForInput(*inputFlag))
+	}
 	for _, solver := range solvers {
-		fmt.Printf("%s: %v\n", getFunctionName(solver), solver(context.Background(), slices.Clone(lines)))
+		fmt.Printf("%s: %v\n", getFunctionName(solver), solver(ctx, slices.Clone(lines)))
 	}
 }

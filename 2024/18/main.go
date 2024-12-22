@@ -9,19 +9,17 @@ import (
 	"github.com/theyoprst/adventofcode/aoc/fld"
 )
 
-// TODO: implement input params in tests.yaml
-const (
-	gridSize   = 71
-	firstBytes = 1024
-)
-
-func SolvePart1(_ context.Context, lines []string) any {
+func SolvePart1(ctx context.Context, lines []string) any {
+	gridSize := aoc.GetParams(ctx).Int("gridSize")
+	firstBytes := aoc.GetParams(ctx).Int("firstBytes")
 	bytesPositions := parseBytePositions(lines)
 	corrupted := containers.NewSet(bytesPositions[:firstBytes]...)
 	return startToFinishDist(corrupted, gridSize)
 }
 
-func SolvePart2(_ context.Context, lines []string) any {
+func SolvePart2(ctx context.Context, lines []string) any {
+	gridSize := aoc.GetParams(ctx).Int("gridSize")
+	firstBytes := aoc.GetParams(ctx).Int("firstBytes")
 	bytePositions := parseBytePositions(lines)
 
 	left := firstBytes - 1          // invariant: left index doesn't block
