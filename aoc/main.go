@@ -1,6 +1,7 @@
 package aoc
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"reflect"
@@ -17,7 +18,9 @@ func getFunctionName(temp interface{}) string {
 }
 
 func Main(solversPart1, solversPart2 []Solver) {
-	lines := ReadInputLines()
+	inputFlag := flag.String("input", "", "input file path")
+	flag.Parse()
+	lines := ReadInputLines(inputFlag)
 	var cmd string
 	if len(os.Args) > 1 {
 		cmd = os.Args[1]

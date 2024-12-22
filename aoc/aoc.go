@@ -15,8 +15,17 @@ import (
 )
 
 // ReadInputLines reads lines from os.Stdin.
-func ReadInputLines() []string {
-	return ReadLines(os.Stdin)
+func ReadInputLines(path *string) []string {
+	var reader io.Reader
+	if path != nil {
+		file, err := os.Open(*path)
+		must.NoError(err)
+		reader = file
+		defer file.Close()
+	} else {
+		reader = os.Stdin
+	}
+	return ReadLines(reader)
 }
 
 // ReadInput reads all bytes from os.Stdin.
