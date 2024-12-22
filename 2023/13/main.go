@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/fld"
 	"github.com/theyoprst/adventofcode/must"
@@ -44,11 +46,11 @@ func SolveGeneric(lines []string, wantMismatches int) any {
 	return ans
 }
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	return SolveGeneric(lines, 0)
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	return SolveGeneric(lines, 1)
 }
 
@@ -81,7 +83,7 @@ func HorMirrorPoint(field [][]byte, wantMismatches int) int {
 	return 0
 }
 
-func SolvePart1Transponse(lines []string) any {
+func SolvePart1Transponse(_ context.Context, lines []string) any {
 	var ans int
 	for _, pattern := range aoc.Blocks(lines) {
 		field := fld.NewByteField(pattern)
@@ -91,7 +93,7 @@ func SolvePart1Transponse(lines []string) any {
 	return ans
 }
 
-func SolvePart2Transponse(lines []string) any {
+func SolvePart2Transponse(_ context.Context, lines []string) any {
 	var ans int
 	for _, pattern := range aoc.Blocks(lines) {
 		field := fld.NewByteField(pattern)

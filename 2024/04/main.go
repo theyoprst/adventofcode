@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/fld"
 )
@@ -11,7 +13,7 @@ import (
 //   rex.New(rex.Common.RawVerbose(``)).MustCompile()
 //
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	const search = "XMAS"
 	f := fld.NewByteField(lines)
 	count := 0
@@ -33,7 +35,7 @@ func SolvePart1(lines []string) any {
 	return count
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	const (
 		search  = "MAS"
 		halfLen = len(search) / 2

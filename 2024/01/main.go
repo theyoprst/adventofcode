@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"sort"
 	"strings"
 
@@ -8,7 +9,7 @@ import (
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	var x, y []int
 	for _, line := range lines {
 		ii := aoc.Ints(line)
@@ -24,7 +25,7 @@ func SolvePart1(lines []string) any {
 	return diff
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	var x []int
 	counter := map[int]int{}
 	for _, line := range lines {
@@ -39,7 +40,7 @@ func SolvePart2(lines []string) any {
 	return score
 }
 
-func SolvePart1AI(lines []string) any {
+func SolvePart1AI(_ context.Context, lines []string) any {
 	leftList := make([]int, 0, len(lines))
 	rightList := make([]int, 0, len(lines))
 	for _, line := range lines {
@@ -58,7 +59,7 @@ func SolvePart1AI(lines []string) any {
 	return totalDistance
 }
 
-func SolvePart2AI(lines []string) any {
+func SolvePart2AI(_ context.Context, lines []string) any {
 	leftList := make([]int, 0, len(lines))
 	rightList := make([]int, 0, len(lines))
 	for _, line := range lines {

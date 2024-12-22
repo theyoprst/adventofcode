@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"slices"
 	"strings"
 
@@ -16,7 +17,7 @@ func hash(s string) int {
 	return h
 }
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	strs := strings.Split(lines[0], ",")
 	ans := 0
 	for _, s := range strs {
@@ -25,7 +26,7 @@ func SolvePart1(lines []string) any {
 	return ans
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	strs := strings.Split(lines[0], ",")
 	type Item struct {
 		Label    string

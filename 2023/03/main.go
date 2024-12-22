@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
+
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/containers"
 	"github.com/theyoprst/adventofcode/aoc/fld"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	field := fld.NewByteField(lines).NewFieldWithBorder('.')
 	var ans int
 	for i, row := range field {
@@ -39,7 +41,7 @@ func SolvePart1(lines []string) any {
 	return ans
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	field := fld.NewByteField(lines).NewFieldWithBorder('.')
 	allGears := map[fld.Pos][]int{}
 	for i, row := range field {

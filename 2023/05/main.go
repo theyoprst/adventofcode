@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"math"
 	"slices"
@@ -36,7 +37,7 @@ func ParseInput(lines []string) (seeds []int, maps [][]MapItem) {
 	return seeds, maps
 }
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	seeds, maps := ParseInput(lines)
 	for _, items := range maps {
 		for i, seed := range seeds {
@@ -54,7 +55,7 @@ func SolvePart1(lines []string) any {
 
 // Start with 10 segments. Filter each segment through mappings splitting by subsegments.
 // Happily, only 170 subsegments are at the end. But in theory there could be huge number of them.
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	seeds, maps := ParseInput(lines)
 	segs := make([]Seg, len(seeds)/2)
 	for i := range segs {
@@ -101,7 +102,7 @@ func SolvePart2(lines []string) any {
 	return ans
 }
 
-func SolvePart2BruteForce(lines []string) any {
+func SolvePart2BruteForce(_ context.Context, lines []string) any {
 	seeds, maps := ParseInput(lines)
 	segs := make([]Seg, len(seeds)/2)
 	for i := range segs {

@@ -1,12 +1,13 @@
 package main
 
 import (
+	"context"
 	"strings"
 
 	"github.com/theyoprst/adventofcode/aoc"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	patterns := strings.Split(lines[0], ", ")
 	designs := lines[2:]
 	totalCount := 0
@@ -34,7 +35,7 @@ func SolvePart1(lines []string) any {
 	return totalCount
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	patterns := strings.Split(lines[0], ", ")
 	designs := lines[2:]
 	totalCount := 0

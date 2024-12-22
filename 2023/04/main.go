@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"slices"
 	"strings"
@@ -9,7 +10,7 @@ import (
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	var ans int
 	for _, line := range lines {
 		_, line = must.Split2(line, ":")
@@ -24,7 +25,7 @@ func SolvePart1(lines []string) any {
 	return ans
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	var ans int
 	copies := map[int]int{}
 	for i, line := range lines {
@@ -42,7 +43,7 @@ func SolvePart2(lines []string) any {
 	return ans
 }
 
-func SolvePart2SegmentTree(lines []string) any {
+func SolvePart2SegmentTree(_ context.Context, lines []string) any {
 	var ans int
 	tree := NewSTree(len(lines))
 	tree.Inc(0, len(lines), 1)

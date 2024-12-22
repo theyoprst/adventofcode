@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"slices"
 	"strings"
 
@@ -34,7 +35,7 @@ type Impulse struct {
 	value Imp
 }
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	flip := map[string]FlipFlop{}
 	conj := map[string]map[string]Imp{}
 	dispatch := map[string][]string{}
@@ -105,7 +106,7 @@ func SolvePart1(lines []string) any {
 	return highs * lows
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	flip := map[string]FlipFlop{}
 	conj := map[string]map[string]Imp{}
 	dispatch := map[string][]string{}

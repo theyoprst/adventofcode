@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/fld"
@@ -9,7 +10,7 @@ import (
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	field := fld.NewByteField(lines)
 	start := field.FindFirst('S')
 	return CountReachable(field, start, 64)
@@ -17,7 +18,7 @@ func SolvePart1(lines []string) any {
 
 var stepsPart2 = 26501365
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	return CountReachableInfiniteSmart(lines, stepsPart2)
 }
 
@@ -187,11 +188,11 @@ func CountReachableInfiniteSmart(lines []string, steps int) int {
 	return ans
 }
 
-func SolvePart2Naive(lines []string) any {
+func SolvePart2Naive(_ context.Context, lines []string) any {
 	return CountReachableInfiniteNaive(lines, stepsPart2)
 }
 
-func SolvePart2Quadratic(lines []string) any {
+func SolvePart2Quadratic(_ context.Context, lines []string) any {
 	return CountReachableInfiniteQuadratic(lines, stepsPart2)
 }
 

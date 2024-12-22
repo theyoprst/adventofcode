@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"iter"
 	"strings"
 
@@ -9,7 +10,7 @@ import (
 	"github.com/theyoprst/adventofcode/aoc/fld"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	blocks := aoc.Blocks(lines)
 	field := fld.NewByteField(blocks[0])
 	robotPos := field.FindFirst('@')
@@ -29,7 +30,7 @@ func SolvePart1(lines []string) any {
 	return score(field, 'O')
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	blocks := aoc.Blocks(lines)
 	field := fld.NewByteField(enlarge(blocks[0]))
 	robotPos := field.FindFirst('@')

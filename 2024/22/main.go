@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"math"
 
 	"github.com/theyoprst/adventofcode/aoc"
@@ -9,7 +10,7 @@ import (
 
 const stepsCount = 2000
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	sum := 0
 	for _, line := range lines {
 		secret := must.Atoi(line)
@@ -21,7 +22,7 @@ func SolvePart1(lines []string) any {
 	return sum
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	const diffsCount = 4
 	// Idea: for each buyer, precalculate the price per each encountered for this buyer tuple of `diffsCount` diffs.
 	// Store it in a map[diff -> price].

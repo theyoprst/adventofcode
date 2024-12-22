@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"math"
 
 	"github.com/theyoprst/adventofcode/aoc"
@@ -42,7 +43,7 @@ const (
 	// MaxCoord = 27 //nolint(godot): false positive.
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	var hailstorms []Hailstorm
 	for _, line := range lines {
 		nn := aoc.Ints(line)
@@ -156,7 +157,7 @@ func SolveLinearSystem(a [][]float64, b []float64) {
 	}
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	var p []Vector3D
 	var v []Vector3D
 	for _, line := range lines {

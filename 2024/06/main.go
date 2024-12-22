@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/containers"
 	"github.com/theyoprst/adventofcode/aoc/fld"
@@ -14,7 +16,7 @@ const (
 
 var dirs = []fld.Pos{fld.Up, fld.Right, fld.Down, fld.Left}
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	field := fld.NewByteField(lines)
 	guardPos := field.FindFirst(guardCh)
 	dirIdx := 0
@@ -34,7 +36,7 @@ func SolvePart1(lines []string) any {
 	return len(visited)
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	// Brute force. Put obstacles on the path and check if the guard will loop.
 	// Optimizations:
 	// 1. Put obstacles only on the path from part1, not on the whole field (speedup x4)

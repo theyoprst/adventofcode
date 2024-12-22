@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/containers"
 	"github.com/theyoprst/adventofcode/aoc/fld"
@@ -9,7 +11,7 @@ import (
 
 var sandSrc = fld.Pos{Row: 0, Col: 500}
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	field, abyss := parseField(lines)
 	count := 0
 	for {
@@ -23,7 +25,7 @@ func SolvePart1(lines []string) any {
 	return count
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	field, abyss := parseField(lines)
 	count := 0
 	for !field.Has(sandSrc) {

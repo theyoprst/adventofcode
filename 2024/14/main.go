@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"strings"
@@ -10,7 +11,7 @@ import (
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	const steps = 100
 	// const width = 11
 	// const height = 7
@@ -39,7 +40,7 @@ func SolvePart1(lines []string) any {
 	return prod
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	const width = 101
 	const height = 103
 
@@ -97,7 +98,7 @@ func SolvePart2(lines []string) any {
 	}
 }
 
-func SolvePart2Fast(lines []string) any {
+func SolvePart2Fast(_ context.Context, lines []string) any {
 	const width = 101
 	const height = 103
 

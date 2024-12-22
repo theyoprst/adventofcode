@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"slices"
 
 	"github.com/theyoprst/adventofcode/aoc"
@@ -23,7 +24,7 @@ type Brick struct {
 	above containers.Set[int]
 }
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	bricks := parseAndFallBricks(lines)
 
 	supporting := containers.NewSet[int]()
@@ -35,7 +36,7 @@ func SolvePart1(lines []string) any {
 	return len(bricks) - len(supporting)
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	bricks := parseAndFallBricks(lines)
 
 	var removedI int

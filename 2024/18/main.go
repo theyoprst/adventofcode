@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/theyoprst/adventofcode/aoc"
@@ -9,16 +10,18 @@ import (
 )
 
 // TODO: implement input params in tests.yaml
-const gridSize = 71
-const firstBytes = 1024
+const (
+	gridSize   = 71
+	firstBytes = 1024
+)
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	bytesPositions := parseBytePositions(lines)
 	corrupted := containers.NewSet(bytesPositions[:firstBytes]...)
 	return startToFinishDist(corrupted, gridSize)
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	bytePositions := parseBytePositions(lines)
 
 	left := firstBytes - 1          // invariant: left index doesn't block

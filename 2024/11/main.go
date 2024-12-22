@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"math"
 	"strconv"
 
@@ -8,11 +9,11 @@ import (
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	return solve(lines, 25)
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	return solve(lines, 75)
 }
 

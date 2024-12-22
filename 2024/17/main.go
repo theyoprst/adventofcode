@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"iter"
 	"slices"
 	"strconv"
@@ -23,7 +24,7 @@ const (
 	OpCodeCDV OpCode = 7
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	a := aoc.Ints(lines[0])[0]
 	b := aoc.Ints(lines[1])[0]
 	c := aoc.Ints(lines[2])[0]
@@ -34,7 +35,7 @@ func SolvePart1(lines []string) any {
 	return strings.Join(output, ",")
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	program := aoc.Ints(lines[4])
 	wantOut := slices.Clone(program)
 	slices.Reverse(wantOut)

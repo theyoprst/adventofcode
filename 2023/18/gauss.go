@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/theyoprst/adventofcode/aoc/fld"
 	"github.com/theyoprst/adventofcode/must"
 )
@@ -27,10 +29,10 @@ func SolveGenericGauss(commands []Command) int {
 	return area
 }
 
-func SolvePart1Gauss(lines []string) any {
+func SolvePart1Gauss(_ context.Context, lines []string) any {
 	return SolveGenericGauss(ParseCommands(lines))
 }
 
-func SolvePart2Gauss(lines []string) any {
+func SolvePart2Gauss(_ context.Context, lines []string) any {
 	return SolveGenericGauss(ParseCommands2(lines))
 }

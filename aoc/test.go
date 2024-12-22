@@ -1,6 +1,7 @@
 package aoc
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"testing"
@@ -56,7 +57,7 @@ func RunTests(t *testing.T, solversPart1 []Solver, solversPart2 []Solver) {
 
 	type testSuite struct {
 		name      string
-		solver    func([]string) any
+		solver    func(context.Context, []string) any
 		testCases []testCase
 	}
 
@@ -87,7 +88,7 @@ func RunTests(t *testing.T, solversPart1 []Solver, solversPart2 []Solver) {
 					defer func() {
 						_ = f.Close()
 					}()
-					ans := suite.solver(ReadLines(f))
+					ans := suite.solver(context.Background(), ReadLines(f))
 					ansStr := fmt.Sprint(ans)
 					if diff := cmp.Diff(ansStr, testCase.want); diff != "" {
 						t.Errorf("Unexpected answer, diff (-got +want):\n%s", diff)

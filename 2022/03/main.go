@@ -2,6 +2,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
@@ -35,7 +37,7 @@ func priority(r rune) int {
 	return int(r - 'A' + 27)
 }
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	ans := 0
 	for _, line := range lines {
 		lines = append(lines, line)
@@ -51,7 +53,7 @@ func SolvePart1(lines []string) any {
 	return ans
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	ans := 0
 	must.Equal(len(lines)%3, 0)
 	for i := 0; i < len(lines)/3; i++ {

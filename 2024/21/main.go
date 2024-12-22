@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"math"
 	"strings"
 
@@ -21,11 +22,11 @@ var (
 	)
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	return solve(lines, 2)
 }
 
-func SolvePart2Right(lines []string) any {
+func SolvePart2Right(_ context.Context, lines []string) any {
 	return solve(lines, 25)
 }
 

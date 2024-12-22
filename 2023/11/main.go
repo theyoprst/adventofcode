@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/fld"
 )
@@ -15,19 +17,19 @@ const (
 	Space = '.'
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	return solveGenericPartSum(lines, 2)
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	return solveGenericPartSum(lines, 1000000)
 }
 
-func SolvePart1Naive(lines []string) any {
+func SolvePart1Naive(_ context.Context, lines []string) any {
 	return solveGenericNaive(lines, 2)
 }
 
-func SolvePart2Naive(lines []string) any {
+func SolvePart2Naive(_ context.Context, lines []string) any {
 	return solveGenericNaive(lines, 1000000)
 }
 

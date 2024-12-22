@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/containers"
 	"github.com/theyoprst/adventofcode/aoc/fld"
@@ -66,12 +68,12 @@ func CountEnergized(field fld.ByteField, start, startDir fld.Pos) int {
 	return len(seenPoints)
 }
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	field := fld.NewByteField(lines)
 	return CountEnergized(field, fld.NewPos(0, 0), fld.Right)
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	field := fld.NewByteField(lines)
 	ans := 0
 	for col := 0; col < field.Cols(); col++ {

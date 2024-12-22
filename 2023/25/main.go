@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"math"
 	"math/rand"
@@ -39,7 +40,7 @@ const (
 // Complexity is `O(|E| * |V|)`.
 // But in test data graph is split in two roughly equal parts. Which means that FFA will be run on averate 2 times, so
 // Expected running time is `O(|E|)`.
-func SolvePart1FFA(lines []string) any {
+func SolvePart1FFA(_ context.Context, lines []string) any {
 	type Edge struct{ from, to string }
 	c := map[Edge]int{}
 	graph := map[string]containers.Set[string]{}
@@ -120,7 +121,7 @@ func SolvePart1FFA(lines []string) any {
 }
 
 // Same as FFA, but BFS instead of DFS was used. 20% faster than FFA because a more short paths are chosen.
-func SolvePart1EdmondsKarp(lines []string) any {
+func SolvePart1EdmondsKarp(_ context.Context, lines []string) any {
 	type Edge struct{ from, to string }
 	c := map[Edge]int{}
 	graph := map[string]containers.Set[string]{}
@@ -201,7 +202,7 @@ func (e Edge) Reversed() Edge {
 
 // For some reason it's 5 times slower than Edmonds-Karp if check all sink nodes t.
 // Maybe because BFS finds t on average much more faster than traversing all the graph for building layered network.
-func SolvePart1Dinic(lines []string) any {
+func SolvePart1Dinic(_ context.Context, lines []string) any {
 	c := map[Edge]int{}
 	graph := map[string]containers.Set[string]{}
 	for _, line := range lines {
@@ -311,7 +312,7 @@ func SolvePart1Dinic(lines []string) any {
 // Total complexity: O(V E log V).
 // To find minimal cut = 3 it has to reduce graph by 80%, there is (probably) no way to reduce it.
 // The slowest solution for this problem.
-func SolveStoerWagner(lines []string) any {
+func SolveStoerWagner(_ context.Context, lines []string) any {
 	graph := map[string]map[string]int{}
 	for _, line := range lines {
 		first, rest := must.Split2(line, ": ")
@@ -380,7 +381,7 @@ func SolveStoerWagner(lines []string) any {
 // Single phase has time O(E), theoretical upper bound for number of phases is O(V^2).
 // But for this graph number of phases were always less than V (after several dozens of runs).
 // So looks like it is O(V*E) for the test graph.
-func SolveKarger(lines []string) any {
+func SolveKarger(_ context.Context, lines []string) any {
 	var edges []Edge
 	vertices := containers.NewSet[string]()
 	for _, line := range lines {
@@ -436,7 +437,7 @@ func SolveKarger(lines []string) any {
 // Possible reasons:
 // - one of the min cut edges was removed in the beginning and we spent lots of time in a wrong branch of recursion.
 // - randomization is slow.
-func SolveKargerStein(lines []string) any {
+func SolveKargerStein(_ context.Context, lines []string) any {
 	var edges []Edge
 	vertices := containers.NewSet[string]()
 	for _, line := range lines {

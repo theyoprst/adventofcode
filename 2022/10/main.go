@@ -1,13 +1,14 @@
 package main
 
 import (
+	"context"
 	"strings"
 
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	registerX := 1
 	cycle := 0
 	signalStrengthSum := 0
@@ -28,7 +29,7 @@ func SolvePart1(lines []string) any {
 	return signalStrengthSum
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	registerX := 1
 	cycle := 0
 	crt := make([][]byte, 6)

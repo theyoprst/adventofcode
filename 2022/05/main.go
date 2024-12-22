@@ -2,11 +2,13 @@
 package main
 
 import (
+	"context"
+
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	blocks := aoc.Blocks(lines)
 	must.Equal(len(blocks), 2)
 	stacks := parseStacks(blocks[0])
@@ -29,7 +31,7 @@ func SolvePart1(lines []string) any {
 	return string(ans)
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	blocks := aoc.Blocks(lines)
 	must.Equal(len(blocks), 2)
 	stacks := parseStacks(blocks[0])

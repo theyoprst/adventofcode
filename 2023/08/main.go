@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
@@ -23,7 +25,7 @@ func ParseGraph(lines []string) map[string]*Node {
 	return g
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	cmd := lines[0]
 	g := ParseGraph(lines[2:])
 
@@ -64,7 +66,7 @@ func SolvePart2(lines []string) any {
 	return ans2
 }
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	ans := 0
 	cmd := lines[0]
 

@@ -1,6 +1,7 @@
 package aoc
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -10,7 +11,7 @@ import (
 	"strings"
 )
 
-type Solver func([]string) any
+type Solver func(context.Context, []string) any
 
 func getFunctionName(temp interface{}) string {
 	path := runtime.FuncForPC(reflect.ValueOf(temp).Pointer()).Name()
@@ -33,6 +34,6 @@ func Main(solversPart1, solversPart2 []Solver) {
 		solvers = append(solvers, solversPart2...)
 	}
 	for _, solver := range solvers {
-		fmt.Printf("%s: %v\n", getFunctionName(solver), solver(slices.Clone(lines)))
+		fmt.Printf("%s: %v\n", getFunctionName(solver), solver(context.Background(), slices.Clone(lines)))
 	}
 }

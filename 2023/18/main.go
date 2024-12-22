@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"slices"
 
 	"github.com/theyoprst/adventofcode/aoc"
@@ -45,7 +46,7 @@ func ParseCommands2(lines []string) []Command {
 	return commands
 }
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	commands := ParseCommands(lines)
 	pos, rows, cols := GetStartAndSize(commands)
 	field := NewFieldBySize(rows, cols, '.')
@@ -91,12 +92,12 @@ func SolvePart1(lines []string) any {
 	return ans
 }
 
-func SolvePart1ByCompression(lines []string) any {
+func SolvePart1ByCompression(_ context.Context, lines []string) any {
 	commands := ParseCommands(lines)
 	return SolveByCompression(commands)
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	commands := ParseCommands2(lines)
 	return SolveByCompression(commands)
 }

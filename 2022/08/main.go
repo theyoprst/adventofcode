@@ -2,12 +2,14 @@
 package main
 
 import (
+	"context"
+
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/containers"
 	"github.com/theyoprst/adventofcode/aoc/fld"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	field := fld.NewByteField(lines)
 	visible := containers.NewSet[fld.Pos]()
 	for row := 0; row < field.Rows(); row++ {
@@ -52,7 +54,7 @@ func SolvePart1(lines []string) any {
 	return len(visible)
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	field := fld.NewByteField(lines)
 	maxProduct := 0
 	for pos := range field.IterPositions() {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"math"
 	"strings"
 
@@ -13,7 +14,7 @@ const (
 	lsCmd    = "$ ls"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	dirs := parseDirs(lines)
 	ans := 0
 	for _, size := range dirs {
@@ -24,7 +25,7 @@ func SolvePart1(lines []string) any {
 	return ans
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	dirs := parseDirs(lines)
 	free := 70000000 - dirs[""]
 	toFree := 30000000 - free

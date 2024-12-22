@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"math"
 
@@ -9,11 +10,11 @@ import (
 	"github.com/theyoprst/adventofcode/aoc/graphs"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	return SolveGeneric(lines, 0, 3)
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	return SolveGeneric(lines, 4, 10)
 }
 

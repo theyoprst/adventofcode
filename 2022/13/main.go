@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"slices"
@@ -9,7 +10,7 @@ import (
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	blocks := aoc.Blocks(lines)
 	ans := 0
 	for i, block := range blocks {
@@ -22,7 +23,7 @@ func SolvePart1(lines []string) any {
 	return ans
 }
 
-func SolvePart1JSON(lines []string) any {
+func SolvePart1JSON(_ context.Context, lines []string) any {
 	blocks := aoc.Blocks(lines)
 	ans := 0
 	for i, block := range blocks {
@@ -35,7 +36,7 @@ func SolvePart1JSON(lines []string) any {
 	return ans
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	blocks := aoc.Blocks(lines)
 	div1 := parsePacket("[[2]]")
 	div2 := parsePacket("[[6]]")
@@ -53,7 +54,7 @@ func SolvePart2(lines []string) any {
 	return (idx1 + 1) * (idx2 + 1)
 }
 
-func SolvePart2JSON(lines []string) any {
+func SolvePart2JSON(_ context.Context, lines []string) any {
 	blocks := aoc.Blocks(lines)
 	div1 := parsePacketJSON("[[2]]")
 	div2 := parsePacketJSON("[[6]]")

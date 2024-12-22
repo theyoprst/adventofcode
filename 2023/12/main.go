@@ -1,17 +1,18 @@
 package main
 
 import (
+	"context"
 	"strings"
 
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	return SolveGeneric(lines, 1)
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	return SolveGeneric(lines, 5)
 }
 

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/aoc/containers"
@@ -18,7 +19,7 @@ var Dirs map[byte]containers.Set[fld.Pos] = map[byte]containers.Set[fld.Pos]{
 	'F': containers.NewSet[fld.Pos](fld.South, fld.East),
 }
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	f := fld.NewByteField(lines).NewFieldWithBorder('*')
 	start := f.FindFirst('S')
 	p := start
@@ -40,7 +41,7 @@ func SolvePart1(lines []string) any {
 	return steps / 2
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	f := fld.ByteField(make([][]byte, 2*len(lines)))
 	for row := 0; row < len(f); row++ {
 		f[row] = bytes.Repeat([]byte{' '}, 2*len(lines[0]))

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"strings"
@@ -9,7 +10,7 @@ import (
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	ans := 0
 	for _, s := range lines {
 		ans += s2i(s)
@@ -17,7 +18,7 @@ func SolvePart1(lines []string) any {
 	return ans
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	ans := 0
 	for _, s := range lines {
 		for i, word := range []string{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"} {

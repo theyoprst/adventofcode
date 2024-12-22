@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"slices"
 	"strings"
 
@@ -13,7 +14,7 @@ type Hand struct {
 	bid int
 }
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	cardOrder := "23456789TJQKA"
 	var hands []Hand
 	for _, line := range lines {
@@ -47,7 +48,7 @@ func SolvePart1(lines []string) any {
 	return ans
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	cardOrder := "J23456789TQKA"
 	var hands []Hand
 	for _, line := range lines {

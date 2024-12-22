@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"slices"
 
@@ -10,7 +11,7 @@ import (
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func SolvePart1BruteForce(lines []string) any {
+func SolvePart1BruteForce(_ context.Context, lines []string) any {
 	field := fld.NewByteField(lines)
 	startPos := fld.NewPos(0, 1)
 	finishPos := fld.NewPos(field.Rows()-1, field.Cols()-2)
@@ -36,7 +37,7 @@ func SolvePart1BruteForce(lines []string) any {
 	return maxPathDFS(startPos, 0)
 }
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	field := fld.NewByteField(lines)
 
 	// Remove forbidden directions, make DFS-based topsort.
@@ -86,7 +87,7 @@ func SolvePart1(lines []string) any {
 	return dp[finishPos]
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	field := fld.NewByteField(lines)
 	startPos := fld.NewPos(0, 1)
 	finishPos := fld.NewPos(field.Rows()-1, field.Cols()-2)

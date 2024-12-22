@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"sort"
 	"strings"
 
@@ -41,7 +42,7 @@ func parseMonkeys(lines []string) []*Monkey {
 	return monkeys
 }
 
-func SolvePart1(lines []string) any {
+func SolvePart1(_ context.Context, lines []string) any {
 	monkeys := parseMonkeys(lines)
 	for round := 0; round < 20; round++ {
 		for _, monkey := range monkeys {
@@ -80,7 +81,7 @@ func SolvePart1(lines []string) any {
 	return counts[len(counts)-1] * counts[len(counts)-2]
 }
 
-func SolvePart2(lines []string) any {
+func SolvePart2(_ context.Context, lines []string) any {
 	monkeys := parseMonkeys(lines)
 
 	lcm := 1
