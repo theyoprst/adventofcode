@@ -9,15 +9,15 @@ import (
 	"github.com/theyoprst/adventofcode/must"
 )
 
-func SolvePart1(_ context.Context, lines []string) any {
-	return solve(lines, 2)
+func SolvePart1(ctx context.Context, lines []string) any {
+	return solve(lines, 2, aoc.GetParams(ctx).Int("profitThresholdPart1"))
 }
 
-func SolvePart2(_ context.Context, lines []string) any {
-	return solve(lines, 20)
+func SolvePart2(ctx context.Context, lines []string) any {
+	return solve(lines, 20, aoc.GetParams(ctx).Int("profitThresholdPart2"))
 }
 
-func solve(lines []string, cheatSize int) int {
+func solve(lines []string, cheatSize int, profitThreshold int) int {
 	field := fld.NewByteField(lines)
 	dist := calculateDistances(field)
 	profits := make(map[int]int)
@@ -46,10 +46,9 @@ func solve(lines []string, cheatSize int) int {
 		}
 	}
 
-	const threshold = 100
 	totalProfits := 0
 	for profit, count := range profits {
-		if profit >= threshold {
+		if profit >= profitThreshold {
 			totalProfits += count
 		}
 	}
