@@ -35,7 +35,9 @@ func Main(solversPart1, solversPart2 []Solver) {
 	}
 	ctx := context.Background()
 	if *inputFlag != "" {
-		ctx = contextWithParams(ctx, paramsForInput(*inputFlag))
+		if params := paramsForInput(*inputFlag); params != nil {
+			ctx = contextWithParams(ctx, params)
+		}
 	}
 	for _, solver := range solvers {
 		fmt.Printf("%s: %v\n", getFunctionName(solver), solver(ctx, slices.Clone(lines)))

@@ -49,7 +49,7 @@ func paramsForInput(path string) Params {
 		}
 	}
 
-	panic(fmt.Errorf("params not found for %q", path))
+	return nil
 }
 
 func (p Params) get(key string) any {
