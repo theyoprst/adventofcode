@@ -1,66 +1,61 @@
 package main
 
 import (
-	"slices"
+	"math"
 
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )
 
-const steps = 2000
+const stepsCount = 2000
 
 func SolvePart1(lines []string) any {
 	sum := 0
 	for _, line := range lines {
-		num := must.Atoi(line)
-		x := num
-		for range steps {
-			x = nextSecret(x)
+		secret := must.Atoi(line)
+		for range stepsCount {
+			secret = nextSecret(secret)
 		}
-		sum += x
+		sum += secret
 	}
 	return sum
 }
 
 func SolvePart2(lines []string) any {
-	// Idea: for each buyer, precalculate the price per each encountered for this buyer tuple of 4 diffs.
+	const diffsCount = 4
+	// Idea: for each buyer, precalculate the price per each encountered for this buyer tuple of `diffsCount` diffs.
 	// Store it in a map[diff -> price].
 	// Then just summate all these maps. And find the max price in the resulting map.
-	// Time Complexity: O(len(buyers) * len(steps) * len(diff)) ~= 2037 * 2000 * 4.
-	// Space Complexity: O(20^len(diffs)) ~= 160_000 (in reality <41_000, because not all diffs are possible).
+	// Time Complexity: O(buyersCount * stepsCount * diffsCount) ~= 2037 * 2000 * 4.
+	//   The `diffsCount` term can be dropped if polinomial hash is used AND this hash is still inside a machine word (64 bits).
+	//   If module 10 is used for price, it requires 5 bits per a diff, so 64/5 = 12 diffs can be hashed in a single 64-bit word.
+	// Space Complexity: minimun of
+	//   - O(19^diffsCount) ~= 160_000 (in reality <41_000, because not all diffs are possible).
+	//   - O(buyersCount * stepsCount) ~= 2037 * 2000 (under the condition that hash is a single machine word).
 
-	// `totalPrice[tuple] = price` means buyers buy infromation after the `tuple` for `price` in total.
-	totalPrice := make(map[int]int, 160000)
-	hashKey := func(diffs []int) int {
-		key := 0
-		for _, diff := range diffs {
-			// possible diffs are -9..9, shift by 9 to make them 0..18.
-			key = key*32 + diff + 9
-		}
-		return key
+	nextPolynomialHash := func(hash int, diff int) int {
+		hash <<= 5                    // 5 bits per diff (-9..9)
+		hash += diff + 9              // diff (-9..9) -> (0..18)
+		hash &= 1<<(5*diffsCount) - 1 // keep only last `diffsCount` diffs, 5 bits per diff
+		return hash
 	}
 
+	// `totalPrice[h] = p` means buyers will buy the infromation after the sequence of 4 diffs with hash `h` for price `p` in total.
+	totalPrice := make(map[int]int, int(math.Pow(19, diffsCount)))
+
 	for _, line := range lines {
-		num := must.Atoi(line)
-		var diffs []int
-
-		// Have to track already seen tuples for each buyer because the monkey stops on the first seen tuple.
-		seenByTheBuyer := make(map[int]struct{}, steps)
-
-		x := num
-		pricePrev := x % 10
-		for range steps {
-			x = nextSecret(x)
-			price := x % 10
-			if len(diffs) == 4 {
-				diffs = slices.Delete(diffs, 0, 1)
-			}
-			diffs = append(diffs, price-pricePrev)
-			if len(diffs) == 4 {
-				key := hashKey(diffs)
-				if _, seen := seenByTheBuyer[key]; !seen {
-					seenByTheBuyer[key] = struct{}{}
-					totalPrice[key] += price
+		secret := must.Atoi(line)
+		seenByTheBuyer := make(map[int]struct{}, stepsCount) // to ignore the same diffs for the same buyer
+		pricePrev := secret % 10
+		hash := 0
+		for step := range stepsCount {
+			secret = nextSecret(secret)
+			price := secret % 10
+			hash = nextPolynomialHash(hash, price-pricePrev)
+			if step >= diffsCount-1 { // the polynomial hash is ready to be used: it has `diffsCount` diffs
+				if _, seen := seenByTheBuyer[hash]; !seen {
+					seenByTheBuyer[hash] = struct{}{}
+					totalPrice[hash] += price
 				}
 			}
 			pricePrev = price
