@@ -66,7 +66,7 @@ func parseDirs(lines []string) map[string]int {
 					sum += must.Atoi(sizeStr)
 				}
 			}
-			for i := 0; i <= len(path); i++ { // TODO: go 1.22
+			for i := range len(path) + 1 {
 				name := strings.Join(path[0:i], "/")
 				dirs[name] += sum
 			}
