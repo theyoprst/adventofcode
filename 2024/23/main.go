@@ -33,9 +33,7 @@ func SolvePart1(_ context.Context, lines []string) any {
 			}
 		}
 	}
-	triList := triangles.Slice()
-	slices.Sort(triList)
-	return len(triList)
+	return len(triangles)
 }
 
 func SolvePart2(_ context.Context, lines []string) any {
@@ -57,8 +55,7 @@ func SolvePart2(_ context.Context, lines []string) any {
 		if len(maybe) == 0 {
 			if len(yes) > maxCliqueSize {
 				maxCliqueSize = len(yes)
-				items := yes.Slice()
-				slices.Sort(items)
+				items := slices.Sorted(maps.Keys(yes))
 				maxClique = strings.Join(items, ",")
 			}
 			return

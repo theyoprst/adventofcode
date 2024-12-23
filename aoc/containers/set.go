@@ -36,14 +36,6 @@ func (s Set[K]) Any() K {
 	panic("No values in the set")
 }
 
-func (s Set[K]) Slice() []K {
-	slice := make([]K, 0, len(s))
-	for key := range s {
-		slice = append(slice, key)
-	}
-	return slice
-}
-
 // Intersection returns a new set with keys that are present in both sets.
 func (s Set[K]) Intersection(other Set[K]) Set[K] {
 	intersection := NewSet[K]()

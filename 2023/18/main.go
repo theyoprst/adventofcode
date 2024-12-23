@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"maps"
 	"slices"
 
 	"github.com/theyoprst/adventofcode/aoc"
@@ -153,10 +154,8 @@ func SolveByCompression(commands []Command) any {
 		colSet.Add(pos.Col, pos.Col+1)
 	}
 
-	rowVals := rowSet.Slice()
-	colVals := colSet.Slice()
-	slices.Sort(rowVals)
-	slices.Sort(colVals)
+	rowVals := slices.Sorted(maps.Keys(rowSet))
+	colVals := slices.Sorted(maps.Keys(colSet))
 
 	rows := len(rowVals) - 1
 	cols := len(colVals) - 1
