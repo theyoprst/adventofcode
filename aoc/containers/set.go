@@ -43,3 +43,28 @@ func (s Set[K]) Slice() []K {
 	}
 	return slice
 }
+
+// Intersection returns a new set with keys that are present in both sets.
+func (s Set[K]) Intersection(other Set[K]) Set[K] {
+	intersection := NewSet[K]()
+	if len(s) > len(other) {
+		s, other = other, s // speed up the loop
+	}
+	for key := range s {
+		if other.Has(key) {
+			intersection.Add(key)
+		}
+	}
+	return intersection
+}
+
+// Difference returns a new set with keys that are present in the first set but not in the second.
+func (s Set[K]) Difference(other Set[K]) Set[K] {
+	difference := NewSet[K]()
+	for key := range s {
+		if !other.Has(key) {
+			difference.Add(key)
+		}
+	}
+	return difference
+}
