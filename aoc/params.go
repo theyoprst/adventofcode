@@ -66,3 +66,11 @@ func (p Params) Int(key string) int {
 	}
 	panic(fmt.Errorf("param %q type mismatch: got %T, want int", key, p[key]))
 }
+
+// Bool returns the value of the key as a bool.
+func (p Params) Bool(key string) bool {
+	if x, ok := p.get(key).(bool); ok {
+		return x
+	}
+	panic(fmt.Errorf("param %q type mismatch: got %T, want bool", key, p[key]))
+}

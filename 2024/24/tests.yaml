@@ -1,0 +1,16 @@
+inputs:
+- path: input_ex1.txt
+  params:
+    part2: false
+  wantPart1: "4"
+  wantPart2: "<nil>"
+- path: input_ex2.txt
+  params:
+    part2: false
+  wantPart1: "2024"
+  wantPart2: "<nil>"
+- path: input.txt
+  params:
+    part2: true
+  wantPart1: "41324968993486"
+  wantPart2: "bmn,jss,mvb,rds,wss,z08,z18,z23"
