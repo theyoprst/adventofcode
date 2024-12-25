@@ -3,8 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"iter"
-	"os"
+	"maps"
 	"slices"
 	"strings"
 
@@ -13,17 +12,54 @@ import (
 	"github.com/theyoprst/adventofcode/must"
 )
 
+type Operation string
+
+const (
+	Const Operation = "-"
+	And   Operation = "AND"
+	Or    Operation = "OR"
+	Xor   Operation = "XOR"
+)
+
+type Wire struct {
+	name   string
+	first  string
+	second string
+	op     Operation
+	value  int // In case of Const operation
+}
+
+func parseConstWire(expr string) *Wire {
+	name, value := must.Split2(expr, ": ")
+	return &Wire{
+		name:  name,
+		op:    Const,
+		value: must.Atoi(value),
+	}
+}
+
+func parseBinaryWire(expr string) *Wire {
+	expr, dst := must.Split2(expr, " -> ")
+	src1, operation, src2 := must.Split3(expr, " ")
+	return &Wire{
+		name:   dst,
+		first:  src1,
+		second: src2,
+		op:     Operation(operation),
+	}
+}
+
 func SolvePart1(_ context.Context, lines []string) any {
 	wires := make(map[string]*Wire, len(lines))
 	blocks := aoc.Blocks(lines)
 	constants, binaries := blocks[0], blocks[1]
 	for _, constExpr := range constants {
 		wire := parseConstWire(constExpr)
-		wires[wire.dst] = wire
+		wires[wire.name] = wire
 	}
 	for _, binaryExpr := range binaries {
 		wire := parseBinaryWire(binaryExpr)
-		wires[wire.dst] = wire
+		wires[wire.name] = wire
 	}
 
 	var eval func(string) int
@@ -33,8 +69,8 @@ func SolvePart1(_ context.Context, lines []string) any {
 		if wire.op == Const {
 			return wire.value
 		}
-		src1 := eval(wire.src1)
-		src2 := eval(wire.src2)
+		src1 := eval(wire.first)
+		src2 := eval(wire.second)
 		switch wire.op {
 		case And:
 			return src1 & src2
@@ -59,284 +95,158 @@ func SolvePart1(_ context.Context, lines []string) any {
 	return ans
 }
 
+type Expr struct {
+	Op     Operation
+	First  *Expr
+	Second *Expr
+	Name   string
+}
+
+func newLiteral(name string) *Expr {
+	return &Expr{
+		Op:   Const,
+		Name: name,
+	}
+}
+
+func newBinary(first *Expr, op Operation, second *Expr) *Expr {
+	return &Expr{
+		Op:     op,
+		First:  first,
+		Second: second,
+	}
+}
+
 func SolvePart2(ctx context.Context, lines []string) any {
+	// We've got eletrical scheme for Ripple-carry adder which is broken in 8 places: 4 pairs of wires are swapped.
+	// The scheme adds 45-bit numbers x and y, and produces 46-bit result z.
+	// There are 3 types of gates: AND, OR, XOR.
+	// Looks like the minimal expression for each bit is (a little different for the first two and the last indexes):
+	//   z = (x ^ y) ^ c, where
+	//   c = (xPrev & yPrev) | (cPrev & (xPrev ^ yPrev))
+	// `c` is a carry bit.
+	// There are 5 gates (binary operations) used if we re-use (xPrev ^ yPref) from the previous bit.
+	// In total, there are 5 gates for 43 bits, 1 gate for the 1st bit, 3 gates for the 2nd bit, 3 gates for the last bit.
+	// 222 gates in total for the minimal circuit, exactly 222 gates in the input. So we have a minimal circuit.
+	//
+	// The idea is for each bit build the expected expression that depend on 5 variables, and try to match it with the input.
+	// If not matched, try to swap some wires until it matched. It appears that 1 swap is enough for each bit.
+	// z = x ^ (y ^ c) and similar are impossible because we want to reuse x^y later for the carry bit.
+	// Matching tries to swap order for each binary operation, 2^5 swaps in total in the worst case, not a big deal.
 	if !aoc.GetParams(ctx).Bool("part2") {
 		return nil
 	}
 	wires := make(map[string]*Wire, len(lines))
-	blocks := aoc.Blocks(lines)
-	binaries := blocks[1]
-	for _, binaryExpr := range binaries {
+	for _, binaryExpr := range aoc.Blocks(lines)[1] {
 		wire := parseBinaryWire(binaryExpr)
-		wires[wire.dst] = wire
+		wires[wire.name] = wire
 	}
 
-	var eval func(zIdx int, name string, carries containers.Set[string], depth int) (expr *Expression, carryName string, used containers.Set[string])
-	eval = func(zIdx int, name string, carries containers.Set[string], depth int) (expr *Expression, carryName string, used containers.Set[string]) {
-		if depth > 5 { // TODO: better cycle detection?
-			return nil, "", nil
-		}
-		used = containers.NewSet[string]()
-		if strings.HasPrefix(name, "x") || strings.HasPrefix(name, "y") {
-			var carryName string
-			if must.Atoi(name[1:]) < zIdx {
-				carryName = name
-			}
-			return newLiteralExpression(name), carryName, used
-		}
-		wire, ok := wires[name]
-		must.True(ok)
-		if carries.Has(name) {
-			return newLiteralExpression(wire.dst), wire.dst, used
-		}
-		used.Add(name)
-		if strings.HasPrefix(wire.dst, "z") {
-			if must.Atoi(wire.dst[1:]) < zIdx {
-				return newLiteralExpression(wire.dst), wire.dst, used
-			}
-		}
-		left, leftCarryName, leftUsed := eval(zIdx, wire.src1, carries, depth+1)
-		right, rightCarryName, rightUsed := eval(zIdx, wire.src2, carries, depth+1)
-		if left == nil || right == nil {
-			return nil, "", nil
-		}
-		expr = newExpression(name, wire.op, left, right)
-		if leftCarryName != "" && rightCarryName != "" {
-			carryName = name
-		} else if leftCarryName != "" {
-			carryName = leftCarryName
-		} else if rightCarryName != "" {
-			carryName = rightCarryName
-		}
-		return expr, carryName, used.Union(leftUsed).Union(rightUsed)
-	}
+	notUsedWires := containers.NewSet(slices.Collect(maps.Keys(wires))...)
 
-	globalUsed := containers.NewSet[string]()
-
-	type WirePair struct {
-		first, second string
-	}
-	iterWirePairsToSwap := func(firstNames containers.Set[string]) iter.Seq[WirePair] {
-		return func(yield func(WirePair) bool) {
-			for firstName := range firstNames {
-				for secondName, second := range wires {
-					if firstName == secondName {
-						continue
-					}
-					if globalUsed.Has(secondName) {
-						continue
-					}
-					if !yield(WirePair{first: firstName, second: second.dst}) {
-						return
-					}
-				}
-			}
-		}
-	}
-
-	carries := containers.NewSet[string]()
 	var swapped []string
 	var prevCarry string
-	for zIdx := 0; ; zIdx++ {
+	for zIdx := range zMax + 1 {
+		wantExpr, wantCarryExpr := buildExpectedExpr(zIdx, prevCarry)
+
 		zName := fmt.Sprintf("z%02d", zIdx)
-		if _, ok := wires[zName]; !ok {
-			break
-		}
-		expr, carryName, localUsed := eval(zIdx, zName, carries, 0)
-		if !isCorrectSumExpression(expr, zIdx, prevCarry) {
-			var swap *WirePair
-			count := 0
-			for pair := range iterWirePairsToSwap(localUsed) {
-				count++
-				wires[pair.first].dst, wires[pair.second].dst = wires[pair.second].dst, wires[pair.first].dst
-				wires[pair.first], wires[pair.second] = wires[pair.second], wires[pair.first]
-				expr, carryName, localUsed = eval(zIdx, zName, carries, 0)
-				if isCorrectSumExpression(expr, zIdx, prevCarry) {
-					swapped = append(swapped, pair.first, pair.second)
-					swap = &pair
-					break
+		matched, localUsed := matchExpr(zName, wantExpr, wires)
+		if !matched {
+			swapFound := false
+		iterSwapsLoop:
+			for first := range localUsed {
+				for second := range notUsedWires {
+					if first != second {
+						wires[first].name, wires[second].name = wires[second].name, wires[first].name
+						wires[first], wires[second] = wires[second], wires[first]
+						matched, localUsed = matchExpr(zName, wantExpr, wires)
+						if matched {
+							swapped = append(swapped, first, second)
+							swapFound = true
+							break iterSwapsLoop
+						}
+						wires[first].name, wires[second].name = wires[second].name, wires[first].name
+						wires[first], wires[second] = wires[second], wires[first]
+					}
 				}
-				wires[pair.first].dst, wires[pair.second].dst = wires[pair.second].dst, wires[pair.first].dst
-				wires[pair.first], wires[pair.second] = wires[pair.second], wires[pair.first]
 			}
-			if swap == nil {
-				fmt.Println("No swap found. Count: ", count)
-				os.Exit(1)
+			if !swapFound {
+				panic("no swap found")
 			}
 		}
 
-		carries.Add(carryName)
-		globalUsed.Update(localUsed)
-		prevCarry = carryName
+		notUsedWires.Remove(slices.Collect(maps.Keys(localUsed))...)
+
+		if wantCarryExpr != nil {
+			prevCarry = wantCarryExpr.Name // Name was populated in matchExpr.
+		}
 	}
 	slices.Sort(swapped)
 	return strings.Join(swapped, ",")
 }
 
-type Operation string
+const zMax = 45
 
-const (
-	Const Operation = "-"
-	And   Operation = "&"
-	Or    Operation = "|"
-	Xor   Operation = "^"
-)
-
-type Wire struct {
-	dst   string
-	src1  string
-	src2  string
-	op    Operation
-	value int // In case of Const operation
-}
-
-func parseWires(lines []string) map[string]*Wire {
-	wires := make(map[string]*Wire, len(lines))
-	blocks := aoc.Blocks(lines)
-	constants, binaries := blocks[0], blocks[1]
-	for _, constExpr := range constants {
-		wire := parseConstWire(constExpr)
-		wires[wire.dst] = wire
-	}
-	for _, binaryExpr := range binaries {
-		wire := parseBinaryWire(binaryExpr)
-		wires[wire.dst] = wire
-	}
-	return wires
-}
-
-func parseConstWire(expr string) *Wire {
-	name, value := must.Split2(expr, ": ")
-	return &Wire{
-		dst:   name,
-		op:    Const,
-		value: must.Atoi(value),
-	}
-}
-
-func parseBinaryWire(expr string) *Wire {
-	expr, dst := must.Split2(expr, " -> ")
-	src1, operation, src2 := must.Split3(expr, " ")
-	return &Wire{
-		dst:  dst,
-		src1: src1,
-		src2: src2,
-		op:   parseOperation(operation),
-	}
-}
-
-func parseOperation(op string) Operation {
-	switch op {
-	case "AND":
-		return And
-	case "OR":
-		return Or
-	case "XOR":
-		return Xor
-	default:
-		panic(fmt.Sprintf("unknown operation %q", op))
-	}
-}
-
-type Expression struct {
-	Name     string
-	Operator Operation
-	Literal  string
-	Operands []*Expression
-}
-
-func newExpression(name string, op Operation, operands ...*Expression) *Expression {
-	return &Expression{
-		Name:     name,
-		Operator: op,
-		Operands: operands,
-	}
-}
-
-func newLiteralExpression(value string) *Expression {
-	return &Expression{
-		Literal: value,
-	}
-}
-
-func (e *Expression) Render() string {
-	return e.renderRec(0)
-}
-
-func (e *Expression) renderRec(depth int) string {
-	if e == nil {
-		return ""
-	}
-	if e.Literal != "" {
-		return e.Literal
-	}
-	var result strings.Builder
-	if depth > 0 {
-		result.WriteString("(")
-	}
-	for i, operand := range e.Operands {
-		if i > 0 {
-			result.WriteString(" ")
-			result.WriteString(string(e.Operator))
-			result.WriteString(" ")
-		}
-		result.WriteString(operand.renderRec(depth + 1))
-	}
-	if depth > 0 {
-		result.WriteString(")")
-	}
-	return result.String()
-}
-
-func (e *Expression) Normalize() {
-	if e == nil {
-		return
-	}
-	if e.Literal != "" {
-		must.Equal(e.Operator, "")
-		return
-	}
-	must.NotEqual(e.Operator, "")
-	var newOperands []*Expression
-	operandsChanged := false
-	for _, operand := range e.Operands {
-		operand.Normalize()
-		if operand.Operator == e.Operator {
-			newOperands = append(newOperands, operand.Operands...)
-			operandsChanged = true
-		} else {
-			newOperands = append(newOperands, operand)
-		}
-	}
-	if operandsChanged {
-		e.Name = ""
-	}
-	slices.SortFunc(newOperands, func(a, b *Expression) int {
-		return strings.Compare(a.Render(), b.Render())
-	})
-	e.Operands = newOperands
-}
-
-func isCorrectSumExpression(expr *Expression, zIdx int, prevCarry string) bool {
-	expr.Normalize()
-	if zIdx == 0 {
-		return expr.Render() == "x00 ^ y00"
-	}
-	if zIdx == 1 {
-		return expr.Render() == "(x00 & y00) ^ x01 ^ y01"
-	}
-	if zIdx == 45 { // TODO: 45 is a magic number
-		want := fmt.Sprintf(
-			"(%s & (x%02d ^ y%02d)) | (x%02d & y%02d)",
-			prevCarry, zIdx-1, zIdx-1, zIdx-1, zIdx-1,
+// buildExpectedExpr builds the expected expression for the zIdx-th bit of z.
+func buildExpectedExpr(zIdx int, prevCarry string) (expr *Expr, carry *Expr) {
+	// Expect expr: (xCur ^ yCur)  ^ carry
+	//                    |            |
+	//             (not last bit)  (not first bit)
+	var xorXY *Expr
+	if zIdx != zMax {
+		xorXY = newBinary(
+			newLiteral("x"+fmt.Sprintf("%02d", zIdx)),
+			Xor,
+			newLiteral("y"+fmt.Sprintf("%02d", zIdx)),
 		)
-		return expr.Render() == want
+		if zIdx == 0 {
+			return xorXY, nil
+		}
 	}
-	want := fmt.Sprintf(
-		"((%s & (x%02d ^ y%02d)) | (x%02d & y%02d)) ^ x%02d ^ y%02d",
-		prevCarry, zIdx-1, zIdx-1, zIdx-1, zIdx-1, zIdx, zIdx,
-	)
-	return expr.Render() == want
+	// if zIdx = 1: carry = xPrev & yPrev
+	// if zIdx > 1: carry = (xPrev & yPrev) | (carry & (xPrev ^ yPrev))
+	xPrev := newLiteral("x" + fmt.Sprintf("%02d", zIdx-1))
+	yPrev := newLiteral("y" + fmt.Sprintf("%02d", zIdx-1))
+	carry = newBinary(xPrev, And, yPrev)
+	if zIdx > 1 {
+		carry = newBinary(
+			carry,
+			Or,
+			newBinary(newLiteral(prevCarry), And, newBinary(xPrev, Xor, yPrev)),
+		)
+	}
+	if xorXY == nil {
+		must.Equal(zIdx, zMax)
+		return carry, carry
+	}
+	return newBinary(xorXY, Xor, carry), carry // Most popular case for zIdx in 1..44
+}
+
+// matchExpr tries to match the wire with the expected expression.
+// It returns bool for matching and used (visited) binary wires.
+// Also populates names in wantExpr (used later to find out name of the carry expression).
+func matchExpr(name string, wantExpr *Expr, wires map[string]*Wire) (matched bool, used containers.Set[string]) {
+	used = containers.NewSet[string]()
+
+	var matchExprRecursive func(name string, wantExpr *Expr) bool
+	matchExprRecursive = func(name string, wantExpr *Expr) bool {
+		if wantExpr.Op == Const {
+			return name == wantExpr.Name
+		}
+		wire, isBinaryWire := wires[name]
+		if !isBinaryWire {
+			return false // wantExpr is binary operation by this moment.
+		}
+		used.Add(wire.name) // Mark binary wire as visited.
+		if wire.op != wantExpr.Op {
+			return false
+		}
+		wantExpr.Name = wire.name
+		return matchExprRecursive(wire.first, wantExpr.First) && matchExprRecursive(wire.second, wantExpr.Second) ||
+			matchExprRecursive(wire.first, wantExpr.Second) && matchExprRecursive(wire.second, wantExpr.First)
+	}
+
+	return matchExprRecursive(name, wantExpr), used
 }
 
 var (
