@@ -6,8 +6,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/theyoprst/adventofcode/must"
 	"gopkg.in/yaml.v3"
+
+	"github.com/theyoprst/adventofcode/must"
 )
 
 type (

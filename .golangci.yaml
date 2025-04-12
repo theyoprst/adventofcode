@@ -1,3 +1,5 @@
+version: "2"
+
 linters:
   enable:
     # Check for pass []any as any in variadic func(...any).
@@ -18,20 +20,11 @@ linters:
     # Checks `Err-` prefix for var and `-Error` suffix for error type.
     - errname
 
-    # Checks for pointers to enclosing loop variables.
-    - exportloopref
-
     # See article from the Author: https://olegk.dev/go-linters-configuration-the-right-version#clfs5vtp601m2ycnv2xpcfy9b
     - gocritic
 
     # Forces to put `.` at the end of the comment. Code is poetry.
     - godot
-
-    # Formatting and imports.
-    - gofmt
-    - gofumpt
-    - goimports
-    - gci
 
     # Allow or ban replace directives in go.mod
     # or force explanation for retract directives.
@@ -40,9 +33,6 @@ linters:
     # Powerful security-oriented linter. But requires some time to
     # configure it properly, see https://github.com/securego/gosec#available-rules
     - gosec
-
-    # Linter that specializes in simplifying code.
-    - gosimple
 
     # Official Go tool. Must have.
     - govet
@@ -83,14 +73,10 @@ linters:
     # Not the same as staticcheck binary :\
     - staticcheck
 
-    # Is a replacement for `golint`, similar to `revive`.
-    - stylecheck
-
     # Check struct tags.
     - tagliatelle
 
     # # Test-related checks. All of them are good.
-    - tenv
     - testableexamples
     - thelper
     - tparallel
@@ -115,20 +101,20 @@ linters:
     # Not relevant to this repository (don't need performance optimization).
     - prealloc
 
-linters-settings:
-  gci:
-    sections:
-      - standard
-      - default
-      - prefix(github.com/theyoprst/adventofcode)
-  gosec:
-    excludes:
-      - G404 # Insecure random number source (rand)
+  settings:
+    gosec:
+      excludes:
+        - G404 # Insecure random number source (rand)
 
-issues:
-  exclude-rules:
-    - path: \d+/main.go
-      linters:
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - linters:
         - prealloc # Does not require prealloc for actual solutions
 
         # disable:
@@ -147,3 +133,22 @@ issues:
 
         # Suggests to use `%w` for error-wrapping everywhere. IMO it is a bad practice leading to interface leaks.
         - errorlint
+        path: \d+/main.go
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+
+formatters:
+  enable:
+    # Formatting and imports.
+    - gofmt
+    - gofumpt
+    - goimports
+    - gci
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/theyoprst/adventofcode)

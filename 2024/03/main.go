@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/hedhyw/rex/pkg/rex"
+
 	"github.com/theyoprst/adventofcode/aoc"
 	"github.com/theyoprst/adventofcode/must"
 )

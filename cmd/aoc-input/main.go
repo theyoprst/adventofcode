@@ -16,6 +16,7 @@ import (
 
 	htmltomarkdown "github.com/JohannesKaufmann/html-to-markdown/v2"
 	"github.com/anaskhan96/soup"
+
 	"github.com/theyoprst/adventofcode/aoc/htmlparser"
 )
 
@@ -102,7 +103,7 @@ func do() error {
 	}
 	var downloadInput []YearDay
 	var downloadProblem []YearDay
-	err = filepath.Walk(curDir, filepath.WalkFunc(func(path string, info fs.FileInfo, err error) error {
+	err = filepath.Walk(curDir, filepath.WalkFunc(func(path string, info fs.FileInfo, _ error) error {
 		if info.IsDir() {
 			yd := parseYearDay(path)
 			if yd.IsValid() {
@@ -172,7 +173,7 @@ func do() error {
 		for i, article := range articles {
 			articleHTMLPath := filepath.Join(yd.Path, fmt.Sprintf("part%d.html", i+1))
 			html := innerHTML(article)
-			if err := os.WriteFile(articleHTMLPath, []byte(html), 0o644); err != nil {
+			if err := os.WriteFile(articleHTMLPath, []byte(html), 0o600); err != nil {
 				return err
 			}
 			log.Printf("Successfully wrote to %q: %d bytes", articleHTMLPath, len(html))
@@ -182,7 +183,7 @@ func do() error {
 			if err != nil {
 				return err
 			}
-			if err := os.WriteFile(articleMDPath, []byte(markdown), 0o644); err != nil {
+			if err := os.WriteFile(articleMDPath, []byte(markdown), 0o600); err != nil {
 				return err
 			}
 			log.Printf("Successfully wrote to %q: %d bytes", articleMDPath, len(markdown))
@@ -198,7 +199,7 @@ func do() error {
 		}
 		for i, example := range examples {
 			examplePath := filepath.Join(yd.Path, fmt.Sprintf("input_ex%d.txt", i+1))
-			if err := os.WriteFile(examplePath, []byte(example), 0o644); err != nil {
+			if err := os.WriteFile(examplePath, []byte(example), 0o600); err != nil {
 				return err
 			}
 			log.Printf("Successfully wrote to %q: %d bytes", examplePath, len(example))

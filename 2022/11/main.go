@@ -28,7 +28,7 @@ func parseMonkeys(lines []string) []*Monkey {
 			itemsList[j] = must.Atoi(item)
 		}
 		operation := strings.Split(lines[i+2], "old ")[1]
-		value := 0
+		var value int
 		if strings.Contains(operation, "old") {
 			value = 0
 		} else {

@@ -87,11 +87,11 @@ func solve(lines []string, robots int) int {
 			movesHor := strings.Repeat(">", max(0, next.Col-cur.Col)) + strings.Repeat("<", max(0, cur.Col-next.Col))
 			curMin := math.MaxInt
 			if fld.NewPos(next.Row, cur.Col) != keypad[' '] {
-				// Try moving vertically first: check that there is soem button in the corner.
+				// Try moving vertically first: check that there is some button in the corner.
 				curMin = min(curMin, minPresses(movesVert+movesHor+"A", keypadIdx+1))
 			}
 			if fld.NewPos(cur.Row, next.Col) != keypad[' '] {
-				// Try moving horizontally first: check that there is soem button in the corner.
+				// Try moving horizontally first: check that there is some button in the corner.
 				curMin = min(curMin, minPresses(movesHor+movesVert+"A", keypadIdx+1))
 			}
 			// Note that other paths are not considered because they are not optimal.

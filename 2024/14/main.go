@@ -180,7 +180,7 @@ func stddev(a []int) float64 {
 	return math.Sqrt(variance / float64(len(a)))
 }
 
-// returns variance(a) * len(a)
+// varianceN returns variance(a) * len(a).
 func varianceN(a []int) int {
 	mean := 0
 	for _, v := range a {

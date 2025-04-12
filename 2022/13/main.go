@@ -159,7 +159,7 @@ func packetsCompare(a, b Packet) int {
 	return packetsCompare(a, b)
 }
 
-func getJsonType(value any) PacketType {
+func getJSONType(value any) PacketType {
 	switch value.(type) {
 	case float64:
 		return PacketTypeNumber
@@ -170,8 +170,8 @@ func getJsonType(value any) PacketType {
 }
 
 func jsonPacketsCompare(a, b any) int {
-	aType := getJsonType(a)
-	bType := getJsonType(b)
+	aType := getJSONType(a)
+	bType := getJSONType(b)
 	if aType == PacketTypeNumber && bType == PacketTypeNumber {
 		return int(a.(float64)) - int(b.(float64))
 	}

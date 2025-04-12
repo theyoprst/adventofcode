@@ -20,9 +20,10 @@ func TiltNorth(field fld.ByteField) {
 		stopRow := -1
 		for row := 0; row < rows; row++ {
 			ch := field[row][col]
-			if ch == Cube {
+			switch ch {
+			case Cube:
 				stopRow = row
-			} else if ch == Round {
+			case Round:
 				stopRow++
 				field.Swap(
 					fld.Pos{Row: stopRow, Col: col},

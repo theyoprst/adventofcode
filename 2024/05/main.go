@@ -23,7 +23,7 @@ func newOrderRules(lines []string) containers.Set[OrderRule] {
 
 // orderComparator is used both for checking and imposing order rules.
 // Happily, order rules define total order, not just a partial one. There are even n*(n-1)/2 rules for sequences of n pages.
-// If there were less rules, or the order was just partical, more sophisticated algorithms should be used,
+// If there were less rules, or the order was just partial, more sophisticated algorithms should be used,
 // like topsort and check for topsorted.
 func orderComparator(orderRules containers.Set[OrderRule]) func(int, int) int {
 	return func(pageA, pageB int) int {

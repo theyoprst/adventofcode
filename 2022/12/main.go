@@ -20,9 +20,10 @@ func solve(lines []string, startFromZeros bool) any {
 
 	height := func(pos fld.Pos) int {
 		h := field.Get(pos)
-		if h == 'S' {
+		switch h {
+		case 'S':
 			h = 'a'
-		} else if h == 'E' {
+		case 'E':
 			h = 'z'
 		}
 		return int(h - 'a')

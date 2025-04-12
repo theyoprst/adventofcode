@@ -44,12 +44,13 @@ func SolvePart2(_ context.Context, lines []string) any {
 	for pc := 0; pc < len(program); pc += 2 {
 		op := OpCode(program[pc])
 		operand := program[pc+1]
-		if op == OpCodeADV {
+		switch op {
+		case OpCodeADV:
 			// Only solve the problem when A is shifted by a constant (1, 2, 3), ...
 			must.Greater(operand, 0)
 			must.Less(operand, 4)
 			aShift += operand
-		} else if op == OpCodeJNZ {
+		case OpCodeJNZ:
 			// ... and the jump is always from the end to the beginning.
 			must.Equal(operand, 0)
 			must.Equal(pc+2, len(program))

@@ -13,7 +13,7 @@ func SolvePart1(_ context.Context, lines []string) any {
 	visited := containers.NewSet[fld.Pos]()
 	var dfs func(fld.Pos) (int, int)
 	dfs = func(pos fld.Pos) (s int, p int) {
-		s += 1
+		s++
 		visited.Add(pos)
 		for _, dir := range fld.DirsSimple {
 			next := pos.Add(dir)
@@ -22,7 +22,7 @@ func SolvePart1(_ context.Context, lines []string) any {
 				s += sNext
 				p += pNext
 			} else if field.Get(next) != field.Get(pos) {
-				p += 1
+				p++
 			}
 		}
 		return s, p

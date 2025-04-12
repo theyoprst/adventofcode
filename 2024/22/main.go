@@ -41,7 +41,7 @@ func SolvePart2(_ context.Context, lines []string) any {
 		return hash
 	}
 
-	// `totalPrice[h] = p` means buyers will buy the infromation after the sequence of 4 diffs with hash `h` for price `p` in total.
+	// `totalPrice[h] = p` means buyers will buy the information after the sequence of 4 diffs with hash `h` for price `p` in total.
 	totalPrice := make(map[int]int, int(math.Pow(19, diffsCount)))
 
 	for _, line := range lines {
