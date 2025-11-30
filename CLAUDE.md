@@ -93,6 +93,22 @@ golangci-lint run ./2024/01/...
 
 The configuration at `.golangci.yaml` enables many linters with special exclusions for solution files matching `\d+/main.go`.
 
+#### Swift Linting
+
+The project uses SwiftLint with comprehensive rules:
+```bash
+swiftlint                    # Run from repository root
+cd 2025 && swiftlint         # Run from year directory
+```
+
+The configuration at `.swiftlint.yml` follows the same philosophy as Go linting: comprehensive but practical for Advent of Code. Key features:
+- Comprehensive opt-in rules for code quality and best practices
+- Relaxed rules for solution files (similar to Go's `\d+/main.go` pattern)
+- Strict linting maintained for `AOCUtilities/` and `AOCTestSupport/`
+- Excludes `.build/` directories and dependencies
+- Allows TODOs in incomplete solutions
+- Pragmatic limits on function/file length and complexity for puzzle solving
+
 ### Swift Solutions (2025+)
 
 Running Swift solutions from the year directory:
