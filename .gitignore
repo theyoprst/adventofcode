@@ -1,3 +1,8 @@
 input.txt
 part*.md
 part*.html
+
+# Swift
+.build/
+.swiftpm/
+*.xcodeproj

@@ -4,7 +4,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This is an Advent of Code solutions repository written in Go. It contains solutions for multiple years (2022, 2023, 2024) organized by year and day, along with a shared `aoc` package providing common utilities.
+This is an Advent of Code solutions repository with solutions in multiple languages:
+- **Go** (2022-2024): Solutions using a shared `aoc` package with common utilities
+- **Swift** (2025+): Solutions organized as a Swift Package with language-agnostic YAML-based testing
+
+## Multi-Language Structure
+
+### 2022-2024 (Go)
+Solutions use the established Go pattern with the shared `aoc` package.
+
+### 2025+ (Swift)
+Swift solutions are organized differently while maintaining compatibility:
+- Solutions live directly in `2025/DD/` directories (no language subdirectory)
+- Each day has `Solution.swift` and `SolutionTests.swift`
+- Tests parse the same `tests.yaml` format as Go (language-agnostic)
+- Package.swift at year level defines executable targets per day
+- Input files (`input.txt`, `input_ex*.txt`) shared at day level
+- If Go solutions are added later, they can go in `2025/DD/go/` subdirectories
 
 ## Project Structure
 
@@ -77,6 +93,29 @@ golangci-lint run ./2024/01/...
 
 The configuration at `.golangci.yaml` enables many linters with special exclusions for solution files matching `\d+/main.go`.
 
+### Swift Solutions (2025+)
+
+Running Swift solutions from the year directory:
+```bash
+cd 2025
+swift run day00 < 00/input.txt
+swift run day01 < 01/input.txt
+```
+
+Running Swift tests:
+```bash
+cd 2025
+swift test                       # All tests
+swift test --filter Day00Tests   # Specific day
+```
+
+Building for release:
+```bash
+cd 2025
+swift build -c release
+.build/release/day00 < 00/input.txt
+```
+
 ### Downloading Inputs
 
 The `cmd/aoc-input` tool requires a session cookie configured in `~/.aoc-input.json`:
@@ -95,7 +134,9 @@ This automatically downloads missing `input.txt` files and problem descriptions 
 
 ## Solution Structure
 
-Each solution follows this pattern:
+### Go Solutions (2022-2024)
+
+Each Go solution follows this pattern:
 
 ```go
 package main
@@ -148,6 +189,62 @@ func Test(t *testing.T) {
 ```
 
 This automatically runs all solvers against all inputs defined in `tests.yaml`.
+
+### Swift Solutions (2025+)
+
+Each Swift solution follows this pattern:
+
+```swift
+import Foundation
+
+func solvePart1(_ lines: [String]) -> Int {
+    // Solution logic
+    return result
+}
+
+func solvePart2(_ lines: [String]) -> Int {
+    // Solution logic
+    return result
+}
+
+@main
+struct DayXX {
+    static func main() {
+        var lines: [String] = []
+        while let line = readLine() {
+            lines.append(line)
+        }
+        print("Part 1:", solvePart1(lines))
+        print("Part 2:", solvePart2(lines))
+    }
+}
+```
+
+Swift tests parse tests.yaml using the Yams library:
+
+```swift
+import Foundation
+import Testing
+import Yams
+@testable import DayXX
+
+@Suite("Day XX Solutions")
+struct DayXXTests {
+    @Test("All test cases from tests.yaml")
+    func testFromYAML() throws {
+        guard let yamlURL = Bundle.module.url(forResource: "tests", withExtension: "yaml") else {
+            Issue.record("tests.yaml not found")
+            return
+        }
+        let yamlString = try String(contentsOf: yamlURL)
+        let tests = try YAMLDecoder().decode(TestsYAML.self, from: yamlString)
+
+        // Test execution logic
+    }
+}
+```
+
+Swift tests automatically run all cases defined in the same `tests.yaml` format as Go.
 
 ## Key Utilities in `aoc` Package
 
