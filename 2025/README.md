@@ -8,11 +8,13 @@ Each day has its own directory with the following structure:
 ```
 DD/
 ├── Solution.swift         # Solution code with solvePart1 and solvePart2 functions
-├── SolutionTests.swift    # Tests using Swift Testing framework
+├── SolutionTests.swift    # Tests using Swift Testing framework with AOCTestSupport
 ├── tests.yaml            # Test configuration (language-agnostic)
 ├── input.txt             # Actual puzzle input (gitignored)
 └── input_ex*.txt         # Example inputs from problem descriptions
 ```
+
+The `AOCTestSupport` directory contains shared test utilities used by all day tests.
 
 ## Running Solutions
 
@@ -24,7 +26,7 @@ swift run day01 < 01/input.txt    # Run day 01
 
 ## Running Tests
 
-Tests use Swift Testing framework and parse tests.yaml for test cases:
+Tests use Swift Testing framework with the shared `AOCTestSupport` library:
 
 ```bash
 swift test                        # Run all tests
@@ -33,7 +35,7 @@ swift test --filter Day00Tests    # Run tests for a specific day
 
 ## Test Configuration
 
-Each day's `tests.yaml` defines test cases:
+Each day's `tests.yaml` defines test cases in a language-agnostic format:
 
 ```yaml
 inputs:
@@ -45,7 +47,23 @@ inputs:
   wantPart2: "expected_part2_result"
 ```
 
-The Swift tests automatically parse this YAML file and run all defined test cases.
+The `AOCTestSupport` library provides a shared `runAOCTests()` function that automatically parses the YAML and runs all test cases. Each day's test file is just:
+
+```swift
+import Testing
+import AOCTestSupport
+@testable import DayXX
+
+@Suite("Day XX Solutions")
+struct DayXXTests {
+    @Test("All test cases from tests.yaml")
+    func testFromYAML() throws {
+        try runAOCTests(bundle: .module, solvePart1: solvePart1, solvePart2: solvePart2)
+    }
+}
+```
+
+This approach eliminates code duplication across test files, similar to Go's `aoc.RunTests()`.
 
 ## Building for Release
 
@@ -64,12 +82,14 @@ swift build -c release
    .executableTarget(name: "dayDD", path: "DD", sources: ["Solution.swift"]),
    .testTarget(
        name: "DayDDTests",
-       dependencies: ["DayDD", "Yams"],
+       dependencies: ["DayDD", "AOCTestSupport"],
        path: "DD",
        sources: ["SolutionTests.swift"],
        resources: [.copy("tests.yaml"), .copy("input.txt"), .copy("input_ex1.txt")]
    ),
    ```
+
+Note: Test targets depend on `AOCTestSupport` (which includes Yams), not Yams directly.
 
 ## Downloading Inputs
 

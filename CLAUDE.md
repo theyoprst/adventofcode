@@ -220,31 +220,27 @@ struct DayXX {
 }
 ```
 
-Swift tests parse tests.yaml using the Yams library:
+Swift tests use the shared `AOCTestSupport` library (similar to Go's `aoc.RunTests()`):
 
 ```swift
-import Foundation
 import Testing
-import Yams
+import AOCTestSupport
 @testable import DayXX
 
 @Suite("Day XX Solutions")
 struct DayXXTests {
     @Test("All test cases from tests.yaml")
     func testFromYAML() throws {
-        guard let yamlURL = Bundle.module.url(forResource: "tests", withExtension: "yaml") else {
-            Issue.record("tests.yaml not found")
-            return
-        }
-        let yamlString = try String(contentsOf: yamlURL)
-        let tests = try YAMLDecoder().decode(TestsYAML.self, from: yamlString)
-
-        // Test execution logic
+        try runAOCTests(bundle: .module, solvePart1: solvePart1, solvePart2: solvePart2)
     }
 }
 ```
 
-Swift tests automatically run all cases defined in the same `tests.yaml` format as Go.
+The `AOCTestSupport` library:
+- Eliminates YAML parsing code duplication across all test files
+- Provides `runAOCTests()` function that reads tests.yaml and runs all test cases
+- Automatically runs all cases defined in the same `tests.yaml` format as Go
+- Test files reduced from ~45 lines to ~10 lines
 
 ## Key Utilities in `aoc` Package
 

@@ -1,12 +1,13 @@
 import Foundation
+import AOCUtilities
 
 func solvePart1(_ lines: [String]) -> Int {
     var leftList: [Int] = []
     var rightList: [Int] = []
 
     for line in lines {
-        let numbers = line.split(separator: /\s+/).compactMap { Int($0) }
-        guard numbers.count == 2 else { continue }
+        let numbers = line.extractInts()
+        precondition(numbers.count == 2, "Expected 2 numbers per line, got \(numbers.count) in: \(line)")
         leftList.append(numbers[0])
         rightList.append(numbers[1])
     }
@@ -24,8 +25,8 @@ func solvePart2(_ lines: [String]) -> Int {
     var rightCount: [Int: Int] = [:]
 
     for line in lines {
-        let numbers = line.split(separator: /\s+/).compactMap { Int($0) }
-        guard numbers.count == 2 else { continue }
+        let numbers = line.extractInts()
+        precondition(numbers.count == 2, "Expected 2 numbers per line, got \(numbers.count) in: \(line)")
         leftList.append(numbers[0])
         rightCount[numbers[1], default: 0] += 1
     }
