@@ -78,6 +78,15 @@ func solvePart2Linear(_ lines: [String]) -> Int {
     return password
 }
 
+let part1Solutions = [
+    Solution(name: "Default", solve: solvePart1)
+]
+
+let part2Solutions = [
+    Solution(name: "Iterative", solve: solvePart2),
+    Solution(name: "Linear", solve: solvePart2Linear)
+]
+
 @main
 struct Day01 {
     static func main() {
@@ -85,8 +94,12 @@ struct Day01 {
         while let line = readLine() {
             lines.append(line)
         }
-        print("Part 1:", solvePart1(lines))
-        print("Part 2:", solvePart2(lines))
-        print("Part 2 (Linear):", solvePart2Linear(lines))
+
+        for solution in part1Solutions {
+            print("Part 1 (\(solution.name)):", solution.solve(lines))
+        }
+        for solution in part2Solutions {
+            print("Part 2 (\(solution.name)):", solution.solve(lines))
+        }
     }
 }

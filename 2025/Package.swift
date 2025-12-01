@@ -23,7 +23,7 @@ let package = Package(
         ),
         .target(
             name: "AOCTestSupport",
-            dependencies: ["Yams"],
+            dependencies: ["Yams", "AOCUtilities"],
             path: "AOCTestSupport",
         ),
         .executableTarget(

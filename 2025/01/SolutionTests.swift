@@ -6,6 +6,6 @@ import AOCTestSupport
 struct Day01Tests {
     @Test("All test cases from tests.yaml")
     func testFromYAML() throws {
-        try runAOCTests(bundle: .module, solvePart1: solvePart1, solvePart2: solvePart2)
+        try runAOCTests(bundle: .module, part1Solutions: part1Solutions, part2Solutions: part2Solutions)
     }
 }
