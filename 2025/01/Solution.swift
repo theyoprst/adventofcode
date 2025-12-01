@@ -53,6 +53,31 @@ func solvePart2(_ lines: [String]) -> Int {
     return password
 }
 
+let dialSize = 100
+
+func solvePart2Linear(_ lines: [String]) -> Int {
+    let rotations = parseRotations(lines)
+    var idx = 50
+    var password = 0
+    for rotation in rotations {
+        password += abs(rotation / dialSize)
+        let oldIdx = idx
+        idx += rotation % dialSize
+        if idx < 0 {
+            if oldIdx > 0 {
+                password += 1
+            }
+            idx += dialSize
+        } else if idx == 0 {
+            password += 1
+        } else if idx >= dialSize {
+            password += 1
+            idx -= dialSize
+        }
+    }
+    return password
+}
+
 @main
 struct Day01 {
     static func main() {
@@ -62,5 +87,6 @@ struct Day01 {
         }
         print("Part 1:", solvePart1(lines))
         print("Part 2:", solvePart2(lines))
+        print("Part 2 (Linear):", solvePart2Linear(lines))
     }
 }
