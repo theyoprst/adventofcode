@@ -1,1 +1,7 @@
-inputs: []
+inputs:
+- path: input_ex1.txt
+  wantPart1: "3"
+  wantPart2: "6"
+- path: input.txt
+  wantPart1: "1007"
+  wantPart2: "5820"
