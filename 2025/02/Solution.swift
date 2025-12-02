@@ -39,57 +39,75 @@ func solvePart1(_ lines: [String]) -> Int {
                 precondition(false, "Either first or last must be an odd number")
             }
         }
-        
+
         precondition(firstStr.count == lastStr.count)
         if firstStr.count & 1 != 0 {
             continue // no bad ids possible
         }
-        
+
         let root = pow10(firstStr.count / 2) + 1
         let firstK = (first + root - 1) / root // ceil(first / root)
         let lastK = last / root // floor(first / root)
-        
+
         sum += root * (firstK + lastK) * (lastK - firstK + 1) / 2
-        
+
     }
-    
+
     return sum
 }
 
-func hasRepetitions(_ t: String) -> Bool {
-    let bytes = Array(t.utf8)
-    if bytes.count == 1 {
-        return false // Prevent invalid iteration
-    }
-    for k in 1...(bytes.count/2) {
-        if bytes.count % k != 0 {
-            continue
-        }
-        var matched = true
-        for i in 1..<(bytes.count/k) {
-            if bytes[0..<k] != bytes[i*k..<(i+1)*k] {
-                matched = false
-                break
-            }
-        }
-        if matched {
+func isDivisibleBy(_ n: Int, _ roots: [Int]) -> Bool {
+    for root in roots {
+        if n % root == 0 {
             return true
         }
     }
     return false
 }
 
+func digitsNumber(_ n: Int) -> Int {
+    var count = 0
+    var x = n
+    repeat {
+        count += 1
+        x /= 10
+    } while x > 0
+    return count
+}
+
+func getRoots(_ len: Int) -> [Int] {
+    var roots: [Int] = []
+    if len <= 1 {
+        return roots
+    }
+    for k in 2...len {
+        if len % k != 0 {
+            continue
+        }
+        var root = 1
+        for _ in 1..<k {
+            root = root * pow10(len / k) + 1
+        }
+        roots.append(root)
+    }
+    return roots
+}
+
 func solvePart2(_ lines: [String]) -> Int {
     let text = lines.joined(separator: "")
     let intervals = text.split(separator: ",")
     var sum = 0
+    let precalcRoots = (0...18).map(getRoots) // Precalculating roots speeds up the solution 10x.
     for interval in intervals {
         let ends = interval.split(separator: "-")
         precondition(ends.count == 2, "Invalid interval \(interval)")
         let first = Int.mustParse(ends[0])
         let last = Int.mustParse(ends[1])
+        // TODO: optimize by splitting first-last interval into same-digit-number subintervals
+        // and then using precalculated roots to get only candidates.
+        // Current approach is good enough though: ~ 1s.
         for k in first...last {
-            if hasRepetitions(String(k)) {
+            if isDivisibleBy(k, precalcRoots[digitsNumber(k)]) {
                sum += k
             }
         }
