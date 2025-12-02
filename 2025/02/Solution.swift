@@ -1,13 +1,13 @@
 import Foundation
 import AOCUtilities
 
-func pow10(_ n: Int) -> Int {
-    precondition(n >= 0)
-    var p = 1
-    for _ in 0..<n {
-        p *= 10
+func pow10(_ num: Int) -> Int {
+    precondition(num >= 0)
+    var pow = 1
+    for _ in 0..<num {
+        pow *= 10
     }
-    return p
+    return pow
 }
 
 func solvePart1(_ lines: [String]) -> Int {
@@ -50,28 +50,25 @@ func solvePart1(_ lines: [String]) -> Int {
         let lastK = last / root // floor(first / root)
 
         sum += root * (firstK + lastK) * (lastK - firstK + 1) / 2
-
     }
 
     return sum
 }
 
-func isDivisibleBy(_ n: Int, _ roots: [Int]) -> Bool {
-    for root in roots {
-        if n % root == 0 {
-            return true
-        }
+func isDivisibleBy(_ num: Int, _ roots: [Int]) -> Bool {
+    for root in roots where num % root == 0 {
+        return true
     }
     return false
 }
 
-func digitsNumber(_ n: Int) -> Int {
+func digitsNumber(_ num: Int) -> Int {
     var count = 0
-    var x = n
+    var cur = num
     repeat {
         count += 1
-        x /= 10
-    } while x > 0
+        cur /= 10
+    } while cur > 0
     return count
 }
 
@@ -106,10 +103,8 @@ func solvePart2(_ lines: [String]) -> Int {
         // TODO: optimize by splitting first-last interval into same-digit-number subintervals
         // and then using precalculated roots to get only candidates.
         // Current approach is good enough though: ~ 1s.
-        for k in first...last {
-            if isDivisibleBy(k, precalcRoots[digitsNumber(k)]) {
-               sum += k
-            }
+        for k in first...last where isDivisibleBy(k, precalcRoots[digitsNumber(k)]) {
+            sum += k
         }
     }
     return sum

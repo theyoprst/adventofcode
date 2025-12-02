@@ -17,9 +17,9 @@ func parseRotations(_ lines: [String]) -> [Int] {
             multiplier = 0
             precondition(false, "Unexpected direction: \(direction)")
         }
-        let n = Int.mustParse(line.dropFirst(1))
-        precondition(n != 0, "Rotation of 0 found")
-        rotations.append(multiplier * n)
+        let steps = Int.mustParse(line.dropFirst(1))
+        precondition(steps != 0, "Rotation of 0 found")
+        rotations.append(multiplier * steps)
     }
     return rotations
 }
