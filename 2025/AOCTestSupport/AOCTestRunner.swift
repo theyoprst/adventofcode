@@ -38,7 +38,10 @@ public func runAOCTests<T1: Equatable & CustomStringConvertible, T2: Equatable &
         }
 
         let input = try String(contentsOf: inputURL)
-        let lines = input.split(separator: "\n").map(String.init)
+        var lines = input.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
+        while lines.last?.isEmpty == true {
+            lines.removeLast()
+        }
 
         // Test Part 1 solutions
         if let expected = test.wantPart1 {
