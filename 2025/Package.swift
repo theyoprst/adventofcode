@@ -34,8 +34,12 @@ let package = Package(
             name: "Day00",
             dependencies: ["AOCUtilities"],
             path: "00",
-            exclude: ["SolutionTests.swift", "tests.yaml", "input.txt", "input_ex1.txt"],
+            exclude: ["SolutionTests.swift", "tests.yaml"],
             sources: ["Solution.swift"],
+            resources: [
+                .copy("input.txt"),
+                .copy("input_ex1.txt"),
+            ]
         ),
         .testTarget(
             name: "Day00Tests",
@@ -53,36 +57,56 @@ let package = Package(
             name: "Day01",
             dependencies: ["AOCUtilities"],
             path: "01",
-            exclude: ["SolutionTests.swift", "tests.yaml", "input.txt", "input_ex1.txt", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["SolutionTests.swift", "tests.yaml", "part1.html", "part1.md", "part2.html", "part2.md"],
             sources: ["Solution.swift"],
+            resources: [
+                .copy("input.txt"),
+                .copy("input_ex1.txt"),
+            ]
         ),
         .executableTarget(
             name: "Day02",
             dependencies: ["AOCUtilities"],
             path: "02",
-            exclude: ["SolutionTests.swift", "tests.yaml", "input.txt", "input_ex1.txt", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["SolutionTests.swift", "tests.yaml", "part1.html", "part1.md", "part2.html", "part2.md"],
             sources: ["Solution.swift"],
+            resources: [
+                .copy("input.txt"),
+                .copy("input_ex1.txt"),
+            ]
         ),
         .executableTarget(
             name: "Day03",
             dependencies: ["AOCUtilities"],
             path: "03",
-            exclude: ["SolutionTests.swift", "tests.yaml", "input.txt", "input_ex1.txt", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["SolutionTests.swift", "tests.yaml", "part1.html", "part1.md", "part2.html", "part2.md"],
             sources: ["Solution.swift"],
+            resources: [
+                .copy("input.txt"),
+                .copy("input_ex1.txt"),
+            ]
         ),
         .executableTarget(
             name: "Day04",
             dependencies: ["AOCUtilities"],
             path: "04",
-            exclude: ["SolutionTests.swift", "tests.yaml", "input.txt", "input_ex1.txt", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["SolutionTests.swift", "tests.yaml", "part1.html", "part1.md", "part2.html", "part2.md"],
             sources: ["Solution.swift"],
+            resources: [
+                .copy("input.txt"),
+                .copy("input_ex1.txt"),
+            ]
         ),
         .executableTarget(
             name: "Day05",
             dependencies: ["AOCUtilities"],
             path: "05",
-            exclude: ["SolutionTests.swift", "tests.yaml", "input.txt", "input_ex1.txt", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["SolutionTests.swift", "tests.yaml", "part1.html", "part1.md", "part2.html", "part2.md"],
             sources: ["Solution.swift"],
+            resources: [
+                .copy("input.txt"),
+                .copy("input_ex1.txt"),
+            ]
         ),
         .testTarget(
             name: "Day01Tests",

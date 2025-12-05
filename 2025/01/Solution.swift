@@ -90,16 +90,6 @@ let part2Solutions = [
 @main
 struct Day01 {
     static func main() {
-        var lines: [String] = []
-        while let line = readLine() {
-            lines.append(line)
-        }
-
-        for solution in part1Solutions {
-            print("Part 1 (\(solution.name)):", solution.solve(lines))
-        }
-        for solution in part2Solutions {
-            print("Part 2 (\(solution.name)):", solution.solve(lines))
-        }
+        runInteractively(part1Solutions: part1Solutions, part2Solutions: part2Solutions, bundle: .module)
     }
 }

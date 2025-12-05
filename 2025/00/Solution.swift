@@ -36,15 +36,17 @@ func solvePart2(_ lines: [String]) -> Int {
         .reduce(0, +)
 }
 
+let part1Solutions = [
+    Solution(name: "Default", solve: solvePart1)
+]
+
+let part2Solutions = [
+    Solution(name: "Default", solve: solvePart2)
+]
+
 @main
 struct Day00 {
     static func main() {
-        var lines: [String] = []
-        while let line = readLine() {
-            lines.append(line)
-        }
-
-        print("Part 1:", solvePart1(lines))
-        print("Part 2:", solvePart2(lines))
+        runInteractively(part1Solutions: part1Solutions, part2Solutions: part2Solutions, bundle: .module)
     }
 }
