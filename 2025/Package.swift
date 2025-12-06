@@ -34,7 +34,7 @@ let package = Package(
             name: "Day01",
             dependencies: ["AOCUtilities"],
             path: "01",
-            exclude: ["SolutionTests.swift", "tests.yaml", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["SolutionTests.swift", "tests.yaml"],
             sources: ["Solution.swift"],
             resources: [
                 .copy("input.txt"),
@@ -45,7 +45,7 @@ let package = Package(
             name: "Day02",
             dependencies: ["AOCUtilities"],
             path: "02",
-            exclude: ["SolutionTests.swift", "tests.yaml", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["SolutionTests.swift", "tests.yaml"],
             sources: ["Solution.swift"],
             resources: [
                 .copy("input.txt"),
@@ -56,7 +56,7 @@ let package = Package(
             name: "Day03",
             dependencies: ["AOCUtilities"],
             path: "03",
-            exclude: ["SolutionTests.swift", "tests.yaml", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["SolutionTests.swift", "tests.yaml"],
             sources: ["Solution.swift"],
             resources: [
                 .copy("input.txt"),
@@ -67,7 +67,7 @@ let package = Package(
             name: "Day04",
             dependencies: ["AOCUtilities"],
             path: "04",
-            exclude: ["SolutionTests.swift", "tests.yaml", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["SolutionTests.swift", "tests.yaml"],
             sources: ["Solution.swift"],
             resources: [
                 .copy("input.txt"),
@@ -78,7 +78,7 @@ let package = Package(
             name: "Day05",
             dependencies: ["AOCUtilities"],
             path: "05",
-            exclude: ["SolutionTests.swift", "tests.yaml", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["SolutionTests.swift", "tests.yaml"],
             sources: ["Solution.swift"],
             resources: [
                 .copy("input.txt"),
@@ -89,7 +89,7 @@ let package = Package(
             name: "Day06",
             dependencies: ["AOCUtilities"],
             path: "06",
-            exclude: ["SolutionTests.swift", "tests.yaml", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["SolutionTests.swift", "tests.yaml"],
             sources: ["Solution.swift"],
             resources: [
                 .copy("input.txt"),
@@ -100,7 +100,7 @@ let package = Package(
             name: "Day01Tests",
             dependencies: ["Day01", "AOCTestSupport"],
             path: "01",
-            exclude: ["Solution.swift", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["Solution.swift"],
             sources: ["SolutionTests.swift"],
             resources: [
                 .copy("tests.yaml"),
@@ -112,7 +112,7 @@ let package = Package(
             name: "Day02Tests",
             dependencies: ["Day02", "AOCTestSupport"],
             path: "02",
-            exclude: ["Solution.swift", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["Solution.swift"],
             sources: ["SolutionTests.swift"],
             resources: [
                 .copy("tests.yaml"),
@@ -124,7 +124,7 @@ let package = Package(
             name: "Day03Tests",
             dependencies: ["Day03", "AOCTestSupport"],
             path: "03",
-            exclude: ["Solution.swift", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["Solution.swift"],
             sources: ["SolutionTests.swift"],
             resources: [
                 .copy("tests.yaml"),
@@ -136,7 +136,7 @@ let package = Package(
             name: "Day04Tests",
             dependencies: ["Day04", "AOCTestSupport"],
             path: "04",
-            exclude: ["Solution.swift", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["Solution.swift"],
             sources: ["SolutionTests.swift"],
             resources: [
                 .copy("tests.yaml"),
@@ -148,7 +148,7 @@ let package = Package(
             name: "Day05Tests",
             dependencies: ["Day05", "AOCTestSupport"],
             path: "05",
-            exclude: ["Solution.swift", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["Solution.swift"],
             sources: ["SolutionTests.swift"],
             resources: [
                 .copy("tests.yaml"),
@@ -160,7 +160,7 @@ let package = Package(
             name: "Day06Tests",
             dependencies: ["Day06", "AOCTestSupport"],
             path: "06",
-            exclude: ["Solution.swift", "part1.html", "part1.md", "part2.html", "part2.md"],
+            exclude: ["Solution.swift"],
             sources: ["SolutionTests.swift"],
             resources: [
                 .copy("tests.yaml"),
