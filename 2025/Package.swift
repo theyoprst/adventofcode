@@ -10,7 +10,6 @@ let package = Package(
         .watchOS(.v9),
     ],
     products: [
-        .executable(name: "day00", targets: ["Day00"]),
         .executable(name: "day01", targets: ["Day01"]),
         .executable(name: "day02", targets: ["Day02"]),
         .executable(name: "day03", targets: ["Day03"]),
@@ -30,29 +29,6 @@ let package = Package(
             name: "AOCTestSupport",
             dependencies: ["Yams", "AOCUtilities"],
             path: "AOCTestSupport",
-        ),
-        .executableTarget(
-            name: "Day00",
-            dependencies: ["AOCUtilities"],
-            path: "00",
-            exclude: ["SolutionTests.swift", "tests.yaml"],
-            sources: ["Solution.swift"],
-            resources: [
-                .copy("input.txt"),
-                .copy("input_ex1.txt"),
-            ]
-        ),
-        .testTarget(
-            name: "Day00Tests",
-            dependencies: ["Day00", "AOCTestSupport"],
-            path: "00",
-            exclude: ["Solution.swift"],
-            sources: ["SolutionTests.swift"],
-            resources: [
-                .copy("tests.yaml"),
-                .copy("input.txt"),
-                .copy("input_ex1.txt"),
-            ]
         ),
         .executableTarget(
             name: "Day01",
