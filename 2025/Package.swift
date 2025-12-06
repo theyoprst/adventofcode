@@ -16,6 +16,7 @@ let package = Package(
         .executable(name: "day03", targets: ["Day03"]),
         .executable(name: "day04", targets: ["Day04"]),
         .executable(name: "day05", targets: ["Day05"]),
+        .executable(name: "day06", targets: ["Day06"]),
     ],
     dependencies: [
         .package(url: "https://github.com/jpsim/Yams.git", from: "5.0.0"),
@@ -108,6 +109,17 @@ let package = Package(
                 .copy("input_ex1.txt"),
             ]
         ),
+        .executableTarget(
+            name: "Day06",
+            dependencies: ["AOCUtilities"],
+            path: "06",
+            exclude: ["SolutionTests.swift", "tests.yaml", "part1.html", "part1.md", "part2.html", "part2.md"],
+            sources: ["Solution.swift"],
+            resources: [
+                .copy("input.txt"),
+                .copy("input_ex1.txt"),
+            ]
+        ),
         .testTarget(
             name: "Day01Tests",
             dependencies: ["Day01", "AOCTestSupport"],
@@ -160,6 +172,18 @@ let package = Package(
             name: "Day05Tests",
             dependencies: ["Day05", "AOCTestSupport"],
             path: "05",
+            exclude: ["Solution.swift", "part1.html", "part1.md", "part2.html", "part2.md"],
+            sources: ["SolutionTests.swift"],
+            resources: [
+                .copy("tests.yaml"),
+                .copy("input.txt"),
+                .copy("input_ex1.txt"),
+            ]
+        ),
+        .testTarget(
+            name: "Day06Tests",
+            dependencies: ["Day06", "AOCTestSupport"],
+            path: "06",
             exclude: ["Solution.swift", "part1.html", "part1.md", "part2.html", "part2.md"],
             sources: ["SolutionTests.swift"],
             resources: [
