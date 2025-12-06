@@ -1,91 +1,79 @@
 import Foundation
 import AOCUtilities
 
-let chAdd: Character = "+"
-let chMul: Character = "*"
-
 func solvePart1(_ lines: [String]) -> Int {
-    precondition(lines.count >= 2)
-    
-    var numbers: [[Int]] = []
-    for i in 0..<lines.count-1 {
-        numbers.append(lines[i].split(separator:" ").map(Int.mustParse))
-        precondition(numbers[i].count == numbers[0].count)
+    assert(lines.count >= 2)
+
+    let table = lines.dropLast().map { line in
+        line.split(separator: " ").map(Int.mustParse)
     }
-    
-    let ops: [Character] = lines[lines.count-1].split(separator:" ").map { $0.first! }
-    precondition(ops.count == numbers[0].count)
-    
+    assert(table.allSatisfy { row in row.count == table[0].count })
+
+    let ops: [Character] = lines.last!.split(separator: " ").map { $0.first! }
+    assert(ops.count == table[0].count)
+
     var grandTotal = 0
     for (col, chOp) in ops.enumerated() {
-        let op: (Int, Int) -> Int
-        var sum: Int
-        switch chOp {
-        case chAdd:
-            op = (+)
-            sum = 0
-        case chMul:
-            op = (*)
-            sum = 1
-        default:
-            fatalError("Unexpected character: \(chOp)")
+        let (op, identity): ((Int, Int) -> Int, identity: Int) = switch chOp {
+        case "+": ((+), 0)
+        case "*": ((*), 1)
+        default: fatalError("Unexpected character: \(chOp)")
         }
-        for row in 0..<numbers.count {
-            sum = op(sum, numbers[row][col])
-        }
-        grandTotal += sum
+        grandTotal += table.reduce(identity) { op($0, $1[col]) }
     }
+
     return grandTotal
 }
 
 func solvePart2(_ lines: [String]) -> Int {
-    var lines = lines.map { Array($0) }
-    var grandTotal = 0
-    var localTotal = 0
-    var localOp: (Int, Int) -> Int = (+) // TODO: had to put value because of a weird compiler error about using before initialize
-    let rows = lines.count
-    let cols = lines.reduce(0) { max($0, $1.count) }
+    var grid = lines.map { Array($0) }
+    let rows = grid.count
+    let cols = grid.map { $0.count }.max()! + 1 // +1 for extra spaces column.
 
     // Make rows equal length
-    for row in 0..<rows {
-        while lines[row].count < cols {
-            lines[row].append(" ")
+    grid = grid.map { row in
+        row + Array(repeating: " ", count: cols - row.count)
+    }
+
+    func parseColumnNumber(_ col: Int) -> Int? {
+        var result = 0
+        var hasDigit = false
+        for row in 0..<rows {
+            if let digit = grid[row][col].wholeNumberValue {
+                result = 10 * result + digit
+                hasDigit = true
+            }
+        }
+        return hasDigit ? result : nil
+    }
+
+    typealias OpPair = (op: (Int, Int) -> Int, identity: Int)
+
+    func parseColumnOp(_ col: Int) -> OpPair? {
+        switch grid[rows-1][col] {
+        case "+": return ((+), 0)
+        case "*": return ((*), 1)
+        default: return nil
         }
     }
 
+    var grandTotal = 0
+    var currentNumbers: [Int] = []
+    var currentOp: OpPair?
     for col in 0..<cols {
-        var colNumber = 0
-        for row in 0..<lines.count-1 {
-            let ch: Character = lines[row][col]
-            switch ch {
-            case " ":
-                continue
-            case "0"..."9":
-                let digit = ch.asciiValue! - Character("0").asciiValue!
-                colNumber = 10 * colNumber + Int(digit)
-            default:
-                fatalError("Unexpected character: \(ch)")
+        if let colNumber = parseColumnNumber(col) {
+            currentNumbers.append(colNumber)
+            if let op = parseColumnOp(col) {
+                assert(currentOp == nil)
+                currentOp = op
             }
-        }
-        let colOpCh = lines[rows-1][col]
-        switch colOpCh {
-        case "+":
-            localOp = (+)
-            grandTotal += localTotal
-            localTotal = colNumber
-        case "*":
-            localOp = (*)
-            grandTotal += localTotal
-            localTotal = colNumber
-        case " ":
-            if colNumber != 0 {
-                localTotal = localOp(localTotal, colNumber)
-            }
-        default:
-            fatalError("Unexpected operation: \(colOpCh)")
+        } else {
+            let (op, identity) = currentOp!
+            grandTotal += currentNumbers.reduce(identity, op)
+            (currentNumbers, currentOp) = ([], nil)
         }
     }
-    grandTotal += localTotal // last column
+    assert(currentOp == nil)
     return grandTotal
 }
 
