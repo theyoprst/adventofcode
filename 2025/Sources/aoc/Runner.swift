@@ -19,17 +19,31 @@ func runAllInputs(
         print("=== Processing: \(inputFile) ===")
 
         let lines = loadInputLines(from: inputFile, bundle: bundle, subdirectory: daySubdirectory)
+        let clock = ContinuousClock()
+        var totalDuration = Duration.zero
 
         for solution in part1Solutions {
-            let result = solution.solve(lines)
-            print("Part 1 (\(solution.name)): \(result)")
+            var result: Any!
+            let duration = clock.measure {
+                result = solution.solve(lines)
+            }
+            let durationMs = Int(duration / .milliseconds(1))
+            totalDuration += duration
+            print("Part 1 (\(solution.name)): \(result!) (time: \(durationMs)ms)")
         }
 
         for solution in part2Solutions {
-            let result = solution.solve(lines)
-            print("Part 2 (\(solution.name)): \(result)")
+            var result: Any!
+            let duration = clock.measure {
+                result = solution.solve(lines)
+            }
+            let durationMs = Int(duration / .milliseconds(1))
+            totalDuration += duration
+            print("Part 2 (\(solution.name)): \(result!) (time: \(durationMs)ms)")
         }
 
+        let totalMs = Int(totalDuration / .milliseconds(1))
+        print("Total time: \(totalMs)ms")
         print()
     }
 }
