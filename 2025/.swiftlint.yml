@@ -27,6 +27,7 @@ disabled_rules:
   - file_name                # Solution.swift doesn't match Day00/Day01 struct names
   - implicit_return          # Explicit returns are clearer in AoC solutions
   - force_unwrapping         # Warn about force unwraps (configured below)
+  - trailing_comma           # Allowing trailing commas is generally considered good practice
 
 # Line length configuration
 line_length:

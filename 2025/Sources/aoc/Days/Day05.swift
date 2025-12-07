@@ -16,7 +16,7 @@ struct Event: Comparable {
     }
 }
 
-func buildEvents(_ lines: [String]) -> [Event] {
+private func buildEvents(_ lines: [String]) -> [Event] {
     let sections = lines.split(separator: "", omittingEmptySubsequences: false)
     precondition(sections.count == 2, "Want 2 blocks, got \(sections.count)")
     let (intervalsSection, testsSection) = (sections[0], sections[1])
@@ -32,7 +32,7 @@ func buildEvents(_ lines: [String]) -> [Event] {
     return (intervalEvents + testEvents).sorted()
 }
 
-func solvePart1(_ lines: [String]) -> Int {
+private func solvePart1(_ lines: [String]) -> Int {
     var (result, depth) = (0, 0)
     for event in buildEvents(lines) {
         switch event.type {
@@ -48,7 +48,7 @@ func solvePart1(_ lines: [String]) -> Int {
     return result
 }
 
-func solvePart2(_ lines: [String]) -> Int {
+private func solvePart2(_ lines: [String]) -> Int {
     var (result, depth, firstStart) = (0, 0, 0)
     for event in buildEvents(lines) {
         switch event.type {
@@ -66,17 +66,14 @@ func solvePart2(_ lines: [String]) -> Int {
     return result
 }
 
-let part1Solutions = [
-    Solution(name: "Default", solve: solvePart1)
-]
+struct Day05: DaySolution {
+    let dayNumber = 5
 
-let part2Solutions = [
-    Solution(name: "Default", solve: solvePart2)
-]
+    let part1Solutions = [
+        Solution(name: "Default", solve: solvePart1)
+    ]
 
-@main
-struct Day05 {
-    static func main() {
-        runInteractively(part1Solutions: part1Solutions, part2Solutions: part2Solutions, bundle: .module)
-    }
+    let part2Solutions = [
+        Solution(name: "Default", solve: solvePart2)
+    ]
 }

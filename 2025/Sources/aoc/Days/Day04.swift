@@ -4,7 +4,7 @@ import AOCUtilities
 let roll: Character = "@"
 let empty: Character = "."
 
-func solvePart1(_ lines: [String]) -> Int {
+private func solvePart1(_ lines: [String]) -> Int {
     let rows = lines.count
     let cols = lines[0].count
     var field = Array(repeating: Array(repeating: empty, count: cols+2), count: rows+2)
@@ -36,7 +36,7 @@ func solvePart1(_ lines: [String]) -> Int {
     return ans
 }
 
-func solvePart2(_ lines: [String]) -> Int {
+private func solvePart2(_ lines: [String]) -> Int {
     let rows = lines.count
     let cols = lines[0].count
     var field = Array(repeating: Array(repeating: empty, count: cols+2), count: rows+2)
@@ -78,17 +78,14 @@ func solvePart2(_ lines: [String]) -> Int {
     return prevRemoved
 }
 
-let part1Solutions = [
-    Solution(name: "Default", solve: solvePart1)
-]
+struct Day04: DaySolution {
+    let dayNumber = 4
 
-let part2Solutions = [
-    Solution(name: "Default", solve: solvePart2)
-]
+    let part1Solutions = [
+        Solution(name: "Default", solve: solvePart1)
+    ]
 
-@main
-struct Day04 {
-    static func main() {
-        runInteractively(part1Solutions: part1Solutions, part2Solutions: part2Solutions, bundle: .module)
-    }
+    let part2Solutions = [
+        Solution(name: "Default", solve: solvePart2)
+    ]
 }

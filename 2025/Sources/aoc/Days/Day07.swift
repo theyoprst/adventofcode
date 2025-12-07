@@ -1,7 +1,7 @@
 import Foundation
 import AOCUtilities
 
-func solvePart1(_ lines: [String]) -> Int {
+private func solvePart1(_ lines: [String]) -> Int {
     var grid = lines.map { Array($0) }
     var splitsCount = 0
     for row in grid.indices.dropLast() {
@@ -29,7 +29,7 @@ func solvePart1(_ lines: [String]) -> Int {
     return splitsCount
 }
 
-func solvePart2(_ lines: [String]) -> Int {
+private func solvePart2(_ lines: [String]) -> Int {
     let grid = lines.map { Array($0) }
     let cols = grid[0].count
     var curRoutes = Array(repeating: 0, count: cols)
@@ -54,17 +54,14 @@ func solvePart2(_ lines: [String]) -> Int {
     return curRoutes.reduce(0, +)
 }
 
-let part1Solutions = [
-    Solution(name: "Default", solve: solvePart1)
-]
+struct Day07: DaySolution {
+    let dayNumber = 7
 
-let part2Solutions = [
-    Solution(name: "Default", solve: solvePart2)
-]
+    let part1Solutions = [
+        Solution(name: "Default", solve: solvePart1)
+    ]
 
-@main
-struct Day07 {
-    static func main() {
-        runInteractively(part1Solutions: part1Solutions, part2Solutions: part2Solutions, bundle: .module)
-    }
+    let part2Solutions = [
+        Solution(name: "Default", solve: solvePart2)
+    ]
 }

@@ -1,7 +1,7 @@
 import Foundation
 import AOCUtilities
 
-func solvePart1(_ lines: [String]) -> Int {
+private func solvePart1(_ lines: [String]) -> Int {
     assert(lines.count >= 2)
 
     let table = lines.dropLast().map { line in
@@ -25,7 +25,7 @@ func solvePart1(_ lines: [String]) -> Int {
     return grandTotal
 }
 
-func solvePart2(_ lines: [String]) -> Int {
+private func solvePart2(_ lines: [String]) -> Int {
     var grid = lines.map { Array($0) }
     let rows = grid.count
     let cols = grid.map { $0.count }.max()! + 1 // +1 for extra spaces column.
@@ -77,17 +77,14 @@ func solvePart2(_ lines: [String]) -> Int {
     return grandTotal
 }
 
-let part1Solutions = [
-    Solution(name: "Default", solve: solvePart1)
-]
+struct Day06: DaySolution {
+    let dayNumber = 6
 
-let part2Solutions = [
-    Solution(name: "Default", solve: solvePart2)
-]
+    let part1Solutions = [
+        Solution(name: "Default", solve: solvePart1)
+    ]
 
-@main
-struct Day06 {
-    static func main() {
-        runInteractively(part1Solutions: part1Solutions, part2Solutions: part2Solutions, bundle: .module)
-    }
+    let part2Solutions = [
+        Solution(name: "Default", solve: solvePart2)
+    ]
 }

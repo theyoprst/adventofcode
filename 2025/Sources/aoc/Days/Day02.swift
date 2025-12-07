@@ -1,7 +1,7 @@
 import Foundation
 import AOCUtilities
 
-func pow10(_ num: Int) -> Int {
+private func pow10(_ num: Int) -> Int {
     precondition(num >= 0)
     var pow = 1
     for _ in 0..<num {
@@ -10,7 +10,7 @@ func pow10(_ num: Int) -> Int {
     return pow
 }
 
-func solvePart1(_ lines: [String]) -> Int {
+private func solvePart1(_ lines: [String]) -> Int {
     let text = lines.joined(separator: "")
     let intervals = text.split(separator: ",")
     var sum = 0
@@ -55,14 +55,14 @@ func solvePart1(_ lines: [String]) -> Int {
     return sum
 }
 
-func isDivisibleBy(_ num: Int, _ roots: [Int]) -> Bool {
+private func isDivisibleBy(_ num: Int, _ roots: [Int]) -> Bool {
     for root in roots where num % root == 0 {
         return true
     }
     return false
 }
 
-func digitsNumber(_ num: Int) -> Int {
+private func digitsNumber(_ num: Int) -> Int {
     var count = 0
     var cur = num
     repeat {
@@ -72,7 +72,7 @@ func digitsNumber(_ num: Int) -> Int {
     return count
 }
 
-func getRoots(_ len: Int) -> [Int] {
+private func getRoots(_ len: Int) -> [Int] {
     var roots: [Int] = []
     if len <= 1 {
         return roots
@@ -90,7 +90,7 @@ func getRoots(_ len: Int) -> [Int] {
     return roots
 }
 
-func solvePart2(_ lines: [String]) -> Int {
+private func solvePart2(_ lines: [String]) -> Int {
     let text = lines.joined(separator: "")
     let intervals = text.split(separator: ",")
     var sum = 0
@@ -110,17 +110,14 @@ func solvePart2(_ lines: [String]) -> Int {
     return sum
 }
 
-let part1Solutions = [
-    Solution(name: "Default", solve: solvePart1)
-]
+struct Day02: DaySolution {
+    let dayNumber = 2
 
-let part2Solutions = [
-    Solution(name: "Default", solve: solvePart2)
-]
+    let part1Solutions = [
+        Solution(name: "Default", solve: solvePart1)
+    ]
 
-@main
-struct Day02 {
-    static func main() {
-        runInteractively(part1Solutions: part1Solutions, part2Solutions: part2Solutions, bundle: .module)
-    }
+    let part2Solutions = [
+        Solution(name: "Default", solve: solvePart2)
+    ]
 }

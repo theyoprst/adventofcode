@@ -1,7 +1,7 @@
 import Foundation
 import AOCUtilities
 
-func parseRotations(_ lines: [String]) -> [Int] {
+private func parseRotations(_ lines: [String]) -> [Int] {
     var rotations: [Int] = []
     for line in lines {
         guard let direction = line.first else {
@@ -24,7 +24,7 @@ func parseRotations(_ lines: [String]) -> [Int] {
     return rotations
 }
 
-func solvePart1(_ lines: [String]) -> Int {
+private func solvePart1(_ lines: [String]) -> Int {
     var idx = 50
     var password = 0
     for rotation in parseRotations(lines) {
@@ -36,7 +36,7 @@ func solvePart1(_ lines: [String]) -> Int {
     return password
 }
 
-func solvePart2(_ lines: [String]) -> Int {
+private func solvePart2(_ lines: [String]) -> Int {
     let rotations = parseRotations(lines)
     var idx = 50
     var password = 0
@@ -55,7 +55,7 @@ func solvePart2(_ lines: [String]) -> Int {
 
 let dialSize = 100
 
-func solvePart2Linear(_ lines: [String]) -> Int {
+private func solvePart2Linear(_ lines: [String]) -> Int {
     let rotations = parseRotations(lines)
     var idx = 50
     var password = 0
@@ -78,18 +78,15 @@ func solvePart2Linear(_ lines: [String]) -> Int {
     return password
 }
 
-let part1Solutions = [
-    Solution(name: "Default", solve: solvePart1)
-]
+struct Day01: DaySolution {
+    let dayNumber = 1
 
-let part2Solutions = [
-    Solution(name: "Iterative", solve: solvePart2),
-    Solution(name: "Linear", solve: solvePart2Linear)
-]
+    let part1Solutions = [
+        Solution(name: "Default", solve: solvePart1)
+    ]
 
-@main
-struct Day01 {
-    static func main() {
-        runInteractively(part1Solutions: part1Solutions, part2Solutions: part2Solutions, bundle: .module)
-    }
+    let part2Solutions = [
+        Solution(name: "Iterative", solve: solvePart2),
+        Solution(name: "Linear", solve: solvePart2Linear)
+    ]
 }

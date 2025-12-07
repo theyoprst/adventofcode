@@ -11,18 +11,14 @@ This is an Advent of Code solutions repository with solutions in multiple langua
 ## Multi-Language Structure
 
 ### 2022-2024 (Go)
-Solutions use the established Go pattern with the shared `aoc` package.
+Solutions use the established Go pattern with the shared `aoc` package. See below for details.
 
 ### 2025+ (Swift)
-Swift solutions are organized differently while maintaining compatibility:
-- Solutions live directly in `2025/DD/` directories (no language subdirectory)
-- Each day has `Solution.swift` and `SolutionTests.swift`
-- Tests parse the same `tests.yaml` format as Go (language-agnostic)
-- Package.swift at year level defines executable targets per day
-- Input files (`input.txt`, `input_ex*.txt`) shared at day level
-- If Go solutions are added later, they can go in `2025/DD/go/` subdirectories
+Swift solutions use a unified executable with proper SPM structure. See `2025/CLAUDE.md` for complete Swift-specific documentation.
 
 ## Project Structure
+
+### Go (2022-2024)
 
 - `YYYY/DD/` - Solutions for each day, where YYYY is the year and DD is the day (e.g., `2024/01/`)
   - `main.go` - Solution code with `SolvePart1` and `SolvePart2` functions
@@ -43,6 +39,17 @@ Swift solutions are organized differently while maintaining compatibility:
 - `must/` - Must-style error handling utilities
 - `template/` - Template for new day solutions
 - `cmd/aoc-input/` - Tool to download inputs and problem descriptions from adventofcode.com
+
+### Swift (2025+)
+
+- `2025/` - Swift Package Manager project (see `2025/CLAUDE.md` for details)
+  - `CLAUDE.md` - Swift-specific documentation
+  - `Package.swift` - Package manifest
+  - `Sources/aoc/` - Main executable target with day solutions
+  - `Tests/AOCTests/` - Consolidated test target
+  - `Resources/DD/` - Resource directories per day (tests.yaml, input files)
+  - `AOCUtilities/` - Shared utilities library
+  - `AOCTestSupport/` - Test support library
 
 ## Common Commands
 
@@ -93,43 +100,7 @@ golangci-lint run ./2024/01/...
 
 The configuration at `.golangci.yaml` enables many linters with special exclusions for solution files matching `\d+/main.go`.
 
-#### Swift Linting
-
-The project uses SwiftLint with comprehensive rules:
-```bash
-cd 2025 && swiftlint         # Run from Swift project directory
-```
-
-The configuration at `2025/.swiftlint.yml` follows the same philosophy as Go linting: comprehensive but practical for Advent of Code. Key features:
-- Comprehensive opt-in rules for code quality and best practices
-- Relaxed rules for solution files (similar to Go's `\d+/main.go` pattern)
-- Strict linting maintained for `AOCUtilities/` and `AOCTestSupport/`
-- Excludes `.build/`, `.swiftpm/` directories and dependencies
-- Allows TODOs in incomplete solutions
-- Pragmatic limits on function/file length and complexity for puzzle solving
-
-### Swift Solutions (2025+)
-
-Running Swift solutions from the year directory:
-```bash
-cd 2025
-swift run day00 < 00/input.txt
-swift run day01 < 01/input.txt
-```
-
-Running Swift tests:
-```bash
-cd 2025
-swift test                       # All tests
-swift test --filter Day00Tests   # Specific day
-```
-
-Building for release:
-```bash
-cd 2025
-swift build -c release
-.build/release/day00 < 00/input.txt
-```
+For Swift linting, see `2025/CLAUDE.md`.
 
 ### Downloading Inputs
 
@@ -205,57 +176,7 @@ func Test(t *testing.T) {
 
 This automatically runs all solvers against all inputs defined in `tests.yaml`.
 
-### Swift Solutions (2025+)
-
-Each Swift solution follows this pattern:
-
-```swift
-import Foundation
-
-func solvePart1(_ lines: [String]) -> Int {
-    // Solution logic
-    return result
-}
-
-func solvePart2(_ lines: [String]) -> Int {
-    // Solution logic
-    return result
-}
-
-@main
-struct DayXX {
-    static func main() {
-        var lines: [String] = []
-        while let line = readLine() {
-            lines.append(line)
-        }
-        print("Part 1:", solvePart1(lines))
-        print("Part 2:", solvePart2(lines))
-    }
-}
-```
-
-Swift tests use the shared `AOCTestSupport` library (similar to Go's `aoc.RunTests()`):
-
-```swift
-import Testing
-import AOCTestSupport
-@testable import DayXX
-
-@Suite("Day XX Solutions")
-struct DayXXTests {
-    @Test("All test cases from tests.yaml")
-    func testFromYAML() throws {
-        try runAOCTests(bundle: .module, solvePart1: solvePart1, solvePart2: solvePart2)
-    }
-}
-```
-
-The `AOCTestSupport` library:
-- Eliminates YAML parsing code duplication across all test files
-- Provides `runAOCTests()` function that reads tests.yaml and runs all test cases
-- Automatically runs all cases defined in the same `tests.yaml` format as Go
-- Test files reduced from ~45 lines to ~10 lines
+For Swift solution structure, see `2025/CLAUDE.md`.
 
 ## Key Utilities in `aoc` Package
 
