@@ -4,7 +4,7 @@
 # Exclude build artifacts and dependencies
 excluded:
   - .build
-  - 2025/.build
+  - .swiftpm
   - "**/Package.swift"
 
 # Opt-in rules (disabled by default but we want them)
