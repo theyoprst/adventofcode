@@ -5,7 +5,7 @@ private func parseRotations(_ lines: [String]) -> [Int] {
     var rotations: [Int] = []
     for line in lines {
         guard let direction = line.first else {
-            precondition(false, "Empty line found")
+            preconditionFailure("Empty line found")
         }
         let multiplier: Int
         switch direction {

@@ -5,7 +5,7 @@ public extension Int {
     /// This is intended for Advent of Code where input is assumed to be well-formed.
     static func mustParse<S: StringProtocol>(_ string: S) -> Int {
         guard let value = Int(string) else {
-            precondition(false, "Failed to parse '\(string)' as Int")
+            preconditionFailure("Failed to parse '\(string)' as Int")
         }
         return value
     }
