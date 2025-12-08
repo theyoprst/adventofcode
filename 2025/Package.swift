@@ -15,6 +15,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/jpsim/Yams.git", from: "5.0.0"),
         .package(url: "https://github.com/apple/swift-argument-parser.git", exact: "1.6.2"),
+        .package(url: "https://github.com/apple/swift-collections.git", .upToNextMajor(from: "1.3.0")),
     ],
     targets: [
         // Shared utilities
@@ -29,6 +30,7 @@ let package = Package(
             dependencies: [
                 "AOCUtilities",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "Collections", package: "swift-collections"),
             ],
             path: "Sources/aoc",
             resources: [
@@ -39,13 +41,19 @@ let package = Package(
                 .copy("../../Resources/05"),
                 .copy("../../Resources/06"),
                 .copy("../../Resources/07"),
+                .copy("../../Resources/08"),
             ]
         ),
 
         // Single test target
         .testTarget(
             name: "AOCTests",
-            dependencies: ["aoc", "AOCUtilities", "Yams"],
+            dependencies: [
+                "aoc",
+                "AOCUtilities",
+                "Yams",
+                .product(name: "Collections", package: "swift-collections"),
+            ],
             path: "Tests/AOCTests",
             resources: [
                 .copy("../../Resources/01"),
@@ -55,6 +63,7 @@ let package = Package(
                 .copy("../../Resources/05"),
                 .copy("../../Resources/06"),
                 .copy("../../Resources/07"),
+                .copy("../../Resources/08"),
             ]
         ),
     ]
