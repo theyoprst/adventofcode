@@ -42,6 +42,7 @@ let package = Package(
                 .copy("../../Resources/06"),
                 .copy("../../Resources/07"),
                 .copy("../../Resources/08"),
+                .copy("../../Resources/09"),
             ]
         ),
 
@@ -64,6 +65,7 @@ let package = Package(
                 .copy("../../Resources/06"),
                 .copy("../../Resources/07"),
                 .copy("../../Resources/08"),
+                .copy("../../Resources/09"),
             ]
         ),
     ]
