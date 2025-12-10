@@ -48,4 +48,9 @@ struct AllDaysTests {
     func testDay09() throws {
         try runAOCTests(bundle: .module, day: Day09())
     }
+
+    @Test("Day 10")
+    func testDay10() throws {
+        try runAOCTests(bundle: .module, day: Day10())
+    }
 }
