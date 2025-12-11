@@ -26,6 +26,7 @@ enum DayRegistry {
         Day08(),
         Day09(),
         Day10(),
+        Day11(),
     ]
 
     // Dictionary for O(1) lookup by day number
